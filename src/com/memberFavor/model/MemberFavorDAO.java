@@ -1,4 +1,4 @@
-package com.permision.model;
+package com.memberFavor.model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +11,7 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-public class PermisionDAO implements PermisionDAO_interface{
+public class MemberFavorDAO implements MemberFavorDAO_interface {
 	private static Connection con = null;
 	static {
 		Context ctx;
@@ -26,15 +26,16 @@ public class PermisionDAO implements PermisionDAO_interface{
 		}
 	}
 	private PreparedStatement psmt;
-	private static final String INSERT = "INSERT INTO PERMISION (EMPNO,OPERATION_ID) VALUES(?,?)";
-	private static final String DELETE = "DELETE FROM PERMISION WHERE EMPNO = ? AND OPERATION_ID = ?";
-	private static final String GETONEEMPPERMISION = "SELECT * FROM PERMISION WHERE EMPNO = ? ";
+	private static final String INSERT = "INSERT INTO MEMBER_FAVOR (MEMBER_ID,GENRE_ID) VALUES(?,?)";
+	private static final String DELETE = "DELETE FROM MEMBER_FAVOR WHERE MEMBER_ID = ? AND GENRE_ID = ?";
+	private static final String GETONEEMPPERMISION = "SELECT * FROM MEMBER_FAVOR WHERE MEMBER_ID = ? ";
+	
 	@Override
-	public void add(PermisionVO newmpermision) {
+	public void add(MemberFavorVO newmemberfavor) {
 		try {
 			psmt = con.prepareStatement(INSERT);
-			psmt.setInt(1, newmpermision.getEmpno());
-			psmt.setInt(2, newmpermision.getOperation_id());
+			psmt.setInt(1, newmemberfavor.getMember_id());
+			psmt.setInt(2, newmemberfavor.getGenre_id());
 			psmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -57,11 +58,11 @@ public class PermisionDAO implements PermisionDAO_interface{
 	}
 
 	@Override
-	public void delete(Integer empno,Integer operation_id) {
+	public void delete(Integer member_id, Integer genre_id) {
 		try {
 			psmt = con.prepareStatement(DELETE);
-			psmt.setInt(1, empno);
-			psmt.setInt(2, operation_id);
+			psmt.setInt(1, member_id);
+			psmt.setInt(2, genre_id);
 			psmt.executeUpdate();
 
 		} catch (SQLException e) {
@@ -85,20 +86,20 @@ public class PermisionDAO implements PermisionDAO_interface{
 	}
 
 	@Override
-	public List<PermisionVO> getOneEmpPermision(Integer empno) {
-		PermisionVO permision = null;
+	public List<MemberFavorVO> getOneMemFavor(Integer member_id) {
+		MemberFavorVO memberfavor = null;
 		ResultSet rs = null;
-		List<PermisionVO> permisionList = new ArrayList<>();
+		List<MemberFavorVO> memfavorList = new ArrayList<>();
 
 		try {
 			psmt = con.prepareStatement(GETONEEMPPERMISION);
-			psmt.setInt(1, empno);
+			psmt.setInt(1, member_id);
 			rs = psmt.executeQuery();
 			while (rs.next()) {
-				permision = new PermisionVO();
-				permision.setEmpno(rs.getInt(1));
-				permision.setOperation_id(rs.getInt(2));
-				permisionList.add(permision);
+				memberfavor = new MemberFavorVO();
+				memberfavor.setMember_id(rs.getInt(1));
+				memberfavor.setGenre_id(rs.getInt(2));
+				memfavorList.add(memberfavor);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -125,6 +126,6 @@ public class PermisionDAO implements PermisionDAO_interface{
 				}
 			}
 		}
-		return permisionList;
+		return memfavorList;
 	}
 }
