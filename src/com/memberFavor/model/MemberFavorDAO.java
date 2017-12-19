@@ -28,7 +28,7 @@ public class MemberFavorDAO implements MemberFavorDAO_interface {
 	private PreparedStatement psmt;
 	private static final String INSERT = "INSERT INTO MEMBER_FAVOR (MEMBER_ID,GENRE_ID) VALUES(?,?)";
 	private static final String DELETE = "DELETE FROM MEMBER_FAVOR WHERE MEMBER_ID = ? AND GENRE_ID = ?";
-	private static final String GETONEEMPPERMISION = "SELECT * FROM MEMBER_FAVOR WHERE MEMBER_ID = ? ";
+	private static final String GETONEMEMFAVOR = "SELECT * FROM MEMBER_FAVOR WHERE MEMBER_ID = ? ";
 	
 	@Override
 	public void add(MemberFavorVO newmemberfavor) {
@@ -92,7 +92,7 @@ public class MemberFavorDAO implements MemberFavorDAO_interface {
 		List<MemberFavorVO> memfavorList = new ArrayList<>();
 
 		try {
-			psmt = con.prepareStatement(GETONEEMPPERMISION);
+			psmt = con.prepareStatement(GETONEMEMFAVOR);
 			psmt.setInt(1, member_id);
 			rs = psmt.executeQuery();
 			while (rs.next()) {
