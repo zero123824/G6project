@@ -33,7 +33,7 @@ public class FriendDAO implements FriendDAO_interface{
 	private static final String UPDATE = "UPDATE FRIEND SET RELATION_STATUS = ?, MEMBER_MSG=?, MSG_STATUS=? "
 										 +"WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
 	private static final String DELETE = "DELETE FROM FRIEND WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
-	private static final String GETONEEMPPERMISION = "SELECT * FROM FRIEND WHERE MEMBER_ID1 = ? ";
+	private static final String GETONEMEMFRIEND = "SELECT * FROM FRIEND WHERE MEMBER_ID1 = ? ";
 		
 	@Override
 	public void add(FriendVO newfriend) {
@@ -132,7 +132,7 @@ public class FriendDAO implements FriendDAO_interface{
 		ResultSet rs = null;
 		List<FriendVO> memfriendList = new ArrayList<>();
 		try {
-			psmt = con.prepareStatement(GETONEEMPPERMISION);
+			psmt = con.prepareStatement(GETONEMEMFRIEND);
 			psmt.setInt(1, member_id1);
 			rs = psmt.executeQuery();
 			while (rs.next()) {
