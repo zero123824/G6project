@@ -13,20 +13,17 @@ import javax.sql.DataSource;
 
 
 public class OperationDAO implements OperationDAO_interface {
-	private static Connection con = null;
+	//共用資源連線池
+	private static DataSource ds = null;
+
 	static {
-		Context ctx;
 		try {
-			ctx = new javax.naming.InitialContext();
-			DataSource ds = (DataSource) ctx.lookup("java:comp/env/jdbc/BA105G6DB");
-			con = ds.getConnection();
+			Context ctx = new javax.naming.InitialContext();
+			ds = (DataSource) ctx.lookup("java:comp/env/jdbc/BA105G6DB");
 		} catch (NamingException e) {
 			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
-	}
-	private PreparedStatement psmt;
+	}	
 	private static final String INSERT = "INSERT INTO OPERATION (OPERATION_ID,OPERATION_NAME) VALUES(?,?)";
 	private static final String UPDATE = "UPDATE OPERATION SET OPERATION_NAME=? WHERE OPERATION_ID = ?";
 	private static final String DELETE = "DELETE FROM OPERATION WHERE OPERATION_ID = ?";
@@ -35,7 +32,10 @@ public class OperationDAO implements OperationDAO_interface {
 
 	@Override
 	public void add(OperationVO newmoperation) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(INSERT);
 			psmt.setInt(1, newmoperation.getOperation_id());
 			psmt.setString(2, newmoperation.getOperation_name());
@@ -63,7 +63,10 @@ public class OperationDAO implements OperationDAO_interface {
 
 	@Override
 	public void update(OperationVO selectedoperation) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(UPDATE);
 			psmt.setString(1, selectedoperation.getOperation_name());
 			psmt.setInt(2, selectedoperation.getOperation_id());
@@ -90,7 +93,10 @@ public class OperationDAO implements OperationDAO_interface {
 
 	@Override
 	public void delete(Integer operation_id) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(DELETE);
 			psmt.setInt(1, operation_id);
 			psmt.executeUpdate();
@@ -117,9 +123,12 @@ public class OperationDAO implements OperationDAO_interface {
 
 	@Override
 	public OperationVO findByPK(Integer operation_id) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		OperationVO operation = null;
 		ResultSet rs = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(SELECT);
 			psmt.setInt(1, operation_id);
 			rs = psmt.executeQuery();
@@ -160,11 +169,14 @@ public class OperationDAO implements OperationDAO_interface {
 
 	@Override
 	public List<OperationVO> getAll() {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		OperationVO operation = null;
 		ResultSet rs = null;
 		List<OperationVO> opList = new ArrayList<>();
 
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(GETALL);
 			rs = psmt.executeQuery();
 			while (rs.next()) {

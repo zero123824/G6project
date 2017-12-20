@@ -1,52 +1,38 @@
-package com.memberFavor.model;
+package com.member_favor.model;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-public class MemberFavorTest {
-	private static Connection con = null;
-	private static PreparedStatement psmt = null;
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
+public class MemberFavorDAO implements MemberFavorDAO_interface {
+	//共用資源連線池
+	private static DataSource ds = null;
+
+	static {
+		try {
+			Context ctx = new javax.naming.InitialContext();
+			ds = (DataSource) ctx.lookup("java:comp/env/jdbc/BA105G6DB");
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
+	}	
 	private static final String INSERT = "INSERT INTO MEMBER_FAVOR (MEMBER_ID,GENRE_ID) VALUES(?,?)";
 	private static final String DELETE = "DELETE FROM MEMBER_FAVOR WHERE MEMBER_ID = ? AND GENRE_ID = ?";
 	private static final String GETONEMEMFAVOR = "SELECT * FROM MEMBER_FAVOR WHERE MEMBER_ID = ? ";
 	
-	
-	public static void main(String[] args) {
-		MemberFavorVO memberfavor = new MemberFavorVO();
+	@Override
+	public void add(MemberFavorVO newmemberfavor) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "ba105g6", "ba105g6");
-			System.out.println("success");
-
-		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-		}
-		memberfavor.setMember_id(1000000004).setGenre_id(90004);
-//		add(memberfavor);	
-//		delete(1000000002,90004);
-		List list = getOneMemFavor(1000000002);
-		Iterator it = list.iterator();
-		while (it.hasNext()) {
-			MemberFavorVO memfavor = (MemberFavorVO)it.next();
-			if(memfavor.getMember_id() == 90013){
-				delete(memfavor.getMember_id() ,memfavor.getGenre_id());
-			}
-			else{
-				System.out.print(memfavor.getMember_id()+",");
-				System.out.println(memfavor.getGenre_id());
-			}
-		}
-
-	}
-	
-	public static void add(MemberFavorVO newmemberfavor) {
-		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(INSERT);
 			psmt.setInt(1, newmemberfavor.getMember_id());
 			psmt.setInt(2, newmemberfavor.getGenre_id());
@@ -71,9 +57,12 @@ public class MemberFavorTest {
 		}
 	}
 
-	
-	public static void delete(Integer member_id, Integer genre_id) {
+	@Override
+	public void delete(Integer member_id, Integer genre_id) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(DELETE);
 			psmt.setInt(1, member_id);
 			psmt.setInt(2, genre_id);
@@ -99,12 +88,16 @@ public class MemberFavorTest {
 		}
 	}
 
-	public static List<MemberFavorVO> getOneMemFavor(Integer member_id) {
+	@Override
+	public List<MemberFavorVO> getOneMemFavor(Integer member_id) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		MemberFavorVO memberfavor = null;
 		ResultSet rs = null;
 		List<MemberFavorVO> memfavorList = new ArrayList<>();
 
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(GETONEMEMFAVOR);
 			psmt.setInt(1, member_id);
 			rs = psmt.executeQuery();
@@ -131,13 +124,13 @@ public class MemberFavorTest {
 					e.printStackTrace();
 				}
 			}
-//			if (con != null) {
-//				try {
-//					con.close();
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//			}
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return memfavorList;
 	}

@@ -14,20 +14,17 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 public class FriendDAO implements FriendDAO_interface{
-	private static Connection con = null;
+	//共用資源連線池
+	private static DataSource ds = null;
+
 	static {
-		Context ctx;
 		try {
-			ctx = new javax.naming.InitialContext();
-			DataSource ds = (DataSource) ctx.lookup("java:comp/env/jdbc/BA105G6DB");
-			con = ds.getConnection();
+			Context ctx = new javax.naming.InitialContext();
+			ds = (DataSource) ctx.lookup("java:comp/env/jdbc/BA105G6DB");
 		} catch (NamingException e) {
 			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
-	}
-	private PreparedStatement psmt;
+	}	
 	private static final String INSERT = "INSERT INTO FRIEND (MEMBER_ID1,MEMBER_ID2,RELATION_STATUS,MEMBER_MSG,MSG_STATUS) "
 										 + "VALUES(?,?,?,?,?)";
 	private static final String UPDATE = "UPDATE FRIEND SET RELATION_STATUS = ?, MEMBER_MSG=?, MSG_STATUS=? "
@@ -37,7 +34,10 @@ public class FriendDAO implements FriendDAO_interface{
 		
 	@Override
 	public void add(FriendVO newfriend) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			Reader reader = new StringReader(newfriend.getMember_msg());
 			psmt = con.prepareStatement(INSERT);
 			psmt.setInt(1, newfriend.getMember_id1());
@@ -68,7 +68,10 @@ public class FriendDAO implements FriendDAO_interface{
 	
 	@Override
 	public void update(FriendVO member_id1, FriendVO member_id2) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			Reader reader = new StringReader(member_id1.getMember_msg());
 			psmt = con.prepareStatement(UPDATE);
 			psmt.setInt(4, member_id1.getMember_id1());
@@ -100,7 +103,10 @@ public class FriendDAO implements FriendDAO_interface{
 	
 	@Override
 	public void delete(FriendVO member_id1, FriendVO member_id2) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(DELETE);
 			psmt.setInt(1, member_id1.getMember_id1());
 			psmt.setInt(2, member_id2.getMember_id2());
@@ -128,10 +134,13 @@ public class FriendDAO implements FriendDAO_interface{
 
 	@Override
 	public List<FriendVO> getOneMemFriends(Integer member_id1) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		FriendVO friend = null;
 		ResultSet rs = null;
 		List<FriendVO> memfriendList = new ArrayList<>();
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(GETONEMEMFRIEND);
 			psmt.setInt(1, member_id1);
 			rs = psmt.executeQuery();

@@ -6,6 +6,7 @@ public interface MemberDAO_interface {
 	void update(MemberVO selectedmem);
 	void delete(Integer member_id);
 	MemberVO findByPK(Integer member_id);
+	MemberVO findByAccount(String member_account);
 	List<MemberVO> getAll();
 	
 }

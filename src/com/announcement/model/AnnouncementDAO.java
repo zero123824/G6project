@@ -14,7 +14,6 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 public class AnnouncementDAO implements AnnouncementDAO_interface {
-	private static Connection con = null;
 	private static final String INSERT = "INSERT INTO ANNOUNCEMENT (ANOUNCE_ID, ANOUNCE_TITLE, ANOUNCE_CONTENT, ANOUNCE_TIME, EMPNO,ANOUNCE_STATUS) "
 										 +"VALUES ('7'||LPAD(ANNOUNCEMENT_SEQUENCE.NEXTVAL,4,'0'),?,?,?,?,?)";
 	private static final String UPDATE = "UPDATE ANNOUNCEMENT SET ANOUNCE_TITLE=?,ANOUNCE_CONTENT=?,ANOUNCE_TIME=?,EMPNO=?,ANOUNCE_STATUS=? "
@@ -23,23 +22,24 @@ public class AnnouncementDAO implements AnnouncementDAO_interface {
 	private static final String SELECT = "SELECT * FROM ANNOUNCEMENT WHERE ANOUNCE_ID = ?";
 	private static final String GETALL = "SELECT * FROM ANNOUNCEMENT ";
 
+	//共用資源連線池
+	private static DataSource ds = null;
+
 	static {
-		Context ctx;
 		try {
-			ctx = new javax.naming.InitialContext();
-			DataSource ds = (DataSource) ctx.lookup("java:comp/env/jdbc/BA105G6DB");
-			con = ds.getConnection();
+			Context ctx = new javax.naming.InitialContext();
+			ds = (DataSource) ctx.lookup("java:comp/env/jdbc/BA105G6DB");
 		} catch (NamingException e) {
 			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
-	}
-	private PreparedStatement psmt;
+	}	
 	
 	@Override
 	public void add(AnnouncementVO newannouncement) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			Reader reader = new StringReader(newannouncement.getAnnounce_content());
 			psmt = con.prepareStatement(INSERT);
 			psmt.setString(1, newannouncement.getAnnounce_title());
@@ -71,7 +71,10 @@ public class AnnouncementDAO implements AnnouncementDAO_interface {
 
 	@Override
 	public void update(AnnouncementVO selectedannoun) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(UPDATE);
 			psmt.setString(1, selectedannoun.getAnnounce_title());
 			psmt.setString(2, selectedannoun.getAnnounce_content());
@@ -102,7 +105,10 @@ public class AnnouncementDAO implements AnnouncementDAO_interface {
 
 	@Override
 	public void delete(Integer announce_id) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(DELETE);
 			psmt.setInt(1, announce_id);
 			psmt.executeUpdate();
@@ -129,9 +135,12 @@ public class AnnouncementDAO implements AnnouncementDAO_interface {
 
 	@Override
 	public AnnouncementVO findByPK(Integer announce_id) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		AnnouncementVO announce = null;
 		ResultSet rs = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(SELECT);
 			psmt.setInt(1, announce_id);
 			rs = psmt.executeQuery();
@@ -176,11 +185,13 @@ public class AnnouncementDAO implements AnnouncementDAO_interface {
 
 	@Override
 	public List<AnnouncementVO> getAll() {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		AnnouncementVO announce = null;
 		ResultSet rs = null;
 		List<AnnouncementVO> announceList = new ArrayList<>();
-
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(GETALL);
 			rs = psmt.executeQuery();
 			while (rs.next()) {

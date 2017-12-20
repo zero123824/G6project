@@ -1,27 +1,30 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>    
 <%@ page import="com.google.gson.*"%>
+<% session.setAttribute("from", request.getRequestURI());%>
 <% JsonArray ja = (JsonArray)session.getAttribute("orderrecord");%>
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Sneaker影城-會員中心</title>
-</head>
-<!-- Bootstrap CSS CDN -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">  
-<!-- Scrollbar Custom CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
-<!-- ICON CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-<!-- Our Custom CSS -->
-<link rel="stylesheet" href="frontend.css">
-<body>
-<div class="wrapper">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <title>Sneaker影城</title>
+
+        <!-- Bootstrap CSS CDN -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">  
+        <!-- Scrollbar Custom CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
+        <!-- ICON CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+         <!-- Our Custom CSS -->
+        <link rel="stylesheet" href="frontend.css">
+    </head>
+    <body id="myPage">
+
+        <div class="wrapper">
             <!-- Sidebar Holder -->
             <nav id="sidebar">
                 <div id="dismiss">
@@ -32,37 +35,55 @@
                 </div>
                 <ul class="list-unstyled components">                    
                     <li class="active">
-                        <a href="index.html"><i class="fa fa-home"></i>首頁</a>
+                        <a href="index.jsp"><i class="fa fa-home fa-lg"></i>　首頁</a>
+                    </li>
+                    <li class="visible-xs">
+                        <a href="membercenter.jsp"><i class="fa fa-user fa-lg"></i>　會員中心</a>
                     </li>
                     <li>
-                        <a href="membercenter.html"><i class="fa fa-user"></i>會員中心</a>                        
+                        <a href="#"><i class="fa fa-film fa-lg"></i>　上映電影資訊</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-film"></i>上映電影資訊</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-commenting-o"></i>討論區</a>
+                        <a href="forum.html"><i class="fa fa-commenting-o fa-lg"></i>　討論區</a>
                     </li>
                     <li>                
-                        <a href="#">電影活動</a>
+                        <a href="#"><i class="fa fa-newspaper-o fa-lg" aria-hidden="true"></i>　電影活動</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-bullhorn" aria-hidden="true"></i>影城公告</a>            
+                        <a href="#"><i class="fa fa-bullhorn fa-lg" aria-hidden="true"></i>　影城公告</a>            
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-cutlery" aria-hidden="true"></i>餐飲介紹</a>
+                        <a href="#"><i class="fa fa-cutlery fa-lg" aria-hidden="true"></i>　餐飲介紹</a>
                     </li>
                     <li>
-                        <a href="#">影城介紹</a>
+                        <a href="#"><i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>　影城介紹</a>
                     </li>
                     <li>
-                        <a href="#">聯繫客服</a>
+                        <a href="#"><i class="fa fa-question fa-lg" aria-hidden="true"></i>　聯繫客服</a>
                     </li>
                 </ul>
             </nav>
             <ul class="right-fastticket list-group hidden-xs">
-                <li class="list-group-item" id="right-fastticket"><i class="fa fa-ticket" aria-hidden="true"></i>快速訂票</li>
+                <a href="booking.html"><li class="list-group-item" id="right-fastticket"><i class="fa fa-ticket" aria-hidden="true"></i>快速訂票</li></a>
             </ul>
+
+            <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+                <div class="modal-dialog">
+                    <div class="loginmodal-container">
+                        <h1>登入您的帳號</h1><br>
+                        <form method="post" action="Login">
+                            <input type="hidden" name="action" value="login">
+                            <input type="text" name="member_account" placeholder="帳號">
+                            <input type="password" name="member_psw" placeholder="密碼">
+                            <input type="submit" name="login" class="login loginmodal-submit" value="確認輸入">
+                        </form>
+
+                        <div class="login-help">
+                            <a href="memberregister.html">註冊會員</a> - <a href="#">忘記密碼</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Page Content Holder -->
             <div id="content">         
                 <nav class="navbar navbar-default">
@@ -70,10 +91,22 @@
                         <div class="navbar-header"> 
                             <button type="button" id="sidebarCollapse" class="glyphicon glyphicon-align-justify btn btn-info navbar-btn">
                             </button>
-                            <img src="logo4.png">                   
-                        </div>                        
+                            <a href="index.jsp"><img src="logo4.png"></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right hidden-xs">
+                        	<c:if test="${empty member}">
+                            	<li><a data-toggle="modal" data-target="#login-modal" style="color:white;margin-top: 5px"><i class="fa fa-user"></i> 會員中心</a></li>
+                            </c:if>
+                            <c:if test="${not empty member}">
+                            	<li><a href="membercenter.jsp" style="color:white;margin-top: 5px"><i class="fa fa-user"></i> ${member.member_account} 您好!</a></li>
+                            	<li><a onclick="document.getElementById('logoutform').submit();" style="color:white;margin-top: 5px">登出</a></li> 
+                            </c:if>
+                        </ul>                 
                     </div>
                 </nav>
+                <form id="logoutform" method="post" action="Login">
+                	<input type="hidden" name="action" value="logout">
+                </form>
                 
 
                 <!-- 從這裡開始修改 -->
@@ -101,8 +134,8 @@
                             <!-- 動態產生訂票紀錄 -->
                             <div class="panel-body">
                             <% for(JsonElement jsonElement : ja){
-    							JsonObject jo = jsonElement.getAsJsonObject();
-    							%><p>電影:<%=jo.get("moviename")%><br>
+								JsonObject jo = jsonElement.getAsJsonObject();
+     							%><p>電影:<%=jo.get("moviename")%><br>
     							日期:<%=jo.get("date")%>								
 								<%}%>                               
                             </div>
@@ -256,5 +289,5 @@
             });
             });
         </script>
-</body>
+    </body>
 </html>

@@ -12,20 +12,17 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 public class EmployeeDAO implements EmployeeDAO_interface {
-	private static Connection con = null;
+	//共用資源連線池
+	private static DataSource ds = null;
+
 	static {
-		Context ctx;
 		try {
-			ctx = new javax.naming.InitialContext();
-			DataSource ds = (DataSource) ctx.lookup("java:comp/env/jdbc/BA105G6DB");
-			con = ds.getConnection();
+			Context ctx = new javax.naming.InitialContext();
+			ds = (DataSource) ctx.lookup("java:comp/env/jdbc/BA105G6DB");
 		} catch (NamingException e) {
 			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
-	}
-	private PreparedStatement psmt;
+	}		
 	private static final String INSERT = "INSERT INTO EMPLOYEE (EMPNO,EMP_PSW,EMP_NAME,EMP_EMAIL,EMP_HIREDATE,EMP_BIRTHDAY,EMP_ADDRESS,EMP_PHONE,EMP_SEX,LAST_ACTIVITY,INSERVICED)"
 			+ "VALUES('13'||LPAD(EMPLOYEE_SEQUENCE.NEXTVAL,3,'0'),?,?,?,?,?,?,?,?,?,?)";
 	private static final String UPDATE = "UPDATE EMPLOYEE SET EMP_PSW=?,EMP_NAME=?,EMP_EMAIL=?,EMP_HIREDATE=?,"
@@ -36,8 +33,10 @@ public class EmployeeDAO implements EmployeeDAO_interface {
 
 	@Override
 	public void add(EmployeeVO newmemp) {
-
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(INSERT);
 			psmt.setString(1, newmemp.getEmp_psw());
 			psmt.setString(2, newmemp.getEmp_name());
@@ -73,7 +72,10 @@ public class EmployeeDAO implements EmployeeDAO_interface {
 
 	@Override
 	public void update(EmployeeVO selectedemp) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(UPDATE);
 			psmt.setString(1, selectedemp.getEmp_psw());
 			psmt.setString(2, selectedemp.getEmp_name());
@@ -109,8 +111,10 @@ public class EmployeeDAO implements EmployeeDAO_interface {
 
 	@Override
 	public void delete(Integer empno) {
-
+		Connection con = null;
+		PreparedStatement psmt = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(DELETE);
 			psmt.setInt(1, empno);
 			psmt.executeUpdate();
@@ -137,9 +141,12 @@ public class EmployeeDAO implements EmployeeDAO_interface {
 
 	@Override
 	public EmployeeVO findByPK(Integer empno) {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		EmployeeVO emp = null;
 		ResultSet rs = null;
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(SELECT);
 			psmt.setInt(1, empno);
 			rs = psmt.executeQuery();
@@ -189,11 +196,14 @@ public class EmployeeDAO implements EmployeeDAO_interface {
 
 	@Override
 	public List<EmployeeVO> getAll() {
+		Connection con = null;
+		PreparedStatement psmt = null;
 		EmployeeVO emp = null;
 		ResultSet rs = null;
 		List<EmployeeVO> empList = new ArrayList<>();
 
 		try {
+			con = ds.getConnection();
 			psmt = con.prepareStatement(GETALL);
 			rs = psmt.executeQuery();
 			while (rs.next()) {

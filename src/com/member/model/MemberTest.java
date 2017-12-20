@@ -25,6 +25,7 @@ public class MemberTest {
 			+ "MEMBER_LOCK_STATUS=?,MEMBER_PIC=?,MEMBER_NICKNAME=? WHERE MEMBER_ID = ? ";
 	private static final String DELETE = "DELETE FROM MEMBER_INFO WHERE MEMBER_ID = ? ";
 	private static final String SELECT = "SELECT * FROM MEMBER_INFO WHERE MEMBER_ID = ? ";
+	private static final String SELECTBYACCOUNT = "SELECT * FROM MEMBER_INFO WHERE MEMBER_ACCOUNT = ? ";
 	private static final String GETALL = "SELECT * FROM MEMBER_INFO";
 	private static Connection con = null;
 	private static PreparedStatement psmt = null;
@@ -315,5 +316,59 @@ public class MemberTest {
 		}
 		return memList;
 	}
-
+	public MemberVO findByAccount(String member_account) {
+		MemberVO member = null;
+		ResultSet rs = null;
+		try {
+			psmt = con.prepareStatement(SELECTBYACCOUNT);
+			psmt.setString(1, member_account);
+			rs = psmt.executeQuery();
+			
+			while(rs.next()){
+				member = new MemberVO();
+				member.setMember_id(rs.getInt(1));
+				member.setMember_account(rs.getString(2));
+				member.setMember_psw(rs.getString(3));
+				member.setMember_lastname(rs.getString(4));
+				member.setMember_firstname(rs.getString(5));
+				member.setMember_address(rs.getString(6));
+				member.setMobilenum(rs.getString(7));
+				member.setMember_emailaddress(rs.getString(8));
+				member.setMember_birthday(rs.getDate(9));
+				member.setMember_idcode(rs.getString(10));
+				member.setCreaditcard(rs.getString(11));
+				member.setSubsenews(rs.getInt(12));
+				member.setMember_sex(rs.getInt(13));
+				member.setMember_lock_status(rs.getInt(14));
+				member.setMember_pic(rs.getBytes(15));
+				member.setMember_nickname(rs.getString(16));
+			}		
+			
+		} catch (SQLException e) {			
+			e.printStackTrace();
+		} finally{
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace(System.err);
+				}
+			}
+			if(psmt != null){
+				try {
+					psmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if(con != null){
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return member;
+	}
 }

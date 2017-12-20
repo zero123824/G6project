@@ -1,4 +1,4 @@
-package com.memberFavor.model;
+package com.member_favor.model;
 
 import java.io.Serializable;
 
