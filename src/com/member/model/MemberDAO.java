@@ -32,7 +32,8 @@ public class MemberDAO implements MemberDAO_interface{
 	private static final String SELECTBYID = "SELECT * FROM MEMBER_INFO WHERE MEMBER_ID = ? ";
 	private static final String SELECTBYACCOUNT = "SELECT * FROM MEMBER_INFO WHERE MEMBER_ACCOUNT = ? ";
 	private static final String GETALL = "SELECT * FROM MEMBER_INFO";
-	
+	private static final String LOGINCHECK = "SELECT MEMBER_EMAILADDRESS, MEMBER_PSW FROM MEMBER_INFO";
+
 	@Override
 	public void add(MemberVO newmember){
 		Connection con = null;
@@ -340,5 +341,50 @@ public class MemberDAO implements MemberDAO_interface{
 			}
 		}
 		return member;
+	}
+	@Override
+	public List<MemberVO> loginCheck() {
+		Connection con = null;
+		PreparedStatement psmt = null;
+		MemberVO member = null;
+		ResultSet rs = null;
+		List<MemberVO> memList = new ArrayList<>();
+
+		try {
+			con = ds.getConnection();
+			psmt = con.prepareStatement(LOGINCHECK);
+			rs = psmt.executeQuery();
+			while (rs.next()) {
+				member = new MemberVO();
+				member.setMember_emailaddress(rs.getString(1));
+				member.setMember_psw(rs.getString(2));
+				memList.add(member);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace(System.err);
+				}
+			}
+			if (psmt != null) {
+				try {
+					psmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return memList;
 	}
 }

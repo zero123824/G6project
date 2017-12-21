@@ -8,5 +8,5 @@ public interface MemberDAO_interface {
 	MemberVO findByPK(Integer member_id);
 	MemberVO findByAccount(String member_account);
 	List<MemberVO> getAll();
-	
+	List<MemberVO> loginCheck();
 }
