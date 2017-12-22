@@ -58,7 +58,6 @@ public class MemberDAO implements MemberDAO_interface{
 			psmt.setInt(13, newmember.getMember_lock_status());
 			psmt.setBytes(14, newmember.getMember_pic());
 			psmt.setString(15,newmember.getMember_nickname());
-			int num = psmt.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();

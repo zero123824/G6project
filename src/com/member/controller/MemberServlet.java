@@ -2,7 +2,8 @@ package com.member.controller;
 
 
 import java.io.IOException;
-
+import java.io.InputStream;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,14 +13,16 @@ import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 import com.member.model.*;
 
-
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 10 * 1024 * 1024, maxRequestSize = 20 * 10 * 1024 * 1024)
 public class MemberServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	Map<String, String> citymap ;
@@ -42,12 +45,12 @@ public class MemberServlet extends HttpServlet {
 		if("login".equals(action)){
 			String member_account = req.getParameter("member_account");
 			String member_psw = req.getParameter("member_psw");	
-			session.setMaxInactiveInterval(2592000);			
 			MemberService memberSvc = new MemberService();
 			MemberVO member = new MemberVO();
 			member = memberSvc.findByAccount(member_account);
-			if(member!=null && member.getMember_psw().equals(member_psw)){
+			if(member_account.trim().length() != 0 && member.getMember_psw().equals(member_psw)){
 				session.setAttribute("member", member);
+				session.setMaxInactiveInterval(2592000);
 				String url=req.getContextPath()+"/member/membercenter.jsp";
 				res.sendRedirect(url);
 			}else{
@@ -71,6 +74,7 @@ public class MemberServlet extends HttpServlet {
 		if("register".equals(action)){
 			String enameReg = "^[(a-zA-Z0-9_)]{4,12}$";
 			String nameReg = "^[\u4e00-\u9fa5_a-zA-Z]$";
+			MemberService memberSvc = new MemberService();
 
 			try {
 				String member_account = req.getParameter("member_account");
@@ -83,12 +87,15 @@ public class MemberServlet extends HttpServlet {
 				String member_emailaddress = req.getParameter("member_emailaddress");
 				String member_idcode = req.getParameter("member_idcode");
 				String creaditcard = req.getParameter("creaditcard");
-				byte[] member_pic = null;
-				String member_nickname = null;
-				
+				String member_nickname = null;				
 				String county = req.getParameter("county");
 				county = citymap.get(county)+"-";
-				String area = req.getParameter("area")+"-";					
+				String area = req.getParameter("area")+"-";	
+				
+
+				if(memberSvc.findByAccount(member_account) !=null){
+					errorMsgs.add("此帳號已被使用");
+				}
 				
 				if(member_account.trim().length() == 0 || member_psw.trim().length() == 0
 				   || member_lastname.trim().length() == 0 || member_firstname.trim().length() == 0
@@ -115,12 +122,23 @@ public class MemberServlet extends HttpServlet {
 				}catch(IllegalArgumentException e) {
 					errorMsgs.add("請輸入日期!");
 				}
+				
 				Integer subsenews = -1;
 				try{
 					subsenews = Integer.valueOf(req.getParameter("subsenews"));
 				} catch(NumberFormatException ne){
 					subsenews = 0;
-				}		
+				}
+				
+				Collection<Part> parts = req.getParts();
+				InputStream in = null;
+				byte[] member_pic = null;
+				for (Part part : parts) {
+					if (part.getContentType()!=null) {
+						in = part.getInputStream();
+						member_pic = new byte[in.available()];
+					}
+				}
 				MemberVO memberVO = new MemberVO();
 				memberVO.setMember_account(member_account)
 				.setMember_psw(member_psw)
@@ -133,6 +151,7 @@ public class MemberServlet extends HttpServlet {
 				.setMember_idcode(member_idcode)
 				.setCreaditcard(creaditcard)
 				.setSubsenews(subsenews)
+				.setMember_pic(member_pic)
 				.setMember_sex(member_sex);
 				
 				if (!errorMsgs.isEmpty()) {
@@ -141,18 +160,78 @@ public class MemberServlet extends HttpServlet {
 					failureView.forward(req, res);
 					return;
 				}
-				/******************新增資料*******************/
+				/******************2.新增資料*******************/
 				Integer member_lock_status = 0;
-				MemberService memberSvc = new MemberService();
 				memberVO = memberSvc.add(member_account, member_psw_forcheck, member_lastname, member_firstname, county+area+member_address, mobilenum, member_emailaddress, member_birthday, member_idcode, creaditcard, subsenews, member_sex, member_lock_status, member_pic, member_nickname);
 						
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
-	}
-	public void init(){
+		if ("update".equals(action)) { 
+			MemberService memberSvc = new MemberService();
+			/***************************1.接收請求參數 - 輸入格式的錯誤處理**********************/
+			Integer member_id = new Integer(req.getParameter("member_id").trim());
+			String member_lastname = req.getParameter("member_lastname");
+			String member_firstname = req.getParameter("member_firstname");
+			String member_address = req.getParameter("member_address");
+			String mobilenum = req.getParameter("mobilenum");
+			String member_emailaddress = req.getParameter("member_emailaddress");
+			String creaditcard = req.getParameter("creaditcard");
+			String member_nickname = null;				
+//			String county = req.getParameter("county");
+//			county = citymap.get(county)+"-";
+//			String area = req.getParameter("area")+"-";
+//			if(member_lastname.trim().length() == 0 || member_firstname.trim().length() == 0
+//			   || member_address.trim().length() == 0 || member_emailaddress.trim().length() == 0
+//			   || mobilenum.trim().length() == 0 || creaditcard.trim().length() == 0 ){
+//				errorMsgs.add("*為必填欄位");
+//			}
+			MemberVO memberVO = memberSvc.findByPK(member_id);
+			memberVO.setMember_lastname(member_lastname)
+					.setMember_firstname(member_firstname)
+					.setMember_address(member_address)
+					.setMobilenum(mobilenum)
+					.setMember_emailaddress(member_emailaddress)
+					.setCreaditcard(creaditcard)
+					.setMember_nickname(member_nickname);
+			if (!errorMsgs.isEmpty()) {
+				req.setAttribute("memberVO", memberVO);
+				RequestDispatcher failureView = req.getRequestDispatcher("/membergetall.jsp");
+				failureView.forward(req, res);
+				return;
+			}					
+			/***************************2.開始修改資料*****************************************/
+			memberVO = memberSvc.update(member_id,memberVO.getMember_account(),memberVO.getMember_psw(),member_lastname, member_firstname, member_address,
+						mobilenum, member_emailaddress, memberVO.getMember_birthday(), memberVO.getMember_idcode(),
+						creaditcard, memberVO.getSubsenews(), memberVO.getMember_sex(), memberVO.getMember_lock_status(),
+						memberVO.getMember_pic(), member_nickname);
+			/***************************3.修改完成,準備轉交(Send the Success view)*************/
+			req.setAttribute("memberVO", memberVO); // 資料庫update成功後,正確的的empVO物件,存入req
+			String url = "/membergetall.jsp";
+			RequestDispatcher successView = req.getRequestDispatcher(url); // 修改成功後,轉交listOneEmp.jsp
+			successView.forward(req, res);
+		}
 		
+		if("suspend".equals(action)){
+			/*************1.接收停權會員ID***************/
+			Integer member_id = Integer.valueOf(req.getParameter("member_id").trim());
+			/*************2.修改資料庫狀態停權************/
+			MemberService memberSvc = new MemberService();
+			MemberVO thismem = memberSvc.findByPK(member_id);
+			if(thismem.getMember_lock_status() == 4){
+				errorMsgs.add("此會員已遭停權");
+			}else{
+				memberSvc.suspend(thismem, 4);
+			}
+			/*************3.停權完成******************/
+			String url = "/membergetall.jsp";
+			RequestDispatcher successView = req.getRequestDispatcher(url);// 刪除成功後,轉交回送出刪除的來源網頁
+			successView.forward(req, res);
+		}
+		
+	}
+	public void init(){		
 		if(citymap == null){
 			citymap = new HashMap<String, String>();
 			citymap.put("city1", "台北市");

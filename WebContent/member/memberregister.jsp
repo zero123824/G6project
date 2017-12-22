@@ -2,6 +2,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<% session.setAttribute("from_forward", request.getServletPath());%>
+<% session.setAttribute("from_redirect", request.getRequestURI());%>
 <!-- basic註冊版本 -->
 <%	
 	MemberVO member = (MemberVO)session.getAttribute("member");
@@ -29,8 +31,7 @@
 	color: red;
 }
 </style>
-<body id="myPage">
-
+<body id="myPage">	
 	<div class="wrapper">
 		<!-- Include sidebar -->
 		<jsp:include page="/frontend/sidebar.jsp" />
@@ -62,7 +63,7 @@
 									</c:forEach>
 								</ul>
 							</c:if>
-                            <form method="post" action="<%=request.getContextPath()%>/member/member.do" id="sentform" class="form-group mygroup">
+                            <form method="post" action="<%=request.getContextPath()%>/member/member.do" id="sentform" class="form-group mygroup" enctype="multipart/form-data">
                                 <div class="form-group mygroup">
                                     <label for="member_emailaddress">電子信箱</label>
                                     <input type="email" id="member_emailaddress" name="member_emailaddress" maxlength="30" 

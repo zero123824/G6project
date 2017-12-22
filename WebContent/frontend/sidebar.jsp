@@ -63,15 +63,12 @@
 					<input type="password" name="member_psw" placeholder="密碼">
 					<label><input type="checkbox" name="">保持登入狀態(公用電腦不建議使用)</label>
 					<input type="submit" name="login" class="login loginmodal-submit" value="確認輸入">
-				</form>				
+				</form>
 				<div class="login-help">
 					<a href="<%=request.getContextPath()%>/member/memberregister.jsp">註冊</a> - <a href="#">忘記密碼</a>
 				</div>
-
 			</div>
 		</div>
 	</div>
-
-
 </body>
 </html>

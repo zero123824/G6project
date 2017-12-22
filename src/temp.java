@@ -6,6 +6,20 @@ import com.member_favor.model.MemberFavorVO;
 
 public class temp {
 	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		$("#login-modal input").blur(function(){
+			$.ajax({url:"<%=request.getContextPath()%>/member/member.do",
+					method:"post",
+					data:{ action: "login"}
+					})
+					.done(function(errorMsgs){
+					window.alert(errorMsgs);
+					});
+		});
+	</script>
+	
+	
 //	session.setAttribute("orderrecord", getOrderlist(member.getMember_id()));
 	getMemberFavor(member.getMember_id());
 	GetRecommendMovie grm = new GetRecommendMovie();

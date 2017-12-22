@@ -13,6 +13,7 @@ public class MemberService {
 			,String member_address,String mobilenum,String member_emailaddress,java.sql.Date member_birthday,String member_idcode
 			,String creaditcard,Integer subsenews,Integer member_sex,Integer member_lock_status,byte[] member_pic,String member_nickname){
 		MemberVO memberVO = new MemberVO();
+		System.out.println(member_pic);
 		memberVO.setMember_account(member_account)
 		.setMember_psw(member_psw)
 		.setMember_lastname(member_lastname)
@@ -36,7 +37,8 @@ public class MemberService {
 			,String member_address,String mobilenum,String member_emailaddress,java.sql.Date member_birthday,String member_idcode
 			,String creaditcard,Integer subsenews,Integer member_sex,Integer member_lock_status,byte[] member_pic,String member_nickname){
 		MemberVO memberVO = new MemberVO();
-		memberVO.setMember_account(member_account)
+		memberVO.setMember_id(member_id)
+		.setMember_account(member_account)
 		.setMember_psw(member_psw)
 		.setMember_lastname(member_lastname)
 		.setMember_firstname(member_firstname)
@@ -55,6 +57,11 @@ public class MemberService {
 		return memberVO;		
 	}
 	
+	public void suspend(MemberVO memberVO,Integer member_lock_status){
+		memberVO.setMember_lock_status(member_lock_status);
+		dao.update(memberVO);
+	}
+	
 	public void delete(Integer member_id){
 		dao.delete(member_id); 
 	}
@@ -62,7 +69,6 @@ public class MemberService {
 	public MemberVO findByPK(Integer member_id){
 		return dao.findByPK(member_id);	
 	}
-
 	
 	public MemberVO findByAccount(String member_account){
 		return dao.findByAccount(member_account);	
