@@ -217,6 +217,11 @@
                                 <input class="magic-checkbox" type="checkbox" name="favortype" value="17" id="type17"><label for="type17">武俠</label> 
                                 <input class="magic-checkbox" type="checkbox" name="favortype" value="18" id="type18"><label for="type18">影展</label> 
                                 <br>
+                                <div class="form-group mygroup">
+                                    <label for="member_nickname">暱稱</label>
+                                    <input type="text" id="member_nickname" name="member_nickname" maxlength="10" 
+                                    class="form-control" value="<%= (memberVO == null) ? "": memberVO.getMember_nickname()%>" placeholder="取個好聽的暱稱吧^^"><br>
+                                </div>
 								上傳一張大頭貼吧
                                 <input type="file" name="member_pic">
                                 </div><br>
@@ -280,7 +285,7 @@
 			
 			//控制資料顯示以及標題
             var stepcount = 1;
-            $("#nextstep").click(function(){  
+            $("#nextstep").click(function(){
             	$("#backstep").val("上一步")
                 $(".title_active").removeClass(function(){
                 	$(this).removeClass("title_active");
@@ -297,6 +302,7 @@
                     $(".advanced").show();
                 });
                 stepcount++;
+                history.pushState(stepcount, "test", "step1/1");
             });
             
             $("#backstep").click(function(){

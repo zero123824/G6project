@@ -3,6 +3,7 @@ package com.member.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -19,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.member.model.*;
 
@@ -40,14 +44,32 @@ public class MemberServlet extends HttpServlet {
 	    req.setCharacterEncoding("UTF-8");
 		List<String> errorMsgs = new LinkedList<String>();
 		req.setAttribute("errorMsgs", errorMsgs);
-		
+		PrintWriter out = res.getWriter();
 		String action = req.getParameter("action");
+		
+		if("verify".equals(action)){
+			String member_account = req.getParameter("member_account");
+			String member_psw = req.getParameter("member_psw");
+			if(member_account.trim().length() == 0 || member_psw.trim().length() == 0){
+				errorMsgs.add("請輸入帳號密碼");	
+				JSONObject error = new JSONObject();
+				try {
+					error.put("錯誤", errorMsgs.get(0));
+					out.print(error);
+					return;
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}	
+		
 		if("login".equals(action)){
 			String member_account = req.getParameter("member_account");
-			String member_psw = req.getParameter("member_psw");	
+			String member_psw = req.getParameter("member_psw");
 			MemberService memberSvc = new MemberService();
 			MemberVO member = new MemberVO();
-			member = memberSvc.findByAccount(member_account);
+			member = memberSvc.findByAccount(member_account);	
+			
 			if(member_account.trim().length() != 0 && member.getMember_psw().equals(member_psw)){
 				session.setAttribute("member", member);
 				session.setMaxInactiveInterval(2592000);
@@ -59,7 +81,7 @@ public class MemberServlet extends HttpServlet {
 				RequestDispatcher failureView = req.getRequestDispatcher(url);
 				failureView.forward(req, res);
 			}
-		}	
+		}
 		
 		if("logout".equals(action)){
 			String url = String.valueOf(session.getAttribute("from_redirect"));

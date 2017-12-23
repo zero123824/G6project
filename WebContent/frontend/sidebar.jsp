@@ -57,10 +57,11 @@
 						</c:forEach>
 					</ul>
 				</c:if>
+				<h5 style="color: red" id="msgs" style="visibility:hidden"></h5>
 				<form method="post" action="<%=request.getContextPath()%>/member/member.do">
 					<input type="hidden" name="action" value="login"> 
-					<input type="text" name="member_account" placeholder="帳號"> 
-					<input type="password" name="member_psw" placeholder="密碼">
+					<input type="text" name="member_account" id="member_account_login" placeholder="帳號"> 
+					<input type="password" name="member_psw" id="member_psw_login" placeholder="密碼">
 					<label><input type="checkbox" name="">保持登入狀態(公用電腦不建議使用)</label>
 					<input type="submit" name="login" class="login loginmodal-submit" value="確認輸入">
 				</form>
@@ -71,4 +72,24 @@
 		</div>
 	</div>
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		$("#login-modal input").blur(function(){
+			$("#msgs").css("visibility","hidden");
+			$.ajax({url:"<%=request.getContextPath()%>/member/member.do",
+					method:"post",
+					data:{ action: "verify",
+						   member_account:$("#member_account_login").val(),
+						   member_psw:$("#member_psw_login").val()},
+					dataType:"json"
+					})
+					.done(function(errorMsgs){
+						getMessage(errorMsgs);
+					});
+			});
+		function getMessage(msgs){
+			$("#msgs").css("visibility","visible");
+			$("#msgs").text(msgs.錯誤);
+		}
+	</script>
 </html>
