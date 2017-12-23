@@ -13,7 +13,6 @@ public class MemberService {
 			,String member_address,String mobilenum,String member_emailaddress,java.sql.Date member_birthday,String member_idcode
 			,String creaditcard,Integer subsenews,Integer member_sex,Integer member_lock_status,byte[] member_pic,String member_nickname){
 		MemberVO memberVO = new MemberVO();
-		System.out.println(member_pic);
 		memberVO.setMember_account(member_account)
 		.setMember_psw(member_psw)
 		.setMember_lastname(member_lastname)
@@ -30,7 +29,7 @@ public class MemberService {
 		.setMember_pic(member_pic)
 		.setMember_nickname(member_nickname);
 		dao.add(memberVO);
-		return memberVO;	
+		return findByAccount(member_account);	
 	}
 	
 	public MemberVO update(Integer member_id,String member_account,String member_psw,String member_lastname,String member_firstname

@@ -130,15 +130,12 @@ public class MemberServlet extends HttpServlet {
 					subsenews = 0;
 				}
 				
-				Collection<Part> parts = req.getParts();
 				InputStream in = null;
 				byte[] member_pic = null;
-				for (Part part : parts) {
-					if (part.getContentType()!=null) {
-						in = part.getInputStream();
-						member_pic = new byte[in.available()];
-					}
-				}
+				in = req.getPart("member_pic").getInputStream();
+				member_pic = new byte[in.available()];
+				in.read(member_pic);
+				
 				MemberVO memberVO = new MemberVO();
 				memberVO.setMember_account(member_account)
 				.setMember_psw(member_psw)
@@ -162,8 +159,14 @@ public class MemberServlet extends HttpServlet {
 				}
 				/******************2.新增資料*******************/
 				Integer member_lock_status = 0;
-				memberVO = memberSvc.add(member_account, member_psw_forcheck, member_lastname, member_firstname, county+area+member_address, mobilenum, member_emailaddress, member_birthday, member_idcode, creaditcard, subsenews, member_sex, member_lock_status, member_pic, member_nickname);
-						
+				memberVO = memberSvc.add(member_account, member_psw_forcheck, member_lastname, member_firstname, 
+						county+area+member_address, mobilenum, member_emailaddress, member_birthday, member_idcode, 
+						creaditcard, subsenews, member_sex, member_lock_status, member_pic, member_nickname);
+				/*****************3.新增完成,準備轉交(Send the Success view)*********/
+				session.setAttribute("member", memberVO);
+				String url=req.getContextPath()+"/member/membercenter.jsp";
+				res.sendRedirect(url);
+		
 			} catch(Exception e) {
 				e.printStackTrace();
 			}

@@ -49,7 +49,7 @@
                             </div>
                             <div class="panel-body">
                                 <img src="<%=request.getContextPath()%>/member/getmemberpic?member_id=${member.member_id}" style="width: 50%;border-radius: 50%;">
-                               	 哈摟!<c:out value="${member.member_nickname}" default="親愛的會員"/>                                
+                               	 哈摟!<c:out value="${member.member_firstname}" default="親愛的會員"/>                                
                             </div>
                             <ul class="list-inline center-block text-center" style="margin-bottom: 25px">
                             <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">編輯會員資料</a></li>

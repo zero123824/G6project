@@ -38,7 +38,6 @@ public class MemberDAO implements MemberDAO_interface{
 	public void add(MemberVO newmember){
 		Connection con = null;
 		PreparedStatement psmt = null;
-
 		try {
 			con = ds.getConnection();
 			psmt = con.prepareStatement(INSERT);
@@ -58,7 +57,8 @@ public class MemberDAO implements MemberDAO_interface{
 			psmt.setInt(13, newmember.getMember_lock_status());
 			psmt.setBytes(14, newmember.getMember_pic());
 			psmt.setString(15,newmember.getMember_nickname());
-
+			psmt.executeUpdate();
+	
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally{
