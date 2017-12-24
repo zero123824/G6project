@@ -35,13 +35,16 @@ public class MemberDAO implements MemberDAO_interface{
 	private static final String LOGINCHECK = "SELECT MEMBER_EMAILADDRESS, MEMBER_PSW FROM MEMBER_INFO";
 
 	@Override
-	public void add(MemberVO newmember){
+	public Integer add(MemberVO newmember){
 		Connection con = null;
 		PreparedStatement psmt = null;
+		ResultSet rs = null;
+		Integer generatedID = null;
 		try {
 			con = ds.getConnection();
-			psmt = con.prepareStatement(INSERT);
-			
+			String[] cols = { "MEMBER_ID" };
+			psmt = con.prepareStatement(INSERT,cols);
+			con.setAutoCommit(false);
 			psmt.setString(1, newmember.getMember_account());
 			psmt.setString(2, newmember.getMember_psw());
 			psmt.setString(3, newmember.getMember_lastname());
@@ -58,9 +61,18 @@ public class MemberDAO implements MemberDAO_interface{
 			psmt.setBytes(14, newmember.getMember_pic());
 			psmt.setString(15,newmember.getMember_nickname());
 			psmt.executeUpdate();
-	
+			rs = psmt.getGeneratedKeys();
+			if(rs.next()) {
+				generatedID = rs.getInt(1);
+			}
+			con.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		} finally{
 			if(psmt != null){
 				try {
@@ -77,6 +89,7 @@ public class MemberDAO implements MemberDAO_interface{
 				}
 			}
 		}
+		return generatedID;
 	}
 
 

@@ -1,14 +1,36 @@
+<%@page import="com.member.model.MemberService"%>
+<%@page import="com.member.model.MemberVO"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.Map"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>    
 <%@ page import="com.google.gson.*"%>
 <% session.setAttribute("from_forward", request.getServletPath());%>
 <% session.setAttribute("from_redirect", request.getRequestURI());%>
+<% Map<String, String> status = new HashMap<String, String>();
+	if(session.getAttribute("member")!=null){
+		if(((MemberVO)session.getAttribute("member")).getSubsenews() == 0){
+			status.put("subscribe", "是");
+			pageContext.setAttribute("status", status);
+		}
+	}
+%>
+<%  int count = 0;
+	MemberService memberSvc = new MemberService();
+	Map<String,String> favormap = new HashMap<String,String>();
+	MemberVO memberVO = (MemberVO)session.getAttribute("member");
+	if(memberVO != null){
+	for(String favorname : memberSvc.getfavorTypeName(memberVO.getMember_id())) {
+		count++;
+		favormap.put("類型"+count, favorname);
+		pageContext.setAttribute("favorname", favormap);
+	}}%>
 
 <%-- <% JsonArray ja = (JsonArray)session.getAttribute("orderrecord");%> --%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-    <head>
+	<head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -52,16 +74,30 @@
                                	 哈摟!<c:out value="${member.member_firstname}" default="親愛的會員"/>                                
                             </div>
                             <ul class="list-inline center-block text-center" style="margin-bottom: 25px">
-                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">編輯會員資料</a></li>
-                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">管理文章</a></li>
-                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">好友管理</a></li>
-                        </ul>
+	                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">編輯會員資料</a></li>
+	                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">管理文章</a></li>
+	                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">好友管理</a></li>
+                        	</ul>
+                        	<div class="panel-body showdata">
+                        		<h4>暱稱:<c:out value="${member.member_nickname}" default=""/></h4><br>
+                        		<h4>姓名:<c:out value="${member.member_lastname}" default=""/> <c:out value="${member.member_firstname}" default=""/></h4><br>
+                        		<h4>地址:<c:out value="${member.member_address}" default=""/></h4><br>
+                        		<h4>手機號碼:<c:out value="${member.mobilenum}" default=""/></h4><br>
+                        		<h4>電子信箱:<c:out value="${member.member_emailaddress}" default=""/></h4><br>
+                        		<h4>訂閱電子報:<c:out value="${status.subscribe}" default=""/></h4><br>
+                        	</div>
+                        	
                         </div>
                     </div> 
-                    <div class="col-xs-12 col-sm-4 text-center" style="background-color: #fff">
+                    <div class="col-xs-12 col-sm-4 text-center">
                         <div class="panel panel-success">
                             <div class="panel-heading">
-                                <h2 class="panel-title">根據您喜好類型:動作片</h2>
+                                <h2 class="panel-title">
+                                	根據您喜好類型:${favorname.類型1}、
+                                	${favorname.類型2}、
+                                	${favorname.類型3}、
+                                	${favorname.類型4}
+                                </h2>
                                 <h3 class="panel-title">目前有電影上映:</h3>
                             </div>
                         </div>                      
@@ -167,6 +203,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 
         <script src="<%=request.getContextPath()%>/js/frontend.js"></script>   
-
+		
     </body>
 </html>

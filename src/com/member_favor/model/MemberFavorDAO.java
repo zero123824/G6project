@@ -34,9 +34,11 @@ public class MemberFavorDAO implements MemberFavorDAO_interface {
 		try {
 			con = ds.getConnection();
 			psmt = con.prepareStatement(INSERT);
+			con.setAutoCommit(false);
 			psmt.setInt(1, newmemberfavor.getMember_id());
 			psmt.setInt(2, newmemberfavor.getGenre_id());
 			psmt.executeUpdate();
+			con.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

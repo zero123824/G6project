@@ -4,6 +4,7 @@ package com.member.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.member.model.*;
+import com.member_favor.model.MemberFavorVO;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 10 * 1024 * 1024, maxRequestSize = 20 * 10 * 1024 * 1024)
 public class MemberServlet extends HttpServlet {
@@ -47,11 +49,68 @@ public class MemberServlet extends HttpServlet {
 		PrintWriter out = res.getWriter();
 		String action = req.getParameter("action");
 		
-		if("verify".equals(action)){
+			
+		/**********************會員登入****************************/		
+		if("login".equals(action)){
 			String member_account = req.getParameter("member_account");
 			String member_psw = req.getParameter("member_psw");
+			String cosistlogin = req.getParameter("cosistlogin");
+			MemberService memberSvc = new MemberService();
+			MemberVO member = new MemberVO();
+			member = memberSvc.findByAccount(member_account);
+			
 			if(member_account.trim().length() == 0 || member_psw.trim().length() == 0){
-				errorMsgs.add("請輸入帳號密碼");	
+				List<String> loginerror = new LinkedList<String>();
+				loginerror.add("請輸入帳號密碼");	
+				JSONObject error = new JSONObject();
+				try {
+					error.put("錯誤", loginerror.get(0));
+					out.print(error);
+					return;
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				return;
+			}
+			
+			if(member_account.trim().length() != 0 && member!=null){
+				if(member.getMember_psw().equals(member_psw)) {
+			/******************登入成功 準備轉交AJAX回瀏覽器重導************************/					
+					session.setAttribute("member", member);
+					if("y".equals(cosistlogin)) {
+						session.setMaxInactiveInterval(2592000);
+					}
+					JSONObject success = new JSONObject();
+					try {
+						success.put("success", "success");
+						out.print(success);
+						return;
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+			/******************登入成功 轉交FORWARD方法************************/			
+//					String url=req.getContextPath()+"/member/membercenter.jsp";
+//					res.sendRedirect(url);
+				}else {
+			/******************登入失敗 準備轉交AJAX方法************************/
+					errorMsgs.add("密碼不符合");	
+					JSONObject error = new JSONObject();
+					try {
+						error.put("錯誤", errorMsgs.get(0));
+						out.print(error);
+						return;
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+			/******************登入失敗 準備轉交FORWARD方法************************/					
+//					errorMsgs.add("密碼不符合");
+//					String url = String.valueOf(session.getAttribute("from_forward"));
+//					RequestDispatcher failureView = req.getRequestDispatcher(url);
+//					failureView.forward(req, res);
+				}
+			}else{
+			/******************登入失敗 準備轉交AJAX方法************************/
+				errorMsgs.add("帳號不存在");	
 				JSONObject error = new JSONObject();
 				try {
 					error.put("錯誤", errorMsgs.get(0));
@@ -60,29 +119,15 @@ public class MemberServlet extends HttpServlet {
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-			}
-		}	
-		
-		if("login".equals(action)){
-			String member_account = req.getParameter("member_account");
-			String member_psw = req.getParameter("member_psw");
-			MemberService memberSvc = new MemberService();
-			MemberVO member = new MemberVO();
-			member = memberSvc.findByAccount(member_account);	
-			
-			if(member_account.trim().length() != 0 && member.getMember_psw().equals(member_psw)){
-				session.setAttribute("member", member);
-				session.setMaxInactiveInterval(2592000);
-				String url=req.getContextPath()+"/member/membercenter.jsp";
-				res.sendRedirect(url);
-			}else{
-				errorMsgs.add("帳密錯誤");
-				String url = String.valueOf(session.getAttribute("from_forward"));
-				RequestDispatcher failureView = req.getRequestDispatcher(url);
-				failureView.forward(req, res);
+			/******************登入失敗 準備轉交FORWARD方法************************/	
+//				errorMsgs.add("帳號錯誤");
+//				String url = String.valueOf(session.getAttribute("from_forward"));
+//				RequestDispatcher failureView = req.getRequestDispatcher(url);
+//				failureView.forward(req, res);
 			}
 		}
 		
+		/**********************會員登出****************************/
 		if("logout".equals(action)){
 			String url = String.valueOf(session.getAttribute("from_redirect"));
 			Enumeration<String> en = session.getAttributeNames();
@@ -97,7 +142,7 @@ public class MemberServlet extends HttpServlet {
 			String enameReg = "^[(a-zA-Z0-9_)]{4,12}$";
 			String nameReg = "^[\u4e00-\u9fa5_a-zA-Z]$";
 			MemberService memberSvc = new MemberService();
-
+			
 			try {
 				String member_account = req.getParameter("member_account");
 				String member_psw = req.getParameter("member_psw");
@@ -109,11 +154,11 @@ public class MemberServlet extends HttpServlet {
 				String member_emailaddress = req.getParameter("member_emailaddress");
 				String member_idcode = req.getParameter("member_idcode");
 				String creaditcard = req.getParameter("creaditcard");
-				String member_nickname = null;				
+				String member_nickname = req.getParameter("member_nickname");;				
 				String county = req.getParameter("county");
+
 				county = citymap.get(county)+"-";
-				String area = req.getParameter("area")+"-";	
-				
+				String area = req.getParameter("area")+"-";				
 
 				if(memberSvc.findByAccount(member_account) !=null){
 					errorMsgs.add("此帳號已被使用");
@@ -127,6 +172,7 @@ public class MemberServlet extends HttpServlet {
 				} else if(!member_account.trim().matches(enameReg)){
 					errorMsgs.add("帳號必須為英文與數字 , 且長度必需在4到12之間");
 				}
+				
 				if(!member_psw.equals(member_psw_forcheck)){
 					errorMsgs.add("密碼不相符");
 				}
@@ -158,6 +204,20 @@ public class MemberServlet extends HttpServlet {
 				member_pic = new byte[in.available()];
 				in.read(member_pic);
 				
+				List<String> favorlist = new ArrayList<String>();
+				try {
+					if(req.getParameterValues("favortype").length>5) {
+						errorMsgs.add("超過5個喜好類型，請重選");
+					}else {
+						for(String favor : req.getParameterValues("favortype")) {
+							favorlist.add(favor); 
+						}
+					}
+				}catch(NullPointerException ne){
+					System.out.println(ne);
+				}
+				
+				
 				MemberVO memberVO = new MemberVO();
 				memberVO.setMember_account(member_account)
 				.setMember_psw(member_psw)
@@ -171,7 +231,9 @@ public class MemberServlet extends HttpServlet {
 				.setCreaditcard(creaditcard)
 				.setSubsenews(subsenews)
 				.setMember_pic(member_pic)
-				.setMember_sex(member_sex);
+				.setMember_sex(member_sex)
+				.setSubsenews(subsenews)
+				.setMember_nickname(member_nickname);
 				
 				if (!errorMsgs.isEmpty()) {
 					req.setAttribute("memberVO", memberVO);
@@ -183,7 +245,7 @@ public class MemberServlet extends HttpServlet {
 				Integer member_lock_status = 0;
 				memberVO = memberSvc.add(member_account, member_psw_forcheck, member_lastname, member_firstname, 
 						county+area+member_address, mobilenum, member_emailaddress, member_birthday, member_idcode, 
-						creaditcard, subsenews, member_sex, member_lock_status, member_pic, member_nickname);
+						creaditcard, subsenews, member_sex, member_lock_status, member_pic, member_nickname,favorlist);
 				/*****************3.新增完成,準備轉交(Send the Success view)*********/
 				session.setAttribute("member", memberVO);
 				String url=req.getContextPath()+"/member/membercenter.jsp";
