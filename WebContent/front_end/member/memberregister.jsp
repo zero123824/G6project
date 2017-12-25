@@ -192,13 +192,13 @@
 
                                 <div class="notneed" style="display:none">
                                 <div class="form-group mygroup">
-									性別
+								<strong>性別</strong>
                                 	<input type="radio" class="magic-radio" name="member_sex" id="men" 
                                 	value="1" class="form-control" <c:if test="${memberVO.getMember_sex() == 1 }">checked</c:if>><label for="men">男</label>
                                     <input type="radio" class="magic-radio" name="member_sex" id="women" 
                                     value="2" class="form-control" <c:if test="${memberVO.getMember_sex() == 2 }">checked</c:if>><label for="women">女</label><br>
                                 </div>
-								<strong>是否訂閱電子報</strong>
+								是否訂閱電子報
                                 <input type="radio" class="magic-radio" name="subsenews" id="subsenews_true" 
                                 value="1" <c:if test="${memberVO.getSubsenews() == 1 }">checked</c:if>><label for="subsenews_true">是</label>
                                 <input type="radio" class="magic-radio" name="subsenews" id="subsenews_false" 
@@ -223,16 +223,16 @@
                                 <input class="magic-checkbox" type="checkbox" name="favortype" value="90017" id="type17"><label for="type17">勵志</label> 
                                 <input class="magic-checkbox" type="checkbox" name="favortype" value="90018" id="type18"><label for="type18">武俠</label> 
                                 <input class="magic-checkbox" type="checkbox" name="favortype" value="90019" id="type19"><label for="type19">影展</label> 
-                                <br>
+                                <br><br>
                                 <div class="form-group mygroup">
                                     <label for="member_nickname">暱稱</label>
                                     <input type="text" id="member_nickname" name="member_nickname" maxlength="10" 
                                     class="form-control" value="<%= (memberVO == null) ? "": memberVO.getMember_nickname()%>" placeholder="取個好聽的暱稱吧^^"><br>
-                                </div>
-								上傳一張大頭貼吧
+                                </div><br><br>
+								<h5>上傳一張大頭貼吧</h5>
                                 <input type="file" id="member_pic" name="member_pic">
-                                <output id="list"></output><span id="preview"></span>
-                                <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                                <img id="member_pic_preview" style="width:100%"></img>
+                                <br><br><br><br><br><br><br><br><br><br><br><br><br>
                                 </div><br>
                                 <div class="text-center">             
                                 <input type="button" class="cancelbtn custombtn" value="取消註冊" id="backstep">
@@ -377,6 +377,8 @@
 			}
 		</script>
 	<script>
+	
+	//單張大頭貼預覽
 	function handleFileSelect(evt) {
 		// FileList物件
 		var files = evt.target.files; 		
@@ -393,15 +395,8 @@
 			// Closure to capture the file information.
 			reader.onload = (function(theFile) {
 				return function(e) {
-					// Render thumbnail.
-					var member_pic_preview = document.getElelmentById("member_pic");
-			//		var span = document.createElement('span');
-					
-					span.innerHTML = [ '<img class="thumb" src="',
-							e.target.result, '" title="',
-							escape(theFile.name), '"/>' ].join('');
-					document.getElementById('list')
-							.insertBefore(span, null);
+					// Render thumbnail.			
+					$("#member_pic_preview").attr({class:'thumb',src:e.target.result,title:escape(theFile.name)});			
 				};
 			})(f);				
 		}

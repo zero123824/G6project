@@ -105,11 +105,31 @@
                         		<h4>手機號碼:<c:out value="${member.mobilenum}" default=""/></h4><br>
                         		<h4>電子信箱:<c:out value="${member.member_emailaddress}" default=""/></h4><br>
                         		<h4>訂閱電子報:<c:out value="${status.subscribe}" default=""/></h4><br>
-                        	</div>
-                        	
-                        </div>
-                    </div> 
-                    <div class="col-xs-12 col-sm-4">
+                        	</div>                        	
+                   		</div>
+                   </div>
+                   
+					<div class="col-xs-12 col-sm-4 col-sm-push-4">
+						<div class="panel panel-info">
+		                	<div class="panel-heading">
+		                        <h3 class="panel-title">最近五筆消費紀錄</h3>
+							</div>
+		                    <!-- 動態產生訂票紀錄 -->
+		                    <div class="panel-body">
+		                                                  
+		                    </div>
+		                </div>
+						<div class="panel panel-danger">
+							<div class="panel-heading">
+								<h3 class="panel-title">優惠券</h3>
+							</div>
+							<div class="panel-body">
+								<p>優惠券</p>
+							</div>
+						</div>
+					</div>
+					
+                   	<div class="col-xs-12 col-sm-4 col-sm-pull-4">
                         <div class="panel panel-success">
                             <div class="panel-heading">
                                 <h2 class="panel-title">
@@ -129,31 +149,12 @@
                             <img src="<%=request.getContextPath()%>/front_end/member/getmc?member_id=${recommend.movie_id}" alt="${recommend.movie_name_en}">
                             <div class="caption">
                                 <h4>${recommend.movie_name_ch}</h4>
-                                <p>${recommend.movie_introduce}</p>                               
+                                <p class="introducecontent">${recommend.movie_introduce}</p>                               
                             </div>
                         </div>
                         </c:forEach>                    
-                    </div>
-            <div class="col-xs-12 col-sm-4">
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">最近五筆消費紀錄</h3>
-                    </div>
-                    <!-- 動態產生訂票紀錄 -->
-                    <div class="panel-body">
-                                                  
-                    </div>
-                </div>
-                <div class="panel panel-danger">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">優惠券</h3>
-                    </div>
-                    <div class="panel-body">
-                        <p>優惠券</p>
-                    </div>
-                </div>
-            </div>                    
-        </div>
+                   </div>        
+        		</div>
                 <!-- 到這裡結束 -->
 				<!-- include footer -->
                 <jsp:include page="/front_end/template/footer.jsp"/>
@@ -174,6 +175,17 @@
 		
     </body>
 	<script type="text/javascript">
+	
+		$(".caption p").each(function(){
+			if($(this).text().length > 80) {
+				$(this).html($(this).text().substring(0,100)+'<a style="font-size:14px;color:#0f52ba;font-weight:bold" href="#">......觀看詳細介紹</a>');
+			};
+		});
+		
+		
+//		if($(".introducecontent").text().length > 100){
+//			$(".introducecontent").text($(".introducecontent").text().substring(0,100)+'......觀看詳細介紹'); 
+//		}
 // 		$("#editable").children("h4").click(function(){
 // 			$(".edit").hide();
 // 			var content1 = $(this).text();
