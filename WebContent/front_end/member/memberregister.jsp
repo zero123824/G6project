@@ -23,9 +23,9 @@
 <!-- ICON CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <!-- datepicker CSS from 老師 -->
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/datetimepicker/jquery.datetimepicker.css" />
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/front_end/datetimepicker/jquery.datetimepicker.css" />
 <!-- Our Custom CSS -->
-<link rel="stylesheet" href="<%=request.getContextPath()%>/css/frontend.css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/front_end/css/frontend.css">
 </head>
 <style type="text/css">
 	strong::before {
@@ -69,13 +69,13 @@
 <body id="myPage">	
 	<div class="wrapper">
 		<!-- Include sidebar -->
-		<jsp:include page="/frontend/sidebar.jsp" />
+		<jsp:include page="/front_end/template/sidebar.jsp" />
 
 		<!-- Page Content -->
 		<div id="content">
 
 			<!-- Include sidebar -->
-			<jsp:include page="/frontend/header.jsp" />
+			<jsp:include page="/front_end/template/header.jsp" />
 
 			<!-- 從這裡開始修改 -->
 			<ol class="breadcrumb">
@@ -98,7 +98,7 @@
 									</c:forEach>
 								</ul>
 							</c:if>
-                            <form method="post" action="<%=request.getContextPath()%>/member/member.do" id="sentform" class="form-group mygroup" enctype="multipart/form-data">
+                            <form method="post" action="<%=request.getContextPath()%>/front_end/member/member.do" id="sentform" class="form-group mygroup" enctype="multipart/form-data">
                                 <div class="basic">
                                 <strong style="font-size:22px;color:#beb8b8;">為必填項目</strong>
                                 <div class="form-group mygroup">
@@ -230,7 +230,8 @@
                                     class="form-control" value="<%= (memberVO == null) ? "": memberVO.getMember_nickname()%>" placeholder="取個好聽的暱稱吧^^"><br>
                                 </div>
 								上傳一張大頭貼吧
-                                <input type="file" name="member_pic">
+                                <input type="file" id="member_pic" name="member_pic">
+                                <output id="list"></output><span id="preview"></span>
                                 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
                                 </div><br>
                                 <div class="text-center">             
@@ -246,7 +247,7 @@
                       </div>
                         <!-- 到這裡結束 -->
 				<!-- include footer -->
-                <jsp:include page="/frontend/footer.jsp"/>
+                <jsp:include page="/front_end/template/footer.jsp"/>
             </div>            
         </div>
         <div class="overlay"></div>
@@ -258,9 +259,9 @@
         <!-- jQuery Custom Scroller CDN -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 		<!-- datepickerJS from老師 -->		
-		<script src="<%=request.getContextPath()%>/datetimepicker/jquery.datetimepicker.full.js"></script>
+		<script src="<%=request.getContextPath()%>/front_end/datetimepicker/jquery.datetimepicker.full.js"></script>
 		<!-- customjs -->
-		<script src="<%=request.getContextPath()%>/js/frontend.js"></script>
+		<script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>
 <% 
 		java.sql.Date member_birthday = null;
 		try {
@@ -345,7 +346,7 @@
 						getAreafromjson(this);
 					}
 				};
-				xhr.open("GET", "<%=request.getContextPath()%>/taiwandistrict.json", true);
+				xhr.open("GET", "<%=request.getContextPath()%>/front_end/taiwandistrict.json", true);
 				xhr.send();
 			}
 			function getAreafromjson(jsonobject) {
@@ -374,5 +375,38 @@
 				 }
 				 return false;
 			}
-		</script>    
+		</script>
+	<script>
+	function handleFileSelect(evt) {
+		// FileList物件
+		var files = evt.target.files; 		
+		// Loop through the FileList and render image files as thumbnails.
+		for (var i = 0, f; f = files[i]; i++) {
+
+			// 只處理image類型的檔案上傳
+			if (!f.type.match('image.*')) {
+				continue;
+			}
+			var reader = new FileReader();
+			// Read in the image file as a data URL.
+			reader.readAsDataURL(f);
+			// Closure to capture the file information.
+			reader.onload = (function(theFile) {
+				return function(e) {
+					// Render thumbnail.
+					var member_pic_preview = document.getElelmentById("member_pic");
+			//		var span = document.createElement('span');
+					
+					span.innerHTML = [ '<img class="thumb" src="',
+							e.target.result, '" title="',
+							escape(theFile.name), '"/>' ].join('');
+					document.getElementById('list')
+							.insertBefore(span, null);
+				};
+			})(f);				
+		}
+	}
+		document.getElementById('member_pic').addEventListener('change',
+			handleFileSelect, false);
+	</script>
 </html>

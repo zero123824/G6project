@@ -1,4 +1,4 @@
-package com.movie_genre.model;
+package com.movie_schedule.model;
 
 import java.util.*;
 import java.sql.*;
@@ -8,9 +8,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import com.movie.model.MovieVO;
-
-public class Movie_GenreDAO implements Movie_GenreDAO_interface {
+public class Movie_ScheduleDAO implements Movie_ScheduleDAO_interface {
 
 	// 一個應用程式中,針對一個資料庫 ,共用一個DataSource即可
 	private static DataSource ds = null;
@@ -24,34 +22,39 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 	}
 	
 	private static final String INSERT_STMT = 
-		"INSERT INTO movie_genre (movie_id,genre_id) VALUES (?, ?)";
+		"INSERT INTO movie_schedule (schedule_id,movie_id,hall_id,schedule_date,sold_seat,seat_stat,midnight) VALUES (movie_schedule_seq.NEXTVAL, ?, ?, ?, ?, ?, ?)";
 	private static final String GET_ALL_STMT = 
-		"SELECT movie_id,genre_id FROM movie_genre order by genre_id";
-	private static final String GET_MOVEI_BYGENRE_STMT = 
-		"SELECT movie_id,genre_id FROM movie_genre where genre_id = ?";
+		"SELECT schedule_id,movie_id,hall_id,to_char(schedule_date,'yyyy-mm-dd hh:mi:ss')schedule_date,sold_seat,seat_stat,midnight FROM movie_schedule order by schedule_id";
+	private static final String GET_ONE_STMT = 
+		"SELECT schedule_id,movie_id,hall_id,to_char(schedule_date,'yyyy-mm-dd hh:mi:ss')schedule_date,sold_seat,seat_stat,midnight FROM movie_schedule where schedule_id = ?";
 	private static final String DELETE = 
-		"DELETE FROM movie_genre where movie_id = ? and genre_id = ?";
+		"DELETE FROM movie_schedule where schedule_id = ?";
 	private static final String UPDATE = 
-		"UPDATE movie_genre set genre_id=? where movie_id = ?";
+		"UPDATE movie_schedule set movie_id=?, hall_id=?, schedule_date=?, sold_seat=?, seat_stat=?, midnight=? where schedule_id = ?";
 
 	@Override
-	public void insert(Movie_GenreVO movie_genreVO) {
+	public void insert(Movie_ScheduleVO movie_scheduleVO) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-
+		
 		try {
-
+			
 			con = ds.getConnection();
 			pstmt = con.prepareStatement(INSERT_STMT);
-
-			pstmt.setLong(1, movie_genreVO.getMovie_id());
-			pstmt.setInt(2, movie_genreVO.getGenre_id());
-
+			
+			pstmt.setLong(1, movie_scheduleVO.getMovie_id());
+			pstmt.setLong(2, movie_scheduleVO.getHall_id());
+			pstmt.setTimestamp(3, movie_scheduleVO.getSchedule_date());
+			pstmt.setInt(4, movie_scheduleVO.getSold_seat());
+			pstmt.setString(5, movie_scheduleVO.getSeat_stat());
+			pstmt.setBoolean(6, movie_scheduleVO.getMidnight());
+			
 			pstmt.executeUpdate();
-
+			
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
+			throw new RuntimeException("A database error occured. "
+					+ se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (pstmt != null) {
@@ -70,25 +73,31 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 			}
 		}
 	}
-
+	
 	@Override
-	public void update(Movie_GenreVO movie_genreVO) {
+	public void update(Movie_ScheduleVO movie_scheduleVO) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-
+		
 		try {
-
+			
 			con = ds.getConnection();
 			pstmt = con.prepareStatement(UPDATE);
-
-			pstmt.setInt(1, movie_genreVO.getGenre_id());
-			pstmt.setLong(2, movie_genreVO.getMovie_id());
-
+			
+			pstmt.setLong(1, movie_scheduleVO.getMovie_id());
+			pstmt.setLong(2, movie_scheduleVO.getHall_id());
+			pstmt.setTimestamp(3, movie_scheduleVO.getSchedule_date());
+			pstmt.setInt(4, movie_scheduleVO.getSold_seat());
+			pstmt.setString(5, movie_scheduleVO.getSeat_stat());
+			pstmt.setBoolean(6, movie_scheduleVO.getMidnight());
+			pstmt.setLong(7, movie_scheduleVO.getSchedule_id());
+			
 			pstmt.executeUpdate();
-
+			
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
+			throw new RuntimeException("A database error occured. "
+					+ se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (pstmt != null) {
@@ -105,11 +114,11 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 					e.printStackTrace(System.err);
 				}
 			}
-		}
+		}		
 	}
-
+	
 	@Override
-	public void delete(Long movie_id, Integer genre_id) {
+	public void delete(Long schedule_id) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 
@@ -118,14 +127,14 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 			con = ds.getConnection();
 			pstmt = con.prepareStatement(DELETE);
 
-			pstmt.setLong(1, movie_id);
-			pstmt.setInt(2, genre_id);
+			pstmt.setLong(1, schedule_id);
 
 			pstmt.executeUpdate();
 
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
+			throw new RuntimeException("A database error occured. "
+					+ se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (pstmt != null) {
@@ -142,14 +151,12 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 					e.printStackTrace(System.err);
 				}
 			}
-		}
+		}		
 	}
-
+	
 	@Override
-	public Set<Long> getMovieByGenre(Integer genre_id) {
-		Set<Long> set = new LinkedHashSet<Long>();
-		Movie_GenreVO movie_genreVO = null;
-		
+	public Movie_ScheduleVO findByPrimaryKey(Long schedule_id) {
+		Movie_ScheduleVO movie_scheduleVO = null;
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -157,22 +164,27 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 		try {
 
 			con = ds.getConnection();
-			pstmt = con.prepareStatement(GET_MOVEI_BYGENRE_STMT);
+			pstmt = con.prepareStatement(GET_ONE_STMT);
 
-			pstmt.setInt(1, genre_id);
+			pstmt.setLong(1, schedule_id);
 
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				movie_genreVO = new Movie_GenreVO();
-				movie_genreVO.setMovie_id(rs.getLong("movie_id"));
-				movie_genreVO.setGenre_id(rs.getInt("genre_id"));
-				set.add(movie_genreVO.getMovie_id());
+				movie_scheduleVO = new Movie_ScheduleVO();
+				movie_scheduleVO.setSchedule_id(rs.getLong("schedule_id"));
+				movie_scheduleVO.setMovie_id(rs.getLong("movie_id"));
+				movie_scheduleVO.setHall_id(rs.getInt("hall_id"));
+				movie_scheduleVO.setSchedule_date(rs.getTimestamp("schedule_date"));
+				movie_scheduleVO.setSold_seat(rs.getInt("sold_seat"));
+				movie_scheduleVO.setSeat_stat(rs.getString("seat_stat"));
+				movie_scheduleVO.setMidnight(rs.getBoolean("midnight"));
 			}
 
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
+			throw new RuntimeException("A database error occured. "
+					+ se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (rs != null) {
@@ -197,18 +209,17 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 				}
 			}
 		}
-		return set;
+		return movie_scheduleVO;
 	}
-
 	@Override
-	public List<Movie_GenreVO> getAll() {
-		List<Movie_GenreVO> list = new ArrayList<Movie_GenreVO>();
-		Movie_GenreVO movie_genreVO = null;
-
+	public List<Movie_ScheduleVO> getAll() {
+		List<Movie_ScheduleVO> list = new ArrayList<Movie_ScheduleVO>();
+		Movie_ScheduleVO movie_scheduleVO = null;
+		
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-
+		ResultSet rs = null;	
+		
 		try {
 
 			con = ds.getConnection();
@@ -216,15 +227,22 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				movie_genreVO = new Movie_GenreVO();
-				movie_genreVO.setMovie_id(rs.getLong("movie_id"));
-				movie_genreVO.setGenre_id(rs.getInt("genre_id"));
-				list.add(movie_genreVO);
+				movie_scheduleVO = new Movie_ScheduleVO();
+				movie_scheduleVO = new Movie_ScheduleVO();
+				movie_scheduleVO.setSchedule_id(rs.getLong("schedule_id"));
+				movie_scheduleVO.setMovie_id(rs.getLong("movie_id"));
+				movie_scheduleVO.setHall_id(rs.getInt("hall_id"));
+				movie_scheduleVO.setSchedule_date(rs.getTimestamp("schedule_date"));
+				movie_scheduleVO.setSold_seat(rs.getInt("sold_seat"));
+				movie_scheduleVO.setSeat_stat(rs.getString("seat_stat"));
+				movie_scheduleVO.setMidnight(rs.getBoolean("midnight"));
+				list.add(movie_scheduleVO);
 			}
 
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
+			throw new RuntimeException("A database error occured. "
+					+ se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (rs != null) {

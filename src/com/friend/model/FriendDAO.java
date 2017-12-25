@@ -67,18 +67,18 @@ public class FriendDAO implements FriendDAO_interface{
 	}
 	
 	@Override
-	public void update(FriendVO member_id1, FriendVO member_id2) {
+	public void update(FriendVO friendVO) {
 		Connection con = null;
 		PreparedStatement psmt = null;
 		try {
 			con = ds.getConnection();
-			Reader reader = new StringReader(member_id1.getMember_msg());
+			Reader reader = new StringReader(friendVO.getMember_msg());
 			psmt = con.prepareStatement(UPDATE);
-			psmt.setInt(4, member_id1.getMember_id1());
-			psmt.setInt(5, member_id2.getMember_id2());
-			psmt.setInt(1, member_id1.getRelation_status());
+			psmt.setInt(4, friendVO.getMember_id1());
+			psmt.setInt(5, friendVO.getMember_id2());
+			psmt.setInt(1, friendVO.getRelation_status());
 			psmt.setCharacterStream(2, reader);
-			psmt.setInt(3, member_id1.getMsg_status());
+			psmt.setInt(3, friendVO.getMsg_status());
 
 			psmt.executeUpdate();
 		} catch (SQLException e) {
@@ -102,14 +102,14 @@ public class FriendDAO implements FriendDAO_interface{
 	}
 	
 	@Override
-	public void delete(FriendVO member_id1, FriendVO member_id2) {
+	public void delete(FriendVO friendVO) {
 		Connection con = null;
 		PreparedStatement psmt = null;
 		try {
 			con = ds.getConnection();
 			psmt = con.prepareStatement(DELETE);
-			psmt.setInt(1, member_id1.getMember_id1());
-			psmt.setInt(2, member_id2.getMember_id2());
+			psmt.setInt(1, friendVO.getMember_id1());
+			psmt.setInt(2, friendVO.getMember_id2());
 			psmt.executeUpdate();
 
 		} catch (SQLException e) {

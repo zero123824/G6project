@@ -16,7 +16,7 @@
 			<button type="button" id="sidebarCollapse"
 				class="glyphicon glyphicon-align-justify btn btn-info navbar-btn">
 			</button>
-			<a href="<%=request.getContextPath()%>/frontend/index.jsp"><img
+			<a href="<%=request.getContextPath()%>/front_end/index.jsp"><img
 				src="<%=request.getContextPath()%>/img/logo.png"></a>
 		</div>
 		<ul class="nav navbar-nav navbar-right hidden-xs">
@@ -27,7 +27,7 @@
 			</c:if>
 			<c:if test="${not empty member}">
 				<li><a
-					href="<%=request.getContextPath()%>/member/membercenter.jsp"
+					href="<%=request.getContextPath()%>/front_end/member/membercenter.jsp"
 					style="color: white; margin-top: 5px"><i class="fa fa-user"></i>
 						${member.member_account} 您好!</a></li>
 				<li><a
@@ -38,7 +38,7 @@
 	</div>
 	</nav>
 	<form id="logoutform" method="post"
-		action="<%=request.getContextPath()%>/member/member.do">
+		action="<%=request.getContextPath()%>/front_end/member/member.do">
 		<input type="hidden" name="action" value="logout">
 	</form>
 </body>

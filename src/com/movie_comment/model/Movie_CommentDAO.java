@@ -1,16 +1,19 @@
-package com.movie_genre.model;
+package com.movie_comment.model;
 
-import java.util.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import com.movie.model.MovieVO;
-
-public class Movie_GenreDAO implements Movie_GenreDAO_interface {
+public class Movie_CommentDAO implements Movie_CommentDAO_interface {
 
 	// 一個應用程式中,針對一個資料庫 ,共用一個DataSource即可
 	private static DataSource ds = null;
@@ -24,34 +27,36 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 	}
 	
 	private static final String INSERT_STMT = 
-		"INSERT INTO movie_genre (movie_id,genre_id) VALUES (?, ?)";
+		"INSERT INTO movie_comment (comment_id,movie_id,member_id,comment_time,comment_content,comment_stat) VALUES (movie_comment_seq.NEXTVAL, ?, ?, CURRENT_TIMESTAMP, ?, ?)";
 	private static final String GET_ALL_STMT = 
-		"SELECT movie_id,genre_id FROM movie_genre order by genre_id";
-	private static final String GET_MOVEI_BYGENRE_STMT = 
-		"SELECT movie_id,genre_id FROM movie_genre where genre_id = ?";
+		"SELECT comment_id,movie_id,member_id,to_char(comment_time,'yyyy-mm-dd hh24:mi:ss')comment_time,comment_content,comment_stat FROM movie_comment order by comment_id";
+	private static final String GET_ONE_STMT = 
+		"SELECT comment_id,movie_id,member_id,to_char(comment_time,'yyyy-mm-dd hh24:mi:ss')comment_time,comment_content,comment_stat FROM movie_comment where comment_id = ?";
 	private static final String DELETE = 
-		"DELETE FROM movie_genre where movie_id = ? and genre_id = ?";
+		"DELETE FROM movie_comment where comment_id = ?";
 	private static final String UPDATE = 
-		"UPDATE movie_genre set genre_id=? where movie_id = ?";
-
+		"UPDATE movie_comment set comment_content=? ,comment_stat=? where comment_id = ?";
+		
 	@Override
-	public void insert(Movie_GenreVO movie_genreVO) {
+	public void insert(Movie_CommentVO movie_commentVO) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-
+		
 		try {
-
 			con = ds.getConnection();
 			pstmt = con.prepareStatement(INSERT_STMT);
-
-			pstmt.setLong(1, movie_genreVO.getMovie_id());
-			pstmt.setInt(2, movie_genreVO.getGenre_id());
-
+			
+			pstmt.setLong(1, movie_commentVO.getMovie_id());
+			pstmt.setLong(2, movie_commentVO.getMember_id());
+			pstmt.setString(3, movie_commentVO.getComment_content());
+			pstmt.setBoolean(4, movie_commentVO.getComment_stat());
+			
 			pstmt.executeUpdate();
-
+			
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
+			throw new RuntimeException("A database error occured. "
+					+ se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (pstmt != null) {
@@ -72,18 +77,19 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 	}
 
 	@Override
-	public void update(Movie_GenreVO movie_genreVO) {
+	public void update(Movie_CommentVO movie_commentVO) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-
+		
 		try {
-
+			
 			con = ds.getConnection();
 			pstmt = con.prepareStatement(UPDATE);
-
-			pstmt.setInt(1, movie_genreVO.getGenre_id());
-			pstmt.setLong(2, movie_genreVO.getMovie_id());
-
+			
+			pstmt.setString(1, movie_commentVO.getComment_content());
+			pstmt.setBoolean(2, movie_commentVO.getComment_stat());
+			pstmt.setLong(3, movie_commentVO.getComment_id());
+			
 			pstmt.executeUpdate();
 
 			// Handle any SQL errors
@@ -105,24 +111,23 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 					e.printStackTrace(System.err);
 				}
 			}
-		}
+		}		
 	}
 
 	@Override
-	public void delete(Long movie_id, Integer genre_id) {
+	public void delete(Long comment_id) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-
+		
 		try {
-
+			
 			con = ds.getConnection();
 			pstmt = con.prepareStatement(DELETE);
-
-			pstmt.setLong(1, movie_id);
-			pstmt.setInt(2, genre_id);
-
+			
+			pstmt.setLong(1, comment_id);
+			
 			pstmt.executeUpdate();
-
+			
 			// Handle any SQL errors
 		} catch (SQLException se) {
 			throw new RuntimeException("A database error occured. " + se.getMessage());
@@ -146,33 +151,35 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 	}
 
 	@Override
-	public Set<Long> getMovieByGenre(Integer genre_id) {
-		Set<Long> set = new LinkedHashSet<Long>();
-		Movie_GenreVO movie_genreVO = null;
-		
+	public Movie_CommentVO findByPrimaryKey(Long comment_id) {
+		Movie_CommentVO movie_commentVO = null;
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-
+		
 		try {
-
+			
 			con = ds.getConnection();
-			pstmt = con.prepareStatement(GET_MOVEI_BYGENRE_STMT);
-
-			pstmt.setInt(1, genre_id);
-
+			pstmt = con.prepareStatement(GET_ONE_STMT);
+			
+			pstmt.setLong(1, comment_id);
+			
 			rs = pstmt.executeQuery();
-
+			
 			while (rs.next()) {
-				movie_genreVO = new Movie_GenreVO();
-				movie_genreVO.setMovie_id(rs.getLong("movie_id"));
-				movie_genreVO.setGenre_id(rs.getInt("genre_id"));
-				set.add(movie_genreVO.getMovie_id());
+				movie_commentVO = new Movie_CommentVO();
+				movie_commentVO.setComment_id(rs.getLong("comment_id"));
+				movie_commentVO.setMovie_id(rs.getLong("movie_id"));
+				movie_commentVO.setMember_id(rs.getLong("member_id"));
+				movie_commentVO.setComment_time(rs.getTimestamp("comment_time"));
+				movie_commentVO.setComment_content(rs.getString("comment_content"));
+				movie_commentVO.setComment_stat(rs.getBoolean("comment_stat"));
 			}
-
+			
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
+			throw new RuntimeException("A database error occured. "
+					+ se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (rs != null) {
@@ -197,34 +204,39 @@ public class Movie_GenreDAO implements Movie_GenreDAO_interface {
 				}
 			}
 		}
-		return set;
+		return movie_commentVO;
 	}
 
 	@Override
-	public List<Movie_GenreVO> getAll() {
-		List<Movie_GenreVO> list = new ArrayList<Movie_GenreVO>();
-		Movie_GenreVO movie_genreVO = null;
-
+	public List<Movie_CommentVO> getAll() {
+		List<Movie_CommentVO> list = new ArrayList<Movie_CommentVO>();
+		Movie_CommentVO movie_commentVO = null;
+		
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-
+		
 		try {
-
+			
 			con = ds.getConnection();
 			pstmt = con.prepareStatement(GET_ALL_STMT);
 			rs = pstmt.executeQuery();
-
+			
 			while (rs.next()) {
-				movie_genreVO = new Movie_GenreVO();
-				movie_genreVO.setMovie_id(rs.getLong("movie_id"));
-				movie_genreVO.setGenre_id(rs.getInt("genre_id"));
-				list.add(movie_genreVO);
+				movie_commentVO = new Movie_CommentVO();
+				movie_commentVO.setComment_id(rs.getLong("comment_id"));
+				movie_commentVO.setMovie_id(rs.getLong("movie_id"));
+				movie_commentVO.setMember_id(rs.getLong("member_id"));
+				movie_commentVO.setComment_time(rs.getTimestamp("comment_time"));
+				movie_commentVO.setComment_content(rs.getString("comment_content"));
+				movie_commentVO.setComment_stat(rs.getBoolean("comment_stat"));
+				list.add(movie_commentVO);
 			}
-
+			
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
+			throw new RuntimeException("A database error occured. "
+					+ se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (rs != null) {

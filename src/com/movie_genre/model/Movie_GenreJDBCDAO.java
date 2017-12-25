@@ -147,8 +147,8 @@ public class Movie_GenreJDBCDAO implements Movie_GenreDAO_interface {
 	}
 	
 	@Override
-	public Set<Movie_GenreVO> getMovieByGenre(Integer genre_id) {
-		Set<Movie_GenreVO> set = new LinkedHashSet<Movie_GenreVO>();
+	public Set<Long> getMovieByGenre(Integer genre_id) {
+		Set<Long> set = new LinkedHashSet<Long>();
 		Movie_GenreVO movie_genreVO = null;
 		
 		Connection con = null;
@@ -169,7 +169,7 @@ public class Movie_GenreJDBCDAO implements Movie_GenreDAO_interface {
 				movie_genreVO = new Movie_GenreVO();
 				movie_genreVO.setMovie_id(rs.getLong("movie_id"));
 				movie_genreVO.setGenre_id(rs.getInt("genre_id"));
-				set.add(movie_genreVO);
+				set.add(movie_genreVO.getMovie_id());
 			}
 
 			// Handle any driver errors
@@ -288,11 +288,11 @@ public class Movie_GenreJDBCDAO implements Movie_GenreDAO_interface {
 		System.out.println("---------------------");
 		
 		//查詢某類型的電影
-		Set<Movie_GenreVO> set = dao.getMovieByGenre(90005);
-		for (Movie_GenreVO aMovie_Genre : set) {
-			System.out.print(aMovie_Genre.getMovie_id() + ",");
-			System.out.print(aMovie_Genre.getGenre_id());
-			System.out.println();
-		}
+//		Set<Movie_GenreVO> set = dao.getMovieByGenre(90005);
+//		for (Movie_GenreVO aMovie_Genre : set) {
+//			System.out.print(aMovie_Genre.getMovie_id() + ",");
+//			System.out.print(aMovie_Genre.getGenre_id());
+//			System.out.println();
+//		}
 	}	
 }

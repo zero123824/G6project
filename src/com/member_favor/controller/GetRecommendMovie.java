@@ -35,7 +35,7 @@ public class GetRecommendMovie {
 
 	// 取得推薦電影的ID並呼叫電影資訊方法
 	@SuppressWarnings("unused")
-	public void getRecommendMovie_ID(Integer member_id) {
+	public static void getRecommendMovie_ID(Integer member_id) {
 		Connection con = null;
 		PreparedStatement psmt = null;
 		List<JsonArray> ja = null;
@@ -54,7 +54,7 @@ public class GetRecommendMovie {
 	}
 
 	// 取得推薦電影的資訊
-	private void getMovieData(String moviename) {
+	private static void getMovieData(String moviename) {
 		Connection con = null;
 		PreparedStatement psmt = null;
 		try {

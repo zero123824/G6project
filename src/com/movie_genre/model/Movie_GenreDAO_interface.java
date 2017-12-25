@@ -8,5 +8,5 @@ public interface Movie_GenreDAO_interface {
 	public void delete(Long movie_id, Integer genre_id);
 	public List<Movie_GenreVO> getAll();
 	//查詢某類型的電影
-	public Set<Movie_GenreVO> getMovieByGenre(Integer genre_id);
+	public Set<Long> getMovieByGenre(Integer genre_id);
 }

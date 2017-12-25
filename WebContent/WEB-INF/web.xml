@@ -15,23 +15,20 @@
     <res-type>javax.sql.DataSource</res-type>
     <res-auth>Container</res-auth>
   </resource-ref>
-  
   <servlet>
     <servlet-name>MemberServlet</servlet-name>
     <servlet-class>com.member.controller.MemberServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>MemberServlet</servlet-name>
-    <url-pattern>/member/member.do</url-pattern>
+    <url-pattern>/front_end/member/member.do</url-pattern>
   </servlet-mapping>
-  
   <servlet>
     <servlet-name>GetMemberPic</servlet-name>
     <servlet-class>com.member.controller.GetMemberPic</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>GetMemberPic</servlet-name>
-    <url-pattern>/member/getmemberpic</url-pattern>
+    <url-pattern>/front_end/member/getmemberpic</url-pattern>
   </servlet-mapping>
-  
 </web-app>

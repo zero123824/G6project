@@ -51,12 +51,3 @@ public class temp {
 //				return null;
 //			}
 //		}
-		
-	//取得會員喜好類型
-		private List<MemberFavorVO> getMemberFavor(Integer member_id){
-			MemberFavorDAO mfd = new MemberFavorDAO();
-			List<MemberFavorVO> memfavorList;
-			memfavorList = mfd.getOneMemFavor(member_id);
-			return memfavorList;
-		}
-}

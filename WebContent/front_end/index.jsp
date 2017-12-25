@@ -10,7 +10,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<link rel="icon" type="image/gif" href="<%=request.getContextPath()%>/img/logo_192.png" />
+		<link rel="icon" type="image/gif" href="<%=request.getContextPath()%>/front_end/img/logo_192.png" />
 		<title>Sneaker影城</title>
 
         <!-- Bootstrap CSS CDN -->
@@ -20,19 +20,19 @@
         <!-- ICON CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
          <!-- Our Custom CSS -->
-        <link rel="stylesheet" href="<%=request.getContextPath()%>/css/frontend.css">
+        <link rel="stylesheet" href="<%=request.getContextPath()%>/front_end/css/frontend.css">
     </head>
     <body id="myPage">
 
         <div class="wrapper">
        <!-- Include sidebar -->        
-        <jsp:include page="/frontend/sidebar.jsp"/>
+        <jsp:include page="/front_end/template/sidebar.jsp"/>
             
             <!-- Page Content -->
             <div id="content">
               
                <!-- Include sidebar --> 
-            	<jsp:include page="/frontend/header.jsp"/>               
+            	<jsp:include page="/front_end/template/header.jsp"/>               
 
                <!-- 從這裡開始修改 -->
                 
@@ -231,7 +231,7 @@
              </div>
                 <!-- 到這裡結束 -->
 				<!-- include footer -->
-                <jsp:include page="/frontend/footer.jsp"/>
+                <jsp:include page="/front_end/template/footer.jsp"/>
             </div>            
         </div>
 
@@ -244,6 +244,6 @@
         <!-- jQuery Custom Scroller CDN -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 		<!-- customjs -->
-        <script src="<%=request.getContextPath()%>/js/frontend.js"></script>   
+        <script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>   
     </body>
 </html>

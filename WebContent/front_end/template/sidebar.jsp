@@ -7,6 +7,24 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>sidebar</title>
 </head>
+<style type="text/css">
+	.modal{
+		text-align: center;
+		padding: 0!important;
+	}
+	.modal:before{
+		content: '';
+		display: inline-block;
+		height: 100%;
+		vertical-align: middle;
+		margin-right: -4px;
+	}
+	.modal .modal-dialog{
+		display: inline-block;
+		text-align: left;
+		vertical-align: middle;
+	}
+</style>
 <body>
 <!-- Sidebar Holder -->
 	<nav id="sidebar">
@@ -18,9 +36,9 @@
 	</div>
 	<ul class="list-unstyled components">
 		<li class="active"><a
-			href="<%=request.getContextPath()%>/frontend/index.jsp"><i
+			href="<%=request.getContextPath()%>/front_end/index.jsp"><i
 				class="fa fa-home fa-lg"></i> 首頁</a></li>
-		<li class="visible-xs"><a href="<%=request.getContextPath()%>/member/membercenter.jsp"><i
+		<li class="visible-xs"><a href="<%=request.getContextPath()%>/front_end/member/membercenter.jsp"><i
 				class="fa fa-user fa-lg"></i> 會員中心</a></li>
 		<li><a href="#"><i class="fa fa-film fa-lg"></i> 上映電影資訊</a></li>
 		<li><a href="forum.html"><i class="fa fa-commenting-o fa-lg"></i>
@@ -58,7 +76,7 @@
 					</ul>
 				</c:if>
 				<h5 style="color: red" id="msgs" style="visibility:hidden"></h5>
-				<form method="post" action="<%=request.getContextPath()%>/member/member.do">
+				<form method="post" action="<%=request.getContextPath()%>/front_end/member/member.do">
 					<input type="hidden" name="action" value="login"> 
 					<input type="text" class="inputforlogin" name="member_account" id="member_account_login" placeholder="帳號"> 
 					<input type="password" class="inputforlogin" name="member_psw" id="member_psw_login" placeholder="密碼">
@@ -66,7 +84,7 @@
 					<input type="submit" name="login" id="verifyaccount" class="login loginmodal-submit" value="確認輸入">
 				</form>
 				<div class="login-help">
-					<a href="<%=request.getContextPath()%>/member/memberregister.jsp">註冊</a> - <a href="#">忘記密碼</a>
+					<a href="<%=request.getContextPath()%>/front_end/member/memberregister.jsp">註冊</a> - <a href="#">忘記密碼</a>
 				</div>
 			</div>
 		</div>
@@ -85,7 +103,7 @@
 			if($("#member_psw_login").val() == ""){
 			    $("#member_psw_login").css("background-color", "#F2DEDE");
 			}
-			$.ajax({url:"<%=request.getContextPath()%>/member/member.do",
+			$.ajax({url:"<%=request.getContextPath()%>/front_end/member/member.do",
 				method:"post",
 				data:{ action: "login",
 					   member_account:$("#member_account_login").val(),
@@ -94,7 +112,7 @@
 				})
 				.done(function(msgs){
 					if(msgs.success == 'success'){
-						window.location = "<%=request.getContextPath()%>/member/membercenter.jsp";
+						window.location = "<%=request.getContextPath()%>/front_end/member/membercenter.jsp";
 					}else{
 						getMessage(msgs);
 					}
@@ -109,7 +127,7 @@
 	
 	//	$("#login-modal input").blur(function(){
 	//		$("#msgs").css("visibility","hidden");
-	//		$.ajax({url:"<%=request.getContextPath()%>/member/member.do",
+	//		$.ajax({url:"<%=request.getContextPath()%>/front_end/member/member.do",
 	//				method:"post",
 	//				data:{ action: "verify",
 	//					   member_account:$("#member_account_login").val(),
