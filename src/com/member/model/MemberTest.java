@@ -2,6 +2,7 @@ package com.member.model;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -74,9 +75,11 @@ public class MemberTest {
 		// }
 		
 		// 修改假圖片進入資料庫 JDBCDAO
-		byte[] pic = getPictureByteArray("C:\\Users\\Java\\Pictures\\nopic.jpg");
+		File dir = new File("C://pic");
+		File[] pics = dir.listFiles();
 
-		for (int i = 1000000001; i <= 1000000014; i++) {
+		for (int i = 1000000001,j=0; i <= 1000000014; i++,j++) {		
+			byte[] pic = getPictureByteArray(pics[j]);
 			try {
 				psmt.setInt(2, i);
 				psmt.setBytes(1, pic);
@@ -87,7 +90,7 @@ public class MemberTest {
 		}
 	}
 
-	public static byte[] getPictureByteArray(String file) {
+	public static byte[] getPictureByteArray(File file) {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);

@@ -47,7 +47,7 @@ public class MemberServlet extends HttpServlet {
 		req.setAttribute("errorMsgs", errorMsgs);
 		PrintWriter out = res.getWriter();
 		String action = req.getParameter("action");
-		
+
 			
 		/**********************會員登入****************************/		
 		if("login".equals(action)){
@@ -166,7 +166,7 @@ public class MemberServlet extends HttpServlet {
 				if(member_account.trim().length() == 0 || member_psw.trim().length() == 0
 				   || member_lastname.trim().length() == 0 || member_firstname.trim().length() == 0
 				   || member_psw_forcheck.trim().length() == 0 || member_address.trim().length() == 0
-				   || mobilenum.trim().length() == 0 ){
+				   || mobilenum.trim().length() == 0 || creaditcard.trim().length() == 0){
 					errorMsgs.add("*為必填欄位");
 				} else if(!member_account.trim().matches(enameReg)){
 					errorMsgs.add("帳號必須為英文與數字 , 且長度必需在4到12之間");

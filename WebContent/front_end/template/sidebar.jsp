@@ -45,7 +45,7 @@
 				討論區</a></li>
 		<li><a href="#"><i class="fa fa-newspaper-o fa-lg"
 				aria-hidden="true"></i> 電影活動</a></li>
-		<li><a href="#"><i class="fa fa-bullhorn fa-lg"
+		<li><a href="<%=request.getContextPath()%>/front_end/announcement/announcement.jsp"><i class="fa fa-bullhorn fa-lg"
 				aria-hidden="true"></i> 影城公告</a></li>
 		<li><a href="#"><i class="fa fa-cutlery fa-lg"
 				aria-hidden="true"></i> 餐飲介紹</a></li>

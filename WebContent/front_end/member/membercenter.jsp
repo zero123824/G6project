@@ -80,7 +80,8 @@
 
                <!-- 從這裡開始修改 -->
                 <ol class="breadcrumb">
-                    <li><a href="#">會員中心</a></li>
+                	<li><a href="<%=request.getContextPath()%>/front_end/index.jsp">首頁</a></li>            	
+					<li><a href="<%=request.getContextPath()%>/front_end/member/membercenter.jsp">會員中心</a></li>
                     <li class="active"><a href="#">個人頁面</a></li>
                 </ol>
                 <div class="container">
