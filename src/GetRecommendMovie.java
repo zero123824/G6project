@@ -1,4 +1,4 @@
-package com.member_favor.controller;
+
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

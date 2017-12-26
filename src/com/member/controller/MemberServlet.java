@@ -26,8 +26,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.member.model.*;
-import com.member_favor.controller.GetRecommendMovie;
-import com.member_favor.model.MemberFavorVO;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 10 * 1024 * 1024, maxRequestSize = 20 * 10 * 1024 * 1024)
 public class MemberServlet extends HttpServlet {
