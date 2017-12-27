@@ -12,7 +12,10 @@
 		class="glyphicon glyphicon-chevron-up"></span></a>
 	<br>
 	<br>
-	<p>&copy; 2017 BA105 SNEAKER CINEMAS
+	<p>Copyright &copy; 2018 BA105G6 SNEAKER Cinemas. All Rights Reserved.
+		<i class="fa fa-facebook-square fa-2x" aria-hidden="true"></i>　
+		<i class="fa fa-instagram fa-2x" aria-hidden="true"></i>　
+		<i class="fa fa-linkedin-square fa-2x" aria-hidden="true"></i>　　
 	<p>
 	</footer>
 </body>

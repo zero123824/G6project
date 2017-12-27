@@ -2,8 +2,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<% session.setAttribute("from_forward", request.getServletPath());%>
-<% session.setAttribute("from_redirect", request.getRequestURI());%>
 <!-- basic註冊版本 -->
 <%	
 	MemberVO member = (MemberVO)session.getAttribute("member");
@@ -14,6 +12,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/gif" href="<%=request.getContextPath()%>/img/logo_192.png" />
 <title>Sneaker影城_註冊會員</title>
 <!-- Bootstrap CSS CDN -->
@@ -202,7 +201,7 @@
                                 <input type="radio" class="magic-radio" name="subsenews" id="subsenews_true" 
                                 value="1" <c:if test="${memberVO.getSubsenews() == 1 }">checked</c:if>><label for="subsenews_true">是</label>
                                 <input type="radio" class="magic-radio" name="subsenews" id="subsenews_false" 
-                                value="2" <c:if test="${memberVO.getSubsenews() == 2 }">checked</c:if>><label for="subsenews_false">否</label><br>
+                                value="0" <c:if test="${memberVO.getSubsenews() == 0 }">checked</c:if>><label for="subsenews_false">否</label><br>
 								喜好電影類型<br>																
                                 <input class="magic-checkbox" type="checkbox" name="favortype" value="90001" id="type1"><label for="type1">動作</label> 
                                 <input class="magic-checkbox" type="checkbox" name="favortype" value="90002" id="type2"><label for="type2">冒險</label> 

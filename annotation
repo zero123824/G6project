@@ -1,0 +1,15 @@
+@WebServlet(/front_end/member/member.do)
+@WebServlet(/front_end/member/getmemberpic)
+@WebFilter( filterName="LoginFilter",
+			urlPatterns={"/front_end/member/membercenter.jsp"},
+			dispatcherTypes={
+       		DispatcherType.FORWARD, DispatcherType.INCLUDE, 
+        	DispatcherType.REQUEST, DispatcherType.ERROR, DispatcherType.ASYNC
+        	})
+@WebFilter( filterName="PageFromFilter"
+			urlPatterns={"/front_end/index.jsp","/front_end/member/membercenter.jsp","/front_end/member/memberregister.jsp",
+						 "/front_end/announcement/*"},
+			dispatcherTypes={
+       		DispatcherType.FORWARD, DispatcherType.INCLUDE, 
+        	DispatcherType.REQUEST, DispatcherType.ERROR, DispatcherType.ASYNC
+        	})

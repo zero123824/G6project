@@ -74,22 +74,25 @@ public class MemberServlet extends HttpServlet {
 			
 			if(member_account.trim().length() != 0 && member!=null){
 				if(member.getMember_psw().equals(member_psw)) {
-			/******************登入成功 準備轉交AJAX回瀏覽器重導************************/					
+			/******************登入成功 準備AJAX回應給瀏覽器重導************************/	
+					String url = (String)session.getAttribute("from_redirect");
 					session.setAttribute("member", member);
 					if("y".equals(cosistlogin)) {
 						session.setMaxInactiveInterval(2592000);
 					}
 					JSONObject success = new JSONObject();
 					try {
+						success.put("url", url);
 						success.put("success", "success");
 						out.print(success);
 						return;
-					} catch (JSONException e) {
-						e.printStackTrace();
+					} catch (JSONException | NullPointerException ne) {
+						ne.printStackTrace();
 					}
 			/******************登入成功 轉交FORWARD方法************************/			
 //					String url=req.getContextPath()+"/member/membercenter.jsp";
 //					res.sendRedirect(url);
+//					return
 				}else {
 			/******************登入失敗 準備轉交AJAX方法************************/
 					errorMsgs.add("密碼不符合");	
@@ -133,8 +136,9 @@ public class MemberServlet extends HttpServlet {
 			while(en.hasMoreElements()){
 				String name = String.valueOf(en.nextElement());
 				session.removeAttribute(name);
-			}
+			}			
 			res.sendRedirect(url);
+			return;
 		}
 		
 		if("register".equals(action)){
@@ -249,6 +253,7 @@ public class MemberServlet extends HttpServlet {
 				session.setAttribute("member", memberVO);
 				String url=req.getContextPath()+"/front_end/member/membercenter.jsp";
 				res.sendRedirect(url);
+				return;
 		
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -258,28 +263,32 @@ public class MemberServlet extends HttpServlet {
 			MemberService memberSvc = new MemberService();
 			/***************************1.接收請求參數 - 輸入格式的錯誤處理**********************/
 			Integer member_id = new Integer(req.getParameter("member_id").trim());
-			String member_lastname = req.getParameter("member_lastname");
-			String member_firstname = req.getParameter("member_firstname");
-			String member_address = req.getParameter("member_address");
+			String member_name = req.getParameter("member_name");			
 			String mobilenum = req.getParameter("mobilenum");
 			String member_emailaddress = req.getParameter("member_emailaddress");
 			String creaditcard = req.getParameter("creaditcard");
-			String member_nickname = null;				
+			String member_nickname = req.getParameter("member_nickname");
+			Integer subsenews = Integer.valueOf(req.getParameter("subsenews"));
+			String member_lastname = null;
+			String member_firstname = null;
+			String member_address = req.getParameter("member_address");
+			if(member_name != null){
+				member_firstname = member_name.substring(1, 3);
+				member_lastname = member_name.substring(0, 1);
+			}
+			
 //			String county = req.getParameter("county");
 //			county = citymap.get(county)+"-";
 //			String area = req.getParameter("area")+"-";
-//			if(member_lastname.trim().length() == 0 || member_firstname.trim().length() == 0
-//			   || member_address.trim().length() == 0 || member_emailaddress.trim().length() == 0
-//			   || mobilenum.trim().length() == 0 || creaditcard.trim().length() == 0 ){
-//				errorMsgs.add("*為必填欄位");
-//			}
+			if(member_address.trim().length() == 0 || member_emailaddress.trim().length() == 0
+			   || mobilenum.trim().length() == 0){
+				errorMsgs.add("*為必填欄位");
+			}
 			MemberVO memberVO = memberSvc.findByPK(member_id);
-			memberVO.setMember_lastname(member_lastname)
-					.setMember_firstname(member_firstname)
-					.setMember_address(member_address)
+			memberVO.setMember_address(member_address)
 					.setMobilenum(mobilenum)
 					.setMember_emailaddress(member_emailaddress)
-					.setCreaditcard(creaditcard)
+					.setSubsenews(subsenews)
 					.setMember_nickname(member_nickname);
 			if (!errorMsgs.isEmpty()) {
 				req.setAttribute("memberVO", memberVO);
@@ -290,11 +299,12 @@ public class MemberServlet extends HttpServlet {
 			/***************************2.開始修改資料*****************************************/
 			memberVO = memberSvc.update(member_id,memberVO.getMember_account(),memberVO.getMember_psw(),member_lastname, member_firstname, member_address,
 						mobilenum, member_emailaddress, memberVO.getMember_birthday(), memberVO.getMember_idcode(),
-						creaditcard, memberVO.getSubsenews(), memberVO.getMember_sex(), memberVO.getMember_lock_status(),
-						memberVO.getMember_pic(), member_nickname);
+						memberVO.getCreaditcard(), memberVO.getSubsenews(), memberVO.getMember_sex(), memberVO.getMember_lock_status(),
+						memberVO.getMember_pic(), memberVO.getMember_nickname());
 			/***************************3.修改完成,準備轉交(Send the Success view)*************/
-			req.setAttribute("memberVO", memberVO); // 資料庫update成功後,正確的的empVO物件,存入req
-			String url = "/membergetall.jsp";
+			session.setAttribute("member", memberVO); // 資料庫update成功後,正確的的empVO物件,存入session
+			req.setAttribute("member", memberVO); // 資料庫update成功後,正確的的empVO物件,存入req
+			String url = String.valueOf(session.getAttribute("from_forward"));
 			RequestDispatcher successView = req.getRequestDispatcher(url); // 修改成功後,轉交listOneEmp.jsp
 			successView.forward(req, res);
 		}

@@ -52,8 +52,7 @@ public class GetMemberPic extends HttpServlet {
 			stmt.close();
 			
 		} catch (Exception e) {
-			String pic = req.getScheme()+"://"+req.getServerName()+":"+req.getServerPort();
-			InputStream is = new URL(pic+"/BA105G6/img/member_default.png").openStream();
+			InputStream is = getServletContext().getResourceAsStream("/img/member_default.png");
 			BufferedInputStream in = new BufferedInputStream(is);
 			byte[] buf = new byte[8 * 1024]; // 4K buffer
 			int len;
@@ -63,7 +62,8 @@ public class GetMemberPic extends HttpServlet {
 			in.close();		
 		  }
 	}
-
+//	String pic = req.getScheme()+"://"+req.getServerName()+":"+req.getServerPort();
+//	InputStream is = new URL(pic+"/BA105G6/img/member_default.png").openStream();
 	public void init() throws ServletException{
 		try {
 			Context ctx = new javax.naming.InitialContext();

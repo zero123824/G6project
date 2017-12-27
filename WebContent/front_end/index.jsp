@@ -2,8 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>    
 <%@ page import="com.google.gson.*"%>
-<% session.setAttribute("from_forward", request.getServletPath());%>
-<% session.setAttribute("from_redirect", request.getRequestURI());%>
+<% request.setAttribute("hereis", "index");%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
@@ -53,15 +52,15 @@
                                     <!-- Wrapper for slides -->
                                     <div class="carousel-inner img-responsive img-custom">
                                         <div class="item active">
-                                            <img src="banner2.jpg" alt="leaves">
+                                            <img src="<%=request.getContextPath()%>/img/carousel1.png" alt="carousel1">
                                         </div>
 
                                         <div class="item">
-                                            <img src="carousel2.jpg" alt="leaves-edit">
+                                            <img src="<%=request.getContextPath()%>/img/carousel2.jpg" alt="carousel2">
                                         </div>
 
                                         <div class="item">
-                                            <img src="banner3.jpg" alt="car">
+                                            <img src="<%=request.getContextPath()%>/img/carousel3.png" alt="carousel3">
                                         </div>
                                     </div>
 

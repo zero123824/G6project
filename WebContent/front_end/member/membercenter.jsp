@@ -1,5 +1,6 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
+<%@page import="java.util.Collections"%>
 <%@page import="com.movie.model.MovieVO"%>
 <%@page import="java.util.Set"%>
 <%@page import="com.member_favor.model.MemberFavorService"%>
@@ -11,17 +12,11 @@
     pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>    
 <%@ page import="com.google.gson.*"%>
-<!-- 沒登入重導至首頁 -->
-<% 	MemberVO memberVO = (MemberVO)session.getAttribute("member"); 
-	if( memberVO == null ){
-		response.sendRedirect(request.getContextPath()+"/front_end/index.jsp");
-	} %>
-<!-- 取得當前頁面,重導和轉送時使用 -->
-<% session.setAttribute("from_forward", request.getServletPath());%>
-<% session.setAttribute("from_redirect", request.getRequestURI());%>
-<% Map<String, String> status = new HashMap<String, String>();
+<% 	request.setAttribute("hereis", "center");%>
+<% 	Map<String, String> status = new HashMap<String, String>();
+	MemberVO memberVO = (MemberVO)session.getAttribute("member");
 	if(session.getAttribute("member")!=null){
-		if(((MemberVO)session.getAttribute("member")).getSubsenews() == 0){
+		if(((MemberVO)session.getAttribute("member")).getSubsenews() == 1){
 			status.put("subscribe", "是");
 		}else{
 			status.put("subscribe", "否");
@@ -40,6 +35,7 @@
  		for(MovieVO mv : mvset){
  			recommendmovie.add(mv);
  		}
+ 		Collections.shuffle(recommendmovie);
 		pageContext.setAttribute("recommendmovie", recommendmovie);
 		for(String favorname : memberSvc.getfavorTypeName(memberVO.getMember_id())) {
 			count++;
@@ -95,7 +91,7 @@
                                	 哈摟!<c:out value="${member.member_firstname}" default="親愛的會員"/>                                
                             </div>
                             <ul class="list-inline center-block text-center" style="margin-bottom: 25px">
-	                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">編輯會員資料</a></li>
+	                            <li><a id="ajaxgetmemberdata" data-toggle="modal" data-target="#modal-edittable" class="list-group-item list-group-item-action list-group-item-danger">編輯會員資料</a></li>
 	                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">管理文章</a></li>
 	                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">好友管理</a></li>
                         	</ul>
@@ -147,8 +143,9 @@
                         </div>
                         <c:forEach var="recommend" items="${recommendmovie}">
                         <div class="thumbnail text-center">
-                            <img src="<%=request.getContextPath()%>/front_end/member/getmc?member_id=${recommend.movie_id}" alt="${recommend.movie_name_en}">
+                            <img src="<%=request.getContextPath()%>/front_end/member/movieposter?movie_id=${recommend.movie_id}" alt="${recommend.movie_name_en}">
                             <div class="caption">
+                            	<h4>${recommend.movie_date}</h4>                            	
                                 <h4>${recommend.movie_name_ch}</h4>
                                 <p class="introducecontent">${recommend.movie_introduce}</p>                               
                             </div>
@@ -156,6 +153,42 @@
                         </c:forEach>                    
                    </div>        
         		</div>
+
+                <div class="modal fade" id="modal-edittable" tabindex="-1" role="dialog"
+                        aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">修改資料</h4>
+                            </div>
+                            <div class="modal-body">
+							<FORM METHOD="post" id="editform" ACTION="<%=request.getContextPath()%>/front_end/member/member.do" style="margin-bottom: 0px;">
+                            	<h4>帳號:</h4><input type='text' name="member_account" value="${member.member_account}" disabled></h4>
+                                <h4>暱稱:</h4><input type='text' name="member_nickname" value="${member.member_nickname}"><br>
+                                <h4>姓名:</h4><input type='text' name="member_name" value="${member.member_lastname}${member.member_firstname}"><br>
+                                <h4>地址:</h4><input type='text' name="member_address" value="${member.member_address}"><br>
+                                <h4>手機號碼:</h4><input type='text' name="mobilenum" value="${member.mobilenum}" maxlength="10"><br>
+                                <h4>電子信箱:</h4><input type='text' name="member_emailaddress" value="${member.getMember_emailaddress()}"><br>
+                                <h4>生日:</h4><input type='text' value="${member.member_birthday}"><br>
+                                <h4>身份證字號:</h4><input type='text' name="member_idcode" value="${member.member_idcode}"><br>
+                                <h4>訂閱電子報:</h4>
+                                <input type="radio" class="magic-radio" name="subsenews" id="subsenews_true" 
+                                value="1" <c:if test="${member.getSubsenews() == 1 }">checked</c:if>><label for="subsenews_true">是</label>
+                                <input type="radio" class="magic-radio" name="subsenews" id="subsenews_false" 
+                                value="0" <c:if test="${member.getSubsenews() == 0 }">checked</c:if>><label for="subsenews_false">否</label><br>
+								<input type="hidden" name="action"	value="update">
+								<input type="hidden" name="member_id" value="${member.member_id}">								                          	
+                            </FORM>
+                            </div>	    
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+                                <button type="button" class="btn btn-primary" onClick="doupadte()">儲存變更</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 到這裡結束 -->
 				<!-- include footer -->
                 <jsp:include page="/front_end/template/footer.jsp"/>
@@ -172,49 +205,52 @@
         <!-- jQuery Custom Scroller CDN -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 
-        <script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>  
-		
+        <script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>  		
     </body>
 	<script type="text/javascript">
+        function setBstModalMaxHeight(element) {
+          this.$element          = $(element);
+          this.$modalContent     = this.$element.find('.modal-content');
+          var $window            = $(window);
+          var $modalContentOH    = this.$modalContent.outerHeight();
+          var $modalContentIH    = this.$modalContent.innerHeight();
+          var _modalBorderWidth   = $modalContentOH - $modalContentIH;
+          var _modalDialogMargin  = $window.width() < 768 ? 20 : 60;
+          var _modalContentHeight = $window.height() - (_modalDialogMargin + _modalBorderWidth);
+          var _modalHeaderHeight  = this.$element.find('.modal-header').outerHeight() || 0;
+          var _modalFooterHeight  = this.$element.find('.modal-footer').outerHeight() || 0;
+          var _modalMaxHeight     = _modalContentHeight - (_modalHeaderHeight + _modalFooterHeight);
+        
+          this.$modalContent.css({
+              'overflow': 'hidden'
+          });
+          
+          this.$element
+            .find('.modal-body').css({
+              'max-height': _modalMaxHeight,
+              'overflow-y': 'auto'
+          });
+        }
+        
+        $('.modal').on('show.bs.modal', function() {
+          $(this).show();
+          setBstModalMaxHeight(this);
+        });
+        
+        $(window).resize(function() {
+          if ($('.modal.in').length != 0) {
+            setBstModalMaxHeight($('.modal.in'));
+          }
+        });
+        
+		function doupadte(){
+			$("#editform").submit();
+		}
 	
 		$(".caption p").each(function(){
 			if($(this).text().length > 80) {
 				$(this).html($(this).text().substring(0,100)+'<a style="font-size:14px;color:#0f52ba;font-weight:bold" href="#">......觀看詳細介紹</a>');
 			};
 		});
-		
-		
-//		if($(".introducecontent").text().length > 100){
-//			$(".introducecontent").text($(".introducecontent").text().substring(0,100)+'......觀看詳細介紹'); 
-//		}
-// 		$("#editable").children("h4").click(function(){
-// 			$(".edit").hide();
-// 			var content1 = $(this).text();
-// 			$(this).append("<input type='text' id='edit2' value='"+content1+"'>");
-// 			$(this).next("#editform").show().attr("class","editable");
-// 			var content1 = $(this).parents("tr").children("#edit1").text();
-// 			$(this).parents("tr").children("#edit1").html("<input type='text' id='edit1' value='"+content1+"'>");
-// 			var content2 = $(this).parents("tr").children("#edit2").text();
-// 			$(this).parents("tr").children("#edit2").html("<input type='text' id='edit2' value='"+content2+"'>");
-// 			var content3 = $(this).parents("tr").children("#edit3").text();
-// 			$(this).parents("tr").children("#edit3").html("<input type='text' id='edit3' value='"+content3+"'>");
-// 			var content4 = $(this).parents("tr").children("#edit4").text();
-// 			$(this).parents("tr").children("#edit4").html("<input type='text' id='edit4' value='"+content4+"'>");
-// 		});
-		
-// 		$("form").submit(function(){
-// 			var lastname = $(this).parents("tr").children("td").children("#edit1").val();
-// 			var firstname = $(this).parents("tr").children("td").children("#edit2").val();
-// 			var address = $(this).parents("tr").children("td").children("#edit3").val();
-// 			var mobile = $(this).parents("tr").children("td").children("#edit4").val();	
-			
-// 			$(this).children("#lnchecked").attr("value",lastname);
-// 			$(this).children("#fnchecked").attr("value",firstname);
-// 			$(this).children("#addchecked").attr("value",address);
-// 			$(this).children("#mobilechecked").attr("value",mobile);
-// 			$(this).children("#emailchecked").attr("value","we3333");
-// 			$(this).children("#cardchecked").attr("value","eresdf");
-	
-// 		})
 	</script>    
 </html>

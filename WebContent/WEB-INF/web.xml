@@ -1,34 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
-  <display-name>BA105G6</display-name>
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
-  </welcome-file-list>
-  <resource-ref>
-    <description>DB Connection</description>
-    <res-ref-name>jdbc/BA105G6DB</res-ref-name>
-    <res-type>javax.sql.DataSource</res-type>
-    <res-auth>Container</res-auth>
-  </resource-ref>
-  <servlet>
-    <servlet-name>MemberServlet</servlet-name>
-    <servlet-class>com.member.controller.MemberServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>MemberServlet</servlet-name>
-    <url-pattern>/front_end/member/member.do</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>GetMemberPic</servlet-name>
-    <servlet-class>com.member.controller.GetMemberPic</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>GetMemberPic</servlet-name>
-    <url-pattern>/front_end/member/getmemberpic</url-pattern>
-  </servlet-mapping>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<display-name>BA105G6</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+
+	<resource-ref>
+		<description>DB Connection</description>
+		<res-ref-name>jdbc/BA105G6DB</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	
+	<servlet>
+		<servlet-name>MemberServlet</servlet-name>
+		<servlet-class>com.member.controller.MemberServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MemberServlet</servlet-name>
+		<url-pattern>/front_end/member/member.do</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>GetMemberPic</servlet-name>
+		<servlet-class>com.member.controller.GetMemberPic</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GetMemberPic</servlet-name>
+		<url-pattern>/front_end/member/getmemberpic</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>LoginFilter</filter-name>
+		<filter-class>com.filter.LoginFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>LoginFilter</filter-name>
+		<url-pattern>/front_end/member/membercenter.jsp</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>ASYNC</dispatcher>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>PageFromFilter</filter-name>
+		<filter-class>com.filter.Pagefrom</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>PageFromFilter</filter-name>
+		<url-pattern>/front_end/index.jsp</url-pattern>
+		<url-pattern>/front_end/member/membercenter.jsp</url-pattern>
+		<url-pattern>/front_end/member/memberregister.jsp</url-pattern>
+		<url-pattern>/front_end/announcement/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>ASYNC</dispatcher>
+	</filter-mapping>
 </web-app>

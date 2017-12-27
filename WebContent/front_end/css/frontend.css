@@ -202,6 +202,7 @@ a.article, a.article:hover {
     left:50px;
     height: 60px;
     padding: 5px;
+    border-radius:10px;
 }
 .navbar-header button{
     background-color: transparent;
@@ -245,6 +246,7 @@ a.article, a.article:hover {
 
 .mainbtn{
     width: 100%;
+    box-shadow: 4px 4px #99a9f4;
 }
 
 /*---------------------------------------*/

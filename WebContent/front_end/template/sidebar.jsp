@@ -35,23 +35,22 @@
 		<img src="<%=request.getContextPath()%>/img/logo.png">
 	</div>
 	<ul class="list-unstyled components">
-		<li class="active"><a
+		<li <c:if test="${hereis == 'index'}">class="active"</c:if>><a
 			href="<%=request.getContextPath()%>/front_end/index.jsp"><i
 				class="fa fa-home fa-lg"></i> 首頁</a></li>
-		<li class="visible-xs"><a href="<%=request.getContextPath()%>/front_end/member/membercenter.jsp"><i
+		<li <c:if test="${hereis == 'center'}">class="active"</c:if>class="visible-xs"><a href="<%=request.getContextPath()%>/front_end/member/membercenter.jsp"><i
 				class="fa fa-user fa-lg"></i> 會員中心</a></li>
-		<li><a href="#"><i class="fa fa-film fa-lg"></i> 上映電影資訊</a></li>
-		<li><a href="forum.html"><i class="fa fa-commenting-o fa-lg"></i>
-				討論區</a></li>
-		<li><a href="#"><i class="fa fa-newspaper-o fa-lg"
+		<li <c:if test="${hereis == '1'}">class="active"</c:if>><a href="#"><i class="fa fa-film fa-lg"></i> 上映電影資訊</a></li>
+		<li <c:if test="${hereis == '1'}">class="active"</c:if>><a href="forum.html"><i class="fa fa-commenting-o fa-lg"></i>討論區</a></li>
+		<li <c:if test="${hereis == '1'}">class="active"</c:if>><a href="#"><i class="fa fa-newspaper-o fa-lg"
 				aria-hidden="true"></i> 電影活動</a></li>
-		<li><a href="<%=request.getContextPath()%>/front_end/announcement/announcement.jsp"><i class="fa fa-bullhorn fa-lg"
+		<li <c:if test="${hereis == 'announce'}">class="active"</c:if>><a href="<%=request.getContextPath()%>/front_end/announcement/announcement.jsp"><i class="fa fa-bullhorn fa-lg"
 				aria-hidden="true"></i> 影城公告</a></li>
-		<li><a href="#"><i class="fa fa-cutlery fa-lg"
+		<li <c:if test="${hereis == '1'}">class="active"</c:if>><a href="#"><i class="fa fa-cutlery fa-lg"
 				aria-hidden="true"></i> 餐飲介紹</a></li>
-		<li><a href="#"><i class="fa fa-info-circle fa-lg"
+		<li <c:if test="${hereis == '1'}">class="active"</c:if>><a href="#"><i class="fa fa-info-circle fa-lg"
 				aria-hidden="true"></i> 影城介紹</a></li>
-		<li><a href="#"><i class="fa fa-question fa-lg"
+		<li <c:if test="${hereis == '1'}">class="active"</c:if>><a href="#"><i class="fa fa-question fa-lg"
 				aria-hidden="true"></i> 聯繫客服</a></li>
 	</ul>
 	</nav>
@@ -66,6 +65,7 @@
 		style="display: none;">
 		<div class="modal-dialog">
 			<div class="loginmodal-container">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h1>登入您的帳號</h1>
 				<br>
 				<c:if test="${not empty errorMsgs}">
@@ -112,7 +112,8 @@
 				})
 				.done(function(msgs){
 					if(msgs.success == 'success'){
-						window.location = "<%=request.getContextPath()%>/front_end/member/membercenter.jsp";
+						var url = msgs.url;
+						window.location = url;
 					}else{
 						getMessage(msgs);
 					}

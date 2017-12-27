@@ -4,8 +4,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<% session.setAttribute("from_forward", request.getServletPath());%>
-<% session.setAttribute("from_redirect", request.getRequestURI());%>
+<% request.setAttribute("hereis", "announce");%>
 <%	AnnouncementService anncmSvc = new AnnouncementService();
 	List<AnnouncementVO> announcelist = anncmSvc.getAll();
 	session.setAttribute("announcelist", announcelist);
@@ -15,6 +14,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/gif" href="<%=request.getContextPath()%>/img/logo_192.png" />
 <title>Sneaker影城_影城公告</title>
 <!-- Bootstrap CSS CDN -->
@@ -96,6 +96,7 @@
 	<script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>		
 </body>
 <script>
+
 	$(".date").each(function(){
 		var time = $(this).text();
 		var chain = time.split("-")[0]+"/"+time.split("-")[1]+"/"+time.split("-")[2]
