@@ -12,20 +12,11 @@
     pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>    
 <%@ page import="com.google.gson.*"%>
+<!-- 取得目前麵包屑位置 -->
 <% 	request.setAttribute("hereis", "center");%>
-<% 	Map<String, String> status = new HashMap<String, String>();
-	MemberVO memberVO = (MemberVO)session.getAttribute("member");
-	if(session.getAttribute("member")!=null){
-		if(((MemberVO)session.getAttribute("member")).getSubsenews() == 1){
-			status.put("subscribe", "是");
-		}else{
-			status.put("subscribe", "否");
-		}
-		pageContext.setAttribute("status", status);
-	}
-%>
 <!-- 取得會員喜好類型名稱,換成中文。 根據喜好類型,找推薦電影。接放入pagecontext裡。-->
-<%  int count = 0;
+<%  MemberVO memberVO = (MemberVO)session.getAttribute("member");
+	int count = 0;
 	MemberService memberSvc = new MemberService();
 	MemberFavorService memberfavorSvc = new MemberFavorService();
 	Map<String,String> favormap = new HashMap<String,String>();
@@ -101,7 +92,7 @@
                         		<h4>地址:<c:out value="${member.member_address}" default=""/></h4><br>
                         		<h4>手機號碼:<c:out value="${member.mobilenum}" default=""/></h4><br>
                         		<h4>電子信箱:<c:out value="${member.member_emailaddress}" default=""/></h4><br>
-                        		<h4>訂閱電子報:<c:out value="${status.subscribe}" default=""/></h4><br>
+                        		<h4>訂閱電子報:<c:out value="${(member.subsenews == 1)? '是':'否'}" default=""/></h4><br>
                         	</div>                        	
                    		</div>
                    </div>
@@ -205,8 +196,9 @@
         <!-- jQuery Custom Scroller CDN -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 
-        <script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>  		
+		<script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>  		
     </body>
+    <!-- modal置中 -->
 	<script type="text/javascript">
         function setBstModalMaxHeight(element) {
           this.$element          = $(element);
@@ -242,7 +234,8 @@
             setBstModalMaxHeight($('.modal.in'));
           }
         });
-        
+	</script>
+	<script type="text/javascript">   
 		function doupadte(){
 			$("#editform").submit();
 		}
@@ -252,5 +245,5 @@
 				$(this).html($(this).text().substring(0,100)+'<a style="font-size:14px;color:#0f52ba;font-weight:bold" href="#">......觀看詳細介紹</a>');
 			};
 		});
-	</script>    
+	</script>
 </html>
