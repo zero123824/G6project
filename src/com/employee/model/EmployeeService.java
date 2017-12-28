@@ -29,12 +29,13 @@ public class EmployeeService {
 		return employeeVO;		
 	}
 	
-	public EmployeeVO update(String emp_psw,String emp_name,String emp_email,
+	public EmployeeVO update(Integer empno,String emp_psw,String emp_name,String emp_email,
 	java.sql.Date emp_hiredate,java.sql.Date emp_birthday,String emp_address,
 	String emp_phone,Integer emp_sex,Timestamp last_activity,
 	Integer inserviced){
 		EmployeeVO employeeVO = new EmployeeVO();
-		employeeVO.setEmp_psw(emp_psw)
+		employeeVO.setEmpno(empno)
+		.setEmp_psw(emp_psw)
 		.setEmp_name(emp_name)
 		.setEmp_email(emp_email)
 		.setEmp_hiredate(emp_hiredate)

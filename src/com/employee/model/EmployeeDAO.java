@@ -89,6 +89,7 @@ public class EmployeeDAO implements EmployeeDAO_interface {
 			psmt.setInt(10, selectedemp.getInserviced());
 			psmt.setInt(11, selectedemp.getEmpno());
 			psmt.executeUpdate();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

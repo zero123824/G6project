@@ -12,6 +12,7 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.employee.model.EmployeeService;
 import com.employee.model.EmployeeVO;
@@ -28,7 +29,6 @@ public class EmployeeServlet extends HttpServlet {
 		PrintWriter out = res.getWriter();		
 		
 		if("empupdate".equals(action)){
-			System.out.println("here");
 			List<String> errorMsgs = new LinkedList<String>();
 			// Store this set in the request scope, in case we need to
 			// send the ErrorPage view.
@@ -69,16 +69,9 @@ public class EmployeeServlet extends HttpServlet {
 				String emp_address = req.getParameter("emp_address").trim();
 				if (emp_address == null || emp_address.trim().length() == 0) {
 					errorMsgs.add("地址請勿空白");
-				}	
-				Double comm = null;
-				try {
-					comm = new Double(req.getParameter("comm").trim());
-				} catch (NumberFormatException e) {
-					comm = 0.0;
-					errorMsgs.add("獎金請填數字.");
 				}
 
-//取出員工物件，進行包裝				
+//取出員工物件，進行包裝
 				EmployeeVO empVO = empSvc.findByPK(empno);
 				empVO.setEmpno(empno);
 				empVO.setEmp_name(emp_name);
@@ -88,26 +81,25 @@ public class EmployeeServlet extends HttpServlet {
 				empVO.setEmp_address(emp_address);
 
 				// Send the use back to the form, if there were errors
-//				if (!errorMsgs.isEmpty()) {
-//					req.setAttribute("empVO", empVO); // 含有輸入格式錯誤的empVO物件,也存入req
-//					RequestDispatcher failureView = req
-//							.getRequestDispatcher("/emp/update_emp_input.jsp");
-//					failureView.forward(req, res);
-//					return; //程式中斷
-//				}
+				if (!errorMsgs.isEmpty()) {
+					req.setAttribute("empVO", empVO); // 含有輸入格式錯誤的empVO物件,也存入req
+					RequestDispatcher failureView = req
+							.getRequestDispatcher("/emp/update_emp_input.jsp");
+					failureView.forward(req, res);
+					return; //程式中斷
+				}
 				
 				/***************************2.開始修改資料*****************************************/
-				empVO = empSvc.update(empVO.getEmp_psw(), empVO.getEmp_name(), empVO.getEmp_email(), 
+				empVO = empSvc.update(empVO.getEmpno(),empVO.getEmp_psw(), empVO.getEmp_name(), empVO.getEmp_email(), 
 						empVO.getEmp_hiredate(), empVO.getEmp_birthday(),empVO.getEmp_address(), empVO.getEmp_phone(),
 						empVO.getEmp_sex(),empVO.getLast_activity(),empVO.getInserviced());
 				
 				/***************************3.修改完成,準備轉交(Send the Success view)*************/
-				System.out.println("here2");
 				Gson gs = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
 				gs.toJson(empVO);
 				String jsondata = gs.toJson(empVO);
 				out.print(jsondata);
-				return;
+				return; //程式中斷
 
 //				req.setAttribute("empVO", empVO); // 資料庫update成功後,正確的的empVO物件,存入req
 //				String url = "/emp/listOneEmp.jsp";
@@ -116,7 +108,8 @@ public class EmployeeServlet extends HttpServlet {
 
 				/***************************其他可能的錯誤處理*************************************/
 			} catch (Exception e) {
-				errorMsgs.add("修改資料失敗:"+e.getMessage());
+				e.printStackTrace();
+				errorMsgs.add("修改資料失敗:"+e.getMessage());			
 				RequestDispatcher failureView = req
 						.getRequestDispatcher("/emp/update_emp_input.jsp");
 				failureView.forward(req, res);
@@ -139,7 +132,7 @@ public class EmployeeServlet extends HttpServlet {
 				EmployeeVO empVO = empSvc.findByPK(empno);
 								
 				/***************************3.查詢完成,準備轉交(Send the Success view)************/
-				Gson gs = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+				Gson gs = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();				
 				String jsondata = gs.toJson(empVO);
 				out.print(jsondata);
 				return;

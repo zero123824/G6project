@@ -50,7 +50,7 @@
 					<h4>員工編號</h4><input id="empno_edit" type="text" name="empno" disabled>
 					<h4>員工姓名</h4><input id="emp_name" type="text" name="emp_name">
 					<h4>電子信箱</h4><input id="emp_email" type="text" name="emp_email">
-					<h4>手機</h4><input id="emp_phone" type="text" name="emp_phone">				
+					<h4>手機</h4><input id="emp_phone" type="text" name="emp_phone" maxlength="10">				
 					<h4>地址</h4><input id="emp_address" type="text" name="emp_address">		
 					<h4>生日</h4><input id="emp_birthday" type="text" name="emp_birthday" disabled>			
 					<h4>雇用日期</h4><input id="emp_hiredate" type="text" name="emp_hiredate" disabled>
@@ -93,13 +93,13 @@
 		<tbody>
 		<c:forEach var="empVO" items="${list}" begin="<%=pageIndex%>" end="<%=pageIndex+rowsPerPage-1%>">
 			<tr class="${(empVO.inserviced == 1) ? 'inserviced':'suspended'}">
-				<td>${empVO.empno}</td>
-				<td>${empVO.emp_name}</td>
-				<td>${empVO.emp_email}</td>
-				<td>${empVO.emp_hiredate}</td>
-				<td>${empVO.emp_phone}</td>
-				<td>${empVO.last_activity}</td> 
-				<td>${(empVO.inserviced == 1) ? "在職":"離職"}</td>
+				<td class="empno">${empVO.empno}</td>
+				<td class="emp_name">${empVO.emp_name}</td>
+				<td class="emp_email">${empVO.emp_email}</td>
+				<td class="emp_hiredate">${empVO.emp_hiredate}</td>
+				<td class="emp_phone">${empVO.emp_phone}</td>
+				<td class="last_activity">${empVO.last_activity}</td> 
+				<td class="inserviced">${(empVO.inserviced == 1) ? "在職":"離職"}</td>
 				<td>
 				     <input type="submit" value="修改" class="editable" <c:if test="${(empVO.inserviced) == 2}">disabled</c:if>>
 				     <input type="hidden" id="empno" name="empno"  value="${empVO.empno}">
@@ -117,18 +117,21 @@
 	</table>
 <%@ include file="page2.file" %>
 	<script src="https://code.jquery.com/jquery.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="  crossorigin="anonymous"></script>		
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="http://malsup.github.com/jquery.form.js"></script>
 	<script type="text/javascript">
 		var form;
-		$(".editable").click(function(){
+		var logWhichRow;
+		$(".editable").click(function(e){
 			$.ajax({url:"<%=request.getContextPath()%>/back_end/employee/emp.do",
 				type:"post",
 				data:{ action:"getOne_For_Update",empno:$(this).next("#empno").val()},
+				async :false,
 				dataType:"json"				
 				})
 				.done(function(msgs){
-					$("#modal-id").modal();
+					$("#modal-id").modal("toggle");
 					$("#empno_edit").val(msgs.empno);
 					$("#emp_name").val(msgs.emp_name);
 					$("#emp_email").val(msgs.emp_email);
@@ -136,9 +139,8 @@
 					$("#emp_phone").val(msgs.emp_phone);
 					$("#emp_birthday").val(msgs.emp_birthday);
 					$("#emp_address").val(msgs.emp_address);
-					form = new FormData(document.getElementById("editeform"));
-//					$('#editeform').ajaxForm();
 				});
+			logWhichRow = $(this).parents("tr");
 		});
 		
 //         $('#editeform').ajaxForm(function() {
@@ -146,7 +148,12 @@
 //         }); 
 
 		$("#submitedit").click(function(){
+			form = new FormData(document.getElementById("editeform"));
 			form.append("action","empupdate");
+			form.append("empno",$("#empno_edit").val());
+			form.append("emp_hiredate",$("#emp_hiredate").val());
+			form.append("emp_birthday",$("#emp_birthday").val());
+			
 			$.ajax({url:"<%=request.getContextPath()%>/back_end/employee/emp.do",
 				type:"POST",
 				data:form,
@@ -154,7 +161,18 @@
  				contentType:false,	// 設置jQuery不去設置Content-Type header})
 				dataType:"json"})
 				.done(function(msgs){
-					console.log("123");
+					$("#modal-id").modal("toggle");
+					$.each(msgs,function(name,value){
+						$(logWhichRow).children('td.'+name).text(value);
+					})
+	//				for(var td in msgs) {
+	//					console.log(msgs.toJSONString())
+	//					
+	//				}
+	//				$(logWhichRow:nth-child(2)).text(msgs.emp_name);
+					var origincolor = $(logWhichRow).css("background-color")
+					$(logWhichRow).css("background-color","#FB6523");
+					$(logWhichRow).animate({backgroundColor: origincolor},5000);					
 				});
 		});
 
