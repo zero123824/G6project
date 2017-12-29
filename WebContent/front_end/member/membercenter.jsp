@@ -19,14 +19,15 @@
 	int count = 0;
 	MemberService memberSvc = new MemberService();
 	MemberFavorService memberfavorSvc = new MemberFavorService();
-	Map<String,String> favormap = new HashMap<String,String>();
+	pageContext.setAttribute("memberfavorSvc", memberfavorSvc);
+ 	Map<String,String> favormap = new HashMap<String,String>();
 	List<MovieVO> recommendmovie = new ArrayList<MovieVO>();
 	if(memberVO != null){
  		Set<MovieVO> mvset = memberfavorSvc.getRecommendMovieByMemFavor(memberVO.getMember_id());
  		for(MovieVO mv : mvset){
  			recommendmovie.add(mv);
  		}
- 		Collections.shuffle(recommendmovie);
+// 		Collections.shuffle(recommendmovie);
 		pageContext.setAttribute("recommendmovie", recommendmovie);
 		for(String favorname : memberSvc.getfavorTypeName(memberVO.getMember_id())) {
 			count++;
@@ -122,6 +123,7 @@
                             <div class="panel-heading">
                                 <h2 class="panel-title">
                                 	根據您喜好類型:
+                                	<c:forEach var="memberfavorVO" items="${memberfavorSvc.getOneMemFavor(member.member_id)}"></c:forEach>
                                 	<c:if test="${favorname != null}">
                                 	${favorname.類型1}、
                                 	${favorname.類型2}、

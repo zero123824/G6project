@@ -30,7 +30,7 @@
 		background-color:#77ABC0;
 		opacity:0.7;
 	}
-	.employeetable tbody tr.suspended {
+	.employeetable tbody tr.suspend {
 		color:burlywood;
 	}
 	.employeetable input{
@@ -46,6 +46,7 @@
 					<h4 class="modal-title">員工資料</h4>
 				</div>
 				<div class="modal-body">
+				<div class="errorMsgs" style="color:red"></div>
 				<form id="editeform">
 					<h4>員工編號</h4><input id="empno_edit" type="text" name="empno" disabled>
 					<h4>員工姓名</h4><input id="emp_name" type="text" name="emp_name">
@@ -92,7 +93,7 @@
 		</thead>
 		<tbody>
 		<c:forEach var="empVO" items="${list}" begin="<%=pageIndex%>" end="<%=pageIndex+rowsPerPage-1%>">
-			<tr class="${(empVO.inserviced == 1) ? 'inserviced':'suspended'}">
+			<tr class="${(empVO.inserviced == 1) ? 'inserviced':'suspend'}">
 				<td class="empno">${empVO.empno}</td>
 				<td class="emp_name">${empVO.emp_name}</td>
 				<td class="emp_email">${empVO.emp_email}</td>
@@ -107,23 +108,27 @@
 				</td>
 				<td>
 				  <FORM METHOD="post" ACTION="<%=request.getContextPath()%>/back_end/employee/emp.do">
-				     <input type="submit" value="離職停權" <c:if test="${(empVO.inserviced) == 2}">disabled</c:if>>
+				     <input type="button" onclick="suspend(event)" value="離職停權" <c:if test="${(empVO.inserviced) == 2}">disabled</c:if>>
 				     <input type="hidden" name="empno"  value="${empVO.empno}">
-				     <input type="hidden" name="action" value="suspended"></FORM>
+				     <input type="hidden" name="action" value="suspend"></FORM>
 				</td>
 			</tr>
 		</c:forEach>			
 		</tbody>
 	</table>
 <%@ include file="page2.file" %>
+	<!-- jquery $ jquery 特效 & 日期format套件 & sweetalert -->
 	<script src="https://code.jquery.com/jquery.js"></script>
-	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="  crossorigin="anonymous"></script>		
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="  crossorigin="anonymous"></script>
+	<script src="<%=request.getContextPath()%>/back_end/employee/jquery-dateFormat.min.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="http://malsup.github.com/jquery.form.js"></script>
 	<script type="text/javascript">
 		var form;
 		var logWhichRow;
 		$(".editable").click(function(e){
+			$(".errorMsgs").text("");
 			$.ajax({url:"<%=request.getContextPath()%>/back_end/employee/emp.do",
 				type:"post",
 				data:{ action:"getOne_For_Update",empno:$(this).next("#empno").val()},
@@ -155,26 +160,61 @@
 			form.append("emp_birthday",$("#emp_birthday").val());
 			
 			$.ajax({url:"<%=request.getContextPath()%>/back_end/employee/emp.do",
-				type:"POST",
-				data:form,
-				processData:false,	// 設置jQuery不去處理發送的數據
- 				contentType:false,	// 設置jQuery不去設置Content-Type header})
-				dataType:"json"})
+					type:"POST",
+					data:form,
+					processData:false,	// 設置jQuery不去處理發送的數據
+	 				contentType:false,	// 設置jQuery不去設置Content-Type header})
+					dataType:"json"})
 				.done(function(msgs){
-					$("#modal-id").modal("toggle");
-					$.each(msgs,function(name,value){
-						$(logWhichRow).children('td.'+name).text(value);
-					})
-	//				for(var td in msgs) {
-	//					console.log(msgs.toJSONString())
-	//					
-	//				}
-	//				$(logWhichRow:nth-child(2)).text(msgs.emp_name);
+	//				如回傳是錯誤訊息，型態為array 否則為完整的jsonObject;
+					if(Array.isArray(msgs)){$(".errorMsgs").text(msgs)}
+					else{
+						$("#modal-id").modal("toggle");
+						$.each(msgs,function(name,value){
+							if(name == 'inserviced'){
+								$(logWhichRow).children('td.'+name).text(value == 1 ? '在職':'離職');
+							}else if(name == 'emp_hiredate'){
+								$(logWhichRow).children('td.'+name).text($.format.date(value, 'yyyy-MM-dd'));
+							}
+							else{
+								$(logWhichRow).children('td.'+name).text(value);}
+						})
+					}
 					var origincolor = $(logWhichRow).css("background-color")
 					$(logWhichRow).css("background-color","#FB6523");
-					$(logWhichRow).animate({backgroundColor: origincolor},5000);					
+					$(logWhichRow).animate({backgroundColor: origincolor},2000);					
 				});
 		});
+		
+		function suspend(event){
+			swal({	icon: "warning",
+					title: '真的要將此位員工停職?',
+					dangerMode: true,
+					buttons: {
+				    cancel: "沒事!按錯了",
+				    catch: {
+				      text: "確定,跟他說byebye~",
+				      value: "catch",
+				    },
+				    defeat: true,
+				  },
+				})
+			.then((value) => {
+				switch (value) {
+				 
+				case "defeat":
+				swal("Pikachu fainted! You gained 500 XP!");
+				break;
+				 
+				case "catch":
+				swal("完成操作!", "已開除此員工!", "success");
+				break;
+				 
+				default:
+				swal("Got away safely!");
+				}
+			});
+		}
 
 	</script>
 </body>

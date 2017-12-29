@@ -41,6 +41,12 @@ public class MemberFavorDAO implements MemberFavorDAO_interface {
 			con.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			try {
+				if(con!=null)
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		} finally {
 			if (psmt != null) {
 				try {

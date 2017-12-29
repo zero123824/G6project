@@ -320,6 +320,12 @@ public class MemberServlet extends HttpServlet {
 			}else{
 				memberSvc.suspend(thismem, 4);
 			}
+			if (!errorMsgs.isEmpty()) {
+				req.setAttribute("memberVO", thismem);
+				RequestDispatcher failureView = req.getRequestDispatcher("/membergetall.jsp");
+				failureView.forward(req, res);
+				return;
+			}
 			/*************3.停權完成******************/
 			String url = "/membergetall.jsp";
 			RequestDispatcher successView = req.getRequestDispatcher(url);// 刪除成功後,轉交回送出刪除的來源網頁

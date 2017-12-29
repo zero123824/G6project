@@ -69,6 +69,7 @@ public class MemberDAO implements MemberDAO_interface{
 		} catch (SQLException e) {
 			e.printStackTrace();
 			try {
+				if(con!=null)
 				con.rollback();
 			} catch (SQLException e1) {
 				e1.printStackTrace();

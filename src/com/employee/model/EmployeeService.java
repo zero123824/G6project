@@ -49,6 +49,11 @@ public class EmployeeService {
 		return employeeVO;
 	}
 	
+	public void suspend(EmployeeVO employeeVO,Integer inserviced){
+		employeeVO.setInserviced(inserviced);
+		dao.update(employeeVO);
+	}
+	
 	public void delete(Integer empno){
 		dao.delete(empno);
 	}

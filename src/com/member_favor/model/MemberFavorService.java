@@ -1,5 +1,6 @@
 package com.member_favor.model;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class MemberFavorService {
 	public Set<MovieVO> getRecommendMovieByMemFavor(Integer member_id){
 		List<MemberFavorVO> memberfavor = dao.getOneMemFavor(member_id);
 		Set<Set<Long>> genresInOneMem = new LinkedHashSet<Set<Long>>();
-		Set<MovieVO> recommendmovie = new LinkedHashSet<MovieVO>();
+		Set<MovieVO> recommendmovie = new HashSet<MovieVO>();
 		for(MemberFavorVO mfv : memberfavor){
 			genredao.findByPrimaryKey(mfv.getGenre_id());
 			genresInOneMem.add(mgdao.getMovieByGenre(mfv.getGenre_id()));
