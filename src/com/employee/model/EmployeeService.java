@@ -12,8 +12,7 @@ public class EmployeeService {
 	
 	public EmployeeVO add(String emp_psw,String emp_name,
 	String emp_email,java.sql.Date emp_hiredate,java.sql.Date emp_birthday,
-	String emp_address,String emp_phone,Integer emp_sex,
-	Timestamp last_activity,Integer inserviced){
+	String emp_address,String emp_phone,Integer emp_sex,Integer inserviced){
 		EmployeeVO employeeVO = new EmployeeVO();
 		employeeVO.setEmp_psw(emp_psw)
 		.setEmp_name(emp_name)
@@ -23,9 +22,8 @@ public class EmployeeService {
 		.setEmp_address(emp_address)
 		.setEmp_phone(emp_phone)
 		.setEmp_sex(emp_sex)
-		.setLast_activity(last_activity)
 		.setInserviced(inserviced);
-		dao.update(employeeVO);
+		dao.add(employeeVO);
 		return employeeVO;		
 	}
 	

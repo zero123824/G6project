@@ -36,9 +36,40 @@
 	.employeetable input{
 		border-radius:4px;
 	}
+	.swal-button--catch{
+		background-color:red;		
+	}
+	.swal-button--catch:active{
+		background-color:#b71c1c;
+		color:#C6C6C6;
+	}
+	.swal-button--confirm{
+		background-color:#337ab7;
+	}
+	.swal-button--confirm:active{
+		background-color:#286090;
+	}	
 </style>
 <body>
-	<div class="modal fade" id="modal-id">
+	<div class="modal fade" id="modal_addemp">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h1 class="modal-title">新增員工</h1>
+				</div>
+				<div class="modal-body">
+					<jsp:include page="/back_end/employee/addnewemployee.jsp" />
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+					<button type="button" onclick="newempsubmit()" class="btn btn-primary">送出新增</button>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+	<div class="modal fade" id="modal_editemp">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -52,7 +83,7 @@
 					<h4>員工姓名</h4><input id="emp_name" type="text" name="emp_name">
 					<h4>電子信箱</h4><input id="emp_email" type="text" name="emp_email">
 					<h4>手機</h4><input id="emp_phone" type="text" name="emp_phone" maxlength="10">				
-					<h4>地址</h4><input id="emp_address" type="text" name="emp_address">		
+					<h4>員工地址</h4><input id="emp_address" type="text" name="emp_address">		
 					<h4>生日</h4><input id="emp_birthday" type="text" name="emp_birthday" disabled>			
 					<h4>雇用日期</h4><input id="emp_hiredate" type="text" name="emp_hiredate" disabled>
 				</form>	
@@ -72,8 +103,9 @@
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="搜尋員工">
 			</div>
-			<button type="submit" class="btn btn-default">新增員工</button>
+			<button type="submit" class="btn btn-default">搜尋</button>
 		</form>
+		<button onclick="getAdd()">新增員工</button>
 	</div>
 <%@ include file="page1.file" %>
 	<table class="table table-hover employeetable">
@@ -107,10 +139,10 @@
 				     <input type="hidden" name="action"	value="getOne_For_Update">
 				</td>
 				<td>
-				  <FORM METHOD="post" ACTION="<%=request.getContextPath()%>/back_end/employee/emp.do">
-				     <input type="button" onclick="suspend(event)" value="離職停權" <c:if test="${(empVO.inserviced) == 2}">disabled</c:if>>
-				     <input type="hidden" name="empno"  value="${empVO.empno}">
-				     <input type="hidden" name="action" value="suspend"></FORM>
+					<input type="button" onclick="suspend(event)" value="離職停權" <c:if test="${(empVO.inserviced) == 2}">disabled</c:if>>
+				  	<FORM METHOD="post" ACTION="<%=request.getContextPath()%>/back_end/employee/emp.do">
+				    <input type="hidden" name="empno"  value="${empVO.empno}">
+				    <input type="hidden" name="action" value="suspend"></FORM>
 				</td>
 			</tr>
 		</c:forEach>			
@@ -136,7 +168,7 @@
 				dataType:"json"				
 				})
 				.done(function(msgs){
-					$("#modal-id").modal("toggle");
+					$("#modal_editemp").modal({show:true});
 					$("#empno_edit").val(msgs.empno);
 					$("#emp_name").val(msgs.emp_name);
 					$("#emp_email").val(msgs.emp_email);
@@ -169,7 +201,7 @@
 	//				如回傳是錯誤訊息，型態為array 否則為完整的jsonObject;
 					if(Array.isArray(msgs)){$(".errorMsgs").text(msgs)}
 					else{
-						$("#modal-id").modal("toggle");
+						$("#modal_editemp").modal("toggle");
 						$.each(msgs,function(name,value){
 							if(name == 'inserviced'){
 								$(logWhichRow).children('td.'+name).text(value == 1 ? '在職':'離職');
@@ -185,8 +217,10 @@
 					$(logWhichRow).animate({backgroundColor: origincolor},2000);					
 				});
 		});
-		
+/*停職員工 jsfunction 彈窗*/	
 		function suspend(event){
+/*先抓到哪一個按鈕，再找他的下一個form[0]*/
+			var formdata = new FormData($(event.target).next("form")[0]);	
 			swal({	icon: "warning",
 					title: '真的要將此位員工停職?',
 					dangerMode: true,
@@ -195,27 +229,45 @@
 				    catch: {
 				      text: "確定,跟他說byebye~",
 				      value: "catch",
-				    },
-				    defeat: true,
+				    }
 				  },
 				})
-			.then((value) => {
+/*判斷選擇的按鈕*/
+			.then((value) => {  
 				switch (value) {
 				 
-				case "defeat":
-				swal("Pikachu fainted! You gained 500 XP!");
-				break;
-				 
 				case "catch":
-				swal("完成操作!", "已開除此員工!", "success");
+					fetch('<%=request.getContextPath()%>/back_end/employee/emp.do',{method: 'post',body:formdata})
+					.then(function(response){
+						return response.text();						
+					})
+					.then(function(text){
+						if(text == 'false'){
+							swal("操作失敗!", "無法開除此員工!", "error");
+						}else if(text == 'true'){
+							swal("完成操作!", "已開除此員工!", "success");
+							$(event.target).parents("tr").removeClass("inserviced").addClass("suspend");
+						}else{
+							swal("沒有此員工!","請重新操作", "error");							
+						}
+					})
 				break;
-				 
 				default:
-				swal("Got away safely!");
+				swal("他是位好員工!!");
 				}
 			});
 		}
-
+		function getAdd(){
+			fetch('<%=request.getContextPath()%>/back_end/employee/emp.do?action=getAdd',{method: 'post'})
+			.then(function(response){
+				if(response.status == 200 && response.ok == true){
+					$("#modal_addemp").modal('show');
+				}
+			});
+		}
+		function newempsubmit(){
+			$("#newempdata").submit();
+		}
 	</script>
 </body>
 </html>
