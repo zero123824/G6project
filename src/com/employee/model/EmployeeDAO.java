@@ -11,8 +11,6 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import com.sun.jmx.snmp.Timestamp;
-
 public class EmployeeDAO implements EmployeeDAO_interface {
 	//共用資源連線池
 	private static DataSource ds = null;
@@ -30,16 +28,20 @@ public class EmployeeDAO implements EmployeeDAO_interface {
 	private static final String UPDATE = "UPDATE EMPLOYEE SET EMP_PSW=?,EMP_NAME=?,EMP_EMAIL=?,EMP_HIREDATE=?,"
 			+ "EMP_BIRTHDAY=?,EMP_ADDRESS=?,EMP_PHONE=?,EMP_SEX=?,LAST_ACTIVITY=?,INSERVICED=? WHERE EMPNO = ?";
 	private static final String DELETE = "DELETE FROM EMPLOYEE WHERE EMPNO = ?";
-	private static final String SELECT = "SELECT * FROM EMPLOYEE WHERE EMPNO = ?";
+	private static final String SELECT = "SELECT * FROM EMPLOYEE WHERE EMPNO = ? AND INSERVICED != 2";
+	private static final String SELECTBYEMAIL = "SELECT * FROM EMPLOYEE WHERE EMP_EMAIL = ? AND INSERVICED != 2";
 	private static final String GETALL = "SELECT * FROM EMPLOYEE ";
 
 	@Override
-	public void add(EmployeeVO newmemp) {
+	public Integer add(EmployeeVO newmemp) {
 		Connection con = null;
 		PreparedStatement psmt = null;
+		ResultSet rs = null;
+		Integer generatedID = null;
+		String[] cols = { "EMPNO" };
 		try {
 			con = ds.getConnection();
-			psmt = con.prepareStatement(INSERT);
+			psmt = con.prepareStatement(INSERT,cols);
 			psmt.setString(1, newmemp.getEmp_psw());
 			psmt.setString(2, newmemp.getEmp_name());
 			psmt.setString(3, newmemp.getEmp_email());
@@ -51,7 +53,10 @@ public class EmployeeDAO implements EmployeeDAO_interface {
 			psmt.setTimestamp(9, newmemp.getLast_activity());
 			psmt.setInt(10, newmemp.getInserviced());
 			psmt.executeUpdate();
-
+			rs = psmt.getGeneratedKeys();
+			if(rs.next()) {
+				generatedID = rs.getInt(1);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -70,6 +75,7 @@ public class EmployeeDAO implements EmployeeDAO_interface {
 				}
 			}
 		}
+		return generatedID;		
 	}
 
 	@Override
@@ -196,7 +202,62 @@ public class EmployeeDAO implements EmployeeDAO_interface {
 		}
 		return emp;
 	}
+	
+	@Override
+	public EmployeeVO findByEmail(String emp_email) {
+		Connection con = null;
+		PreparedStatement psmt = null;
+		EmployeeVO emp = null;
+		ResultSet rs = null;
+		try {
+			con = ds.getConnection();
+			psmt = con.prepareStatement(SELECTBYEMAIL);
+			psmt.setString(1, emp_email);
+			rs = psmt.executeQuery();
 
+			while (rs.next()) {
+				emp = new EmployeeVO();
+				emp.setEmpno(rs.getInt(1));
+				emp.setEmp_psw(rs.getString(2));
+				emp.setEmp_name(rs.getString(3));
+				emp.setEmp_email(rs.getString(4));
+				emp.setEmp_hiredate(rs.getDate(5));
+				emp.setEmp_birthday(rs.getDate(6));
+				emp.setEmp_address(rs.getString(7));
+				emp.setEmp_phone(rs.getString(8));
+				emp.setEmp_sex(rs.getInt(9));
+				emp.setLast_activity(rs.getTimestamp(10));
+				emp.setInserviced(rs.getInt(11));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace(System.err);
+				}
+			}
+			if (psmt != null) {
+				try {
+					psmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return emp;
+	}
+	
 	@Override
 	public List<EmployeeVO> getAll() {
 		Connection con = null;

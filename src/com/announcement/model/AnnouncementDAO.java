@@ -20,7 +20,7 @@ public class AnnouncementDAO implements AnnouncementDAO_interface {
 										 +"WHERE ANOUNCE_ID = ?";
 	private static final String DELETE = "DELETE FROM ANNOUNCEMENT WHERE ANOUNCE_ID = ?";
 	private static final String SELECT = "SELECT * FROM ANNOUNCEMENT WHERE ANOUNCE_ID = ?";
-	private static final String GETALL = "SELECT * FROM ANNOUNCEMENT ORDER BY ANNOUNCE_TIME DESC ";
+	private static final String GETALL = "SELECT * FROM ANNOUNCEMENT ORDER BY ANOUNCE_TIME DESC ";
 
 	//共用資源連線池
 	private static DataSource ds = null;

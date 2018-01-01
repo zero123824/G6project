@@ -15,12 +15,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.employee.model.EmployeeService;
 import com.employee.model.EmployeeVO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.member.model.MemberService;
 import com.member.model.MemberVO;
+import com.permision.model.PermisionService;
+import com.tools.PassWordEncode;
 //為了ajax異步互動，使用multifile讀檔
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024, maxRequestSize = 10 * 1024 * 1024)
 public class EmployeeServlet extends HttpServlet {
@@ -33,15 +38,17 @@ public class EmployeeServlet extends HttpServlet {
 		res.setContentType("text/html;charset=UTF-8");
 		String action = req.getParameter("action");
 		PrintWriter out = res.getWriter();
-		
+		HttpSession session = req.getSession();
+
+//開啟新增員工跳窗		
 		if("getAdd".equals(action)){
 			boolean getAdd = true;
 			req.setAttribute("getAdd", getAdd);
-			RequestDispatcher successView = req.getRequestDispatcher("/back_end/employee/employee_managerment.jsp");
+			RequestDispatcher successView = req.getRequestDispatcher("/back_end/employee/employee_management.jsp");
 			successView.forward(req, res);
 			return;
 		}
-		
+//新增員工action		
 		if("addnewemp".equals(action)){
 			Map<String,String> errorMsgs = new LinkedHashMap<String,String>();		
 			req.setAttribute("errorMsgs", errorMsgs);
@@ -101,6 +108,11 @@ public class EmployeeServlet extends HttpServlet {
 				} catch(NumberFormatException ne){
 					errorMsgs.put("emp_sex","性別錯誤");
 				}
+				
+				String[] operation_ids = req.getParameterValues("operation_id");
+				if(operation_ids == null || operation_ids.length == 0) {
+					errorMsgs.put("operation_id","請至少選擇一項權限功能");
+				}
 
 				//取出員工物件，進行包裝
 				EmployeeVO empVO = new EmployeeVO();
@@ -122,31 +134,35 @@ public class EmployeeServlet extends HttpServlet {
 //					failureView.forward(req, res);
 				}
 				
-				String emp_psw = "0000";
+				/*產生明碼for user and hashcode for資料庫*/
+				String password = PassWordEncode.getAuthCode();
+				PassWordEncode.getHashCode(password);
+				String emp_psw = PassWordEncode.getHashCode(password);
+				System.out.println(password);
+
 				Integer inserviced = 1;
 				
 				/***************************2.開始新增資料*****************************************/
 				try{empVO = empSvc.add(emp_psw, empVO.getEmp_name(), empVO.getEmp_email(), empVO.getEmp_hiredate(),
 						empVO.getEmp_birthday(), empVO.getEmp_address(), empVO.getEmp_phone(),
-						empVO.getEmp_sex(), inserviced);
-				
+						empVO.getEmp_sex(),operation_ids, inserviced);					
+
 				/***************************3.新增完成,準備轉交(Send the Success view)*************/
-					gs.toJson(empVO);
-					String jsondata = gs.toJson(empVO);
-					out.print(jsondata);
+//					gs.toJson(empVO);
+//					String jsondata = gs.toJson(empVO);
+//					out.print(jsondata);
 //					return; //程式中斷
 				}catch(Exception e){
 					e.printStackTrace();
 				}
-//				req.setAttribute("empVO", empVO); // 資料庫update成功後,正確的的empVO物件,存入req
+//				req.setAttribute("empVO", empVO); 	 // 資料庫update成功後,正確的的empVO物件,存入req
 				String url = req.getParameter("hrefFrom");
-				RequestDispatcher successView = req.getRequestDispatcher(url); // 修改成功後,轉交listOneEmp.jsp
-				successView.forward(req, res);
+				res.sendRedirect(url);				 // 修改成功後,ajax重導
+				return;
 
 				/***************************其他可能的錯誤處理*************************************/
 			} catch (Exception e) {
 				e.printStackTrace();
-//				errorMsgs.add("修改資料失敗:"+e.getMessage());			
 				RequestDispatcher failureView = req
 						.getRequestDispatcher("/emp/update_emp_input.jsp?whichPage=1500");
 				failureView.forward(req, res);
@@ -306,7 +322,31 @@ public class EmployeeServlet extends HttpServlet {
 			}
 		}
 		
-		
-		
+//員工登入action
+		if(("login").equals(action)){
+			EmployeeService empSvc = new EmployeeService();
+			PermisionService permisionSvc = new PermisionService();
+			String emp_email = req.getParameter("emp_email");
+			String emp_psw = req.getParameter("emp_psw");
+			List<String> loginerror = new LinkedList<String>();
+			req.setAttribute("errorMsgs", loginerror);
+			if(emp_email.trim().length() == 0 || emp_psw.trim().length() == 0){	
+				loginerror.add("請輸入帳號密碼");
+				RequestDispatcher failureView = req.getRequestDispatcher("/back_end/login.jsp");
+				failureView.forward(req, res);
+				return;
+			}
+			EmployeeVO employeeVO = empSvc.findByEmail(emp_email);
+			if(employeeVO == null) {
+				out.print("無此員工");
+				return;
+			}
+			if(PassWordEncode.verifyPsw(emp_psw, employeeVO.getEmp_psw())) {
+				session.setAttribute("keymap",permisionSvc.getOneEmpPermision(employeeVO.getEmpno()));
+				out.println("登入成功");	
+			}else {
+				out.println("登入失敗");
+			}
+		}
 	}
 }

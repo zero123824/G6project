@@ -152,9 +152,10 @@
 	<!-- jquery $ jquery 特效 & 日期format套件 & sweetalert -->
 	<script src="https://code.jquery.com/jquery.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="  crossorigin="anonymous"></script>
-	<script src="<%=request.getContextPath()%>/back_end/employee/jquery-dateFormat.min.js"></script>
+	<script src="<%=request.getContextPath()%>/back_end/employee/js/jquery-dateFormat.min.js"></script>
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="<%=request.getContextPath()%>/back_end/employee/js/bootstrap-modal-popover.js"></script>	
     <script src="http://malsup.github.com/jquery.form.js"></script>
 	<script type="text/javascript">
 		var form;
@@ -185,15 +186,15 @@
 //         }); 
 
 		$("#submitedit").click(function(){
-			form = new FormData(document.getElementById("editeform"));
-			form.append("action","empupdate");
-			form.append("empno",$("#empno_edit").val());
-			form.append("emp_hiredate",$("#emp_hiredate").val());
-			form.append("emp_birthday",$("#emp_birthday").val());
+			editeform = new FormData(document.getElementById("editeform"));
+			editeform.append("action","empupdate");
+			editeform.append("empno",$("#empno_edit").val());
+			editeform.append("emp_hiredate",$("#emp_hiredate").val());
+			editeform.append("emp_birthday",$("#emp_birthday").val());
 			
 			$.ajax({url:"<%=request.getContextPath()%>/back_end/employee/emp.do",
 					type:"POST",
-					data:form,
+					data:editeform,
 					processData:false,	// 設置jQuery不去處理發送的數據
 	 				contentType:false,	// 設置jQuery不去設置Content-Type header})
 					dataType:"json"})
@@ -266,7 +267,33 @@
 			});
 		}
 		function newempsubmit(){
-			$("#newempdata").submit();
+			$(".errormsgs").text("");
+			var newempform = new FormData($("#newempdata")[0])
+			fetch('<%=request.getContextPath()%>/back_end/employee/emp.do',{method: 'post',body:newempform})
+			.then(function(response){	
+				if (response.redirected) {
+					window.location = response.url ;
+				}
+				return response.json();
+			})
+			.then(function(error){
+				$.each(error,function(name,value){
+					if(name == "emp_sex"){
+						$("input[name="+name+"]").parent("td").after(function(){
+							return "<b class='errormsgs' style='color:red'>"+ value + "</b>"
+						});
+					}else if(name == "operation_id"){
+						$("#operation").after(function(){
+							return "<b class='errormsgs' style='color:red'>"+ value + "</b>"
+						});				
+					}else{
+						$("input[name="+name+"]").css("background-color","#F2DEDE");
+						$("input[name="+name+"]").parent("td").after(function(){
+							return "<b class='errormsgs' style='color:red'>"+ value + "</b>"
+						});
+					}
+				})
+			});
 		}
 	</script>
 </body>

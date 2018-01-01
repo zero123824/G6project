@@ -18,17 +18,77 @@
 <title>SNEAKER影城新增員工</title>
 </head>
 <style type="text/css">
+	#permission{
+		text-align:center;
+	}
 	#permission td {
 		width: 80px;
 		height: 80px;
 	}
-	.chosed{
-		color:red;
+	.chosen{
+		background-color:#B7C2F3;
+		border:2px solid blue;
+		color:blue;
 	}
 </style>
 <body>
+
+	<div class="popover" id="modalpopover">
+	    <div class="arrow"></div>
+	   	<button type="button" class="close" id="popoverclose" aria-hidden="true">選擇完成</button>
+	    <h1 class="popover-title">功能列表</h1>
+	    <div class="popover-content">       	
+			<table id='permission'>
+				<tr>
+					<td id="15001">票價管理</td>
+					<td id="15002">電影排程</td>
+					<td id="15003">廳院管理</td>
+				</tr>
+				<tr>
+					<td id="15004">餐飲管理</td>
+					<td id="15005">窗口售票</td>
+					<td id="15006">公告管理</td>
+				</tr>
+				<tr>
+					<td id="15007">檢舉系統</td>
+					<td id="15008">售票統計</td>
+					<td id="15009">員工管理</td>
+				</tr>
+			</table>			
+	    </div>
+	</div>
+
+
+	<div class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h1 class="modal-title">新增員工</h1>
+				</div>
+				<div class="modal-body">
+					this is a test;
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+					<button type="button" onclick="newempsubmit()" class="btn btn-primary">送出新增</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- form在列表頁面中送出 抓取id -->
 	<FORM METHOD="post" id="newempdata" ACTION="<%=request.getContextPath()%>/back_end/employee/emp.do" name="addform">
-		<div id="container""></div>
+		<div style="display:none">
+			<input type="checkbox" name="operation_id" value="15001"></input>
+	       	<input type="checkbox" name="operation_id" value="15002"></input>
+	       	<input type="checkbox" name="operation_id" value="15003"></input>
+	       	<input type="checkbox" name="operation_id" value="15004"></input>
+	       	<input type="checkbox" name="operation_id" value="15005"></input>
+	       	<input type="checkbox" name="operation_id" value="15006"></input>
+	       	<input type="checkbox" name="operation_id" value="15007"></input>
+	       	<input type="checkbox" name="operation_id" value="15008"></input>
+	       	<input type="checkbox" name="operation_id" value="15009"></input>
+		</div>   		
 		<table>
 		<tr>
 			<td>員工姓名:</td>
@@ -61,40 +121,19 @@
 		<tr>
 			<td>性別:</td>
 			<td>
-				<input type="radio" name="emp_sex" value="1" size="45"/>男
-				<input type="radio" name="emp_sex" value="2" size="45"/>女
+				<input type="radio" name="emp_sex" value="1" />男
+				<input type="radio" name="emp_sex" value="2" />女
 			</td>
 		</tr>
 		<jsp:useBean id="opSvc" scope="page" class="com.operation.model.OperationService" />
 		<tr>
 			<td>權限:<font color=red><b>*</b></font></td>
-			<td><input type="button" data-toggle="popover" data-content="
-					<table border='1' id='permission'>
-						<tr>
-							<td>票價管理</td>
-							<td>電影排程</td>
-							<td>廳院管理</td>
-						</tr>
-						<tr>
-							<td>餐飲管理</td>
-							<td>窗口售票</td>
-							<td>公告管理</td>
-						</tr>
-						<tr>
-							<td>檢舉系統</td>
-							<td>售票統計</td>
-							<td>員工管理</td>
-						</tr>
-					</table>" value="選擇權限" onclick="bind()"></td>
-			<td><select size="1" name="operaion_id">
-				<c:forEach var="operationVO" items="${opSvc.all}">
-					<option value="${operationVO.operation_id}" ${(empVO.operation_id==deptVO.operation_id)? 'selected':'' } >${operationVO.operation_name}
-				</c:forEach>
-			</select></td>
+			<td id="operation"><a href="#modalpopover" role="button" data-modal-position="relative" data-toggle="modal-popover" 
+						data-placement="bottom">選擇權限</a></td>
 		</tr>
 		</table>
 		<input type="hidden" name="action" value="addnewemp">
-		<input type ="hidden" name="hrefFrom" value="<%=request.getServletPath()+"?"+request.getQueryString()%>">
+		<input type ="hidden" name="hrefFrom" value="<%=request.getRequestURI()+"?whichPage=200"%>">
 	</FORM>
 	<script src="https://code.jquery.com/jquery.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -111,7 +150,6 @@
    }
 %>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/datetimepicker/jquery.datetimepicker.css" />
-<script src="<%=request.getContextPath()%>/datetimepicker/jquery.js"></script>
 <script src="<%=request.getContextPath()%>/datetimepicker/jquery.datetimepicker.full.js"></script>
 <script>
         $.datetimepicker.setLocale('zh');
@@ -137,25 +175,26 @@
             //minDate:               '-1970-01-01', // 去除今日(不含)之前
             //maxDate:               '+1970-01-01'  // 去除今日(不含)之後
          });
-        $(document).ready(function(){
-			$('[data-toggle="popover"]').popover({
-				html:true,
-				trigger:"click",
-				container:"#container",
-				placement:"bottom"
-			});
-		});
         
+        $("#newempdata input").click(function(){
+        	$(this).css("background-color","white");
+        })
         
-//         container.onclick= function(){
-//         	console.log("sdf");
-//         	$(this).addClass("chosed");
-//         }
-        function bind(){
-        	var container = document.getElementById("container").children;
-        	console.log(container);
-        	console.log($(container).find("*"));
-        }
+        $("#permission td").click(function(){
+ 			var id = $(this).attr("id");
+        	if($(this).attr("class")== 'chosen'){
+     			$(this).removeClass("chosen");
+     			$("input[value="+id+"]").removeAttr("checked");
+
+     		}else{
+     			$(this).addClass("chosen");
+     			$("input[value="+id+"]").attr("checked","checked");
+     		}	
+        })
         
+        $("#popoverclose").click(function(){
+        	$("#modalpopover").modalPopover("toggle");
+        })
+
 </script>
 </html>
