@@ -142,4 +142,35 @@ public class MemberFavorDAO implements MemberFavorDAO_interface {
 		}
 		return memfavorList;
 	}
+
+	@Override
+	public void addFavorByGeneratedMember_ID(MemberFavorVO memberFavorVO, Connection con) {
+		PreparedStatement psmt = null;
+		try {
+			psmt = con.prepareStatement(INSERT);
+			psmt.setInt(1, memberFavorVO.getMember_id());
+			psmt.setInt(2, memberFavorVO.getGenre_id());
+			psmt.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				if(con!=null){
+					con.rollback();
+					System.err.print("Transaction is being ");
+					System.err.println("rolled back-由-emp");
+				}
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		} finally {
+			if (psmt != null) {
+				try {
+					psmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}		
+	}
 }

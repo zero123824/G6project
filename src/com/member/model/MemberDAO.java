@@ -65,6 +65,7 @@ public class MemberDAO implements MemberDAO_interface{
 			if(rs.next()) {
 				generatedID = rs.getInt(1);
 			}
+			rs.close();
 			con.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -400,4 +401,62 @@ public class MemberDAO implements MemberDAO_interface{
 		}
 		return memList;
 	}
+
+	/***JDBC TRANSACTiON 由PK方進行主控，將自增主鍵與連線交給下一個DAO***/
+//	@Override
+//	public void addByJDBCTransaction(MemberVO newmember, List<String> favorlist) {
+//		Connection con = null;
+//		PreparedStatement psmt = null;
+//		ResultSet rs = null;
+//		Integer generatedID = null;
+//		try {
+//			con = ds.getConnection();
+//			String[] cols = { "MEMBER_ID" };
+//			psmt = con.prepareStatement(INSERT,cols);
+//			con.setAutoCommit(false);
+//			psmt.setString(1, newmember.getMember_account());
+//			psmt.setString(2, newmember.getMember_psw());
+//			psmt.setString(3, newmember.getMember_lastname());
+//			psmt.setString(4, newmember.getMember_firstname());
+//			psmt.setString(5, newmember.getMember_address());
+//			psmt.setString(6, newmember.getMobilenum());
+//			psmt.setString(7, newmember.getMember_emailaddress());
+//			psmt.setDate(8, newmember.getMember_birthday());
+//			psmt.setString(9, newmember.getMember_idcode());
+//			psmt.setString(10, newmember.getCreaditcard());
+//			psmt.setInt(11, newmember.getSubsenews());
+//			psmt.setInt(12, newmember.getMember_sex());
+//			psmt.setInt(13, newmember.getMember_lock_status());
+//			psmt.setBytes(14, newmember.getMember_pic());
+//			psmt.setString(15,newmember.getMember_nickname());
+//			psmt.executeUpdate();
+//			rs = psmt.getGeneratedKeys();
+//			if(rs.next()) {
+//				generatedID = rs.getInt(1);
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			try {
+//				if(con!=null)
+//				con.rollback();
+//			} catch (SQLException e1) {
+//				e1.printStackTrace();
+//			}
+//		} finally{
+//			if(psmt != null){
+//				try {
+//					psmt.close();
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			if(con != null){
+//				try {
+//					con.close();
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}		
+//	}
 }

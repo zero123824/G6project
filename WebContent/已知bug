@@ -8,8 +8,8 @@
 
 資料庫
 2017       會員信箱 unique 
-2018/01/01 會員信用卡假資料不足23碼
-		     員工emp_psw欄位改為64byte		
-		     公告欄位名稱 anounce ->announce   	
+2018/01/01  會員信用卡假資料不足23碼		     	
+		     公告欄位名稱 anounce ->announce
+		     員工emp_psw欄位改為64byte
 		     員工emp_psw假資料改8d969eef6ecad3c29a3a629280e686cfc3f5d5a86aff3ca122c923adc6c92
 		   

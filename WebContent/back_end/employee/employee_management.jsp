@@ -17,6 +17,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0, shrink-to-fit=no">
 <title>SNEAKER影城員工管理</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <!--[if lt IE 9]>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
@@ -65,6 +66,18 @@
 					<button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
 					<button type="button" onclick="newempsubmit()" class="btn btn-primary">送出新增</button>
 				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modal-spinner">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-body">
+					<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+					<span class="sr-only">新增中...</span>
+					<span>新增中...</span>					
+				</div>				
 			</div>
 		</div>
 	</div>
@@ -268,7 +281,8 @@
 		}
 		function newempsubmit(){
 			$(".errormsgs").text("");
-			var newempform = new FormData($("#newempdata")[0])
+			$("#modal-spinner").modal("toggle");
+			var newempform = new FormData($("#newempdata")[0]);
 			fetch('<%=request.getContextPath()%>/back_end/employee/emp.do',{method: 'post',body:newempform})
 			.then(function(response){	
 				if (response.redirected) {
@@ -277,6 +291,7 @@
 				return response.json();
 			})
 			.then(function(error){
+				$("#modal-spinner").modal("toggle");
 				$.each(error,function(name,value){
 					if(name == "emp_sex"){
 						$("input[name="+name+"]").parent("td").after(function(){

@@ -82,6 +82,7 @@ public class MemberService {
 	}
 	
 	public void insertfavor(List<String> favorlist,Integer member_id) {
+//		dao.addByJDBCTransaction(member_id, favorlist);
 		for(String favor : favorlist) {
 			MemberFavorVO newmemberfavor = new MemberFavorVO();
 			newmemberfavor.setGenre_id(Integer.valueOf(favor));

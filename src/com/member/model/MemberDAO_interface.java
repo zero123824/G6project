@@ -9,4 +9,7 @@ public interface MemberDAO_interface {
 	MemberVO findByAccount(String member_account);
 	List<MemberVO> getAll();
 	List<MemberVO> loginCheck();
+	
+	/**JDBC TRANSACTION ACID**/
+//	void addByJDBCTransaction(MemberVO newmember,List<String> favorlist);
 }

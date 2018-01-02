@@ -48,13 +48,12 @@
 								<div class="form-group">
 									<label for="signin-email" class="control-label sr-only">Email</label>
 									<input type="email" class="form-control" id="signin-email"
-										name="emp_email" value="samuel.gold@domain.com" placeholder="Email">
+										name="emp_email" placeholder="Email">
 								</div>
 								<div class="form-group">
 									<label for="signin-password" class="control-label sr-only">Password</label>
 									<input type="password" class="form-control"
-										id="signin-password" name="emp_psw" value="thisisthepassword"
-										placeholder="Password">
+										id="signin-password" name="emp_psw"	placeholder="Password">
 								</div>
 								<div class="form-group clearfix">
 									<label class="fancy-checkbox element-left"> <input

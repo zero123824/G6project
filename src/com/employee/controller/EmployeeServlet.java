@@ -26,6 +26,7 @@ import com.member.model.MemberService;
 import com.member.model.MemberVO;
 import com.permision.model.PermisionService;
 import com.tools.PassWordEncode;
+import com.tools.SendToNewEmployee;
 //為了ajax異步互動，使用multifile讀檔
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024, maxRequestSize = 10 * 1024 * 1024)
 public class EmployeeServlet extends HttpServlet {
@@ -147,7 +148,11 @@ public class EmployeeServlet extends HttpServlet {
 						empVO.getEmp_birthday(), empVO.getEmp_address(), empVO.getEmp_phone(),
 						empVO.getEmp_sex(),operation_ids, inserviced);					
 
-				/***************************3.新增完成,準備轉交(Send the Success view)*************/
+				/***************************3.新增完成,寄送email和密碼*****************************/
+
+				SendToNewEmployee.SendMail(empVO, password);			
+				
+				/***************************4.新增完成,準備轉交(Send the Success view)*************/
 //					gs.toJson(empVO);
 //					String jsondata = gs.toJson(empVO);
 //					out.print(jsondata);

@@ -27,7 +27,6 @@ public class AnnouncementService {
 
 	public List<AnnouncementVO> getAll() {
 		List<AnnouncementVO> announcelist = dao.getAll();
-		Collections.reverse(announcelist);
 		return announcelist;
 	}
 	

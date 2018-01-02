@@ -102,12 +102,12 @@
                                 <strong style="font-size:22px;color:#beb8b8;">為必填項目</strong>
                                 <div class="form-group mygroup">
                                     <strong for="member_emailaddress">電子信箱</strong><b id="emailcheck" style="color:red"></b>
-                                    <input type="email" id="member_emailaddress" name="member_emailaddress" maxlength="30" 
+                                    <input type="email" id="member_emailaddress" name="member_emailaddress" maxlength="30" onchange="ajaxverify(this)" 
                                     class="form-control" value="<%= (memberVO == null) ? "": memberVO.getMember_emailaddress()%>" placeholder="請輸入電子信箱"><br>
                                 </div>
                                 <div class="form-group mygroup">
                                 	<strong for="member_account">帳號</strong>
-                                	<input type="text" id="member_account" name="member_account" maxlength="12" 
+                                	<input type="text" id="member_account" name="member_account" maxlength="12" onchange="ajaxverify(this)"
                                 	class="form-control" value="<%= (memberVO == null) ? "": memberVO.getMember_account()%>" placeholder="請輸入帳號4-12碼英文+數字"><br>
                                 </div>
                                 <div class="form-group mygroup">
@@ -377,30 +377,40 @@
 		</script>
 	<script>
 	
-	//單張大頭貼預覽
-	function handleFileSelect(evt) {
-		// FileList物件
-		var files = evt.target.files; 		
-		// Loop through the FileList and render image files as thumbnails.
-		for (var i = 0, f; f = files[i]; i++) {
-
-			// 只處理image類型的檔案上傳
-			if (!f.type.match('image.*')) {
-				continue;
+		//單張大頭貼預覽
+		function handleFileSelect(evt) {
+			// FileList物件
+			var files = evt.target.files; 		
+			// Loop through the FileList and render image files as thumbnails.
+			for (var i = 0, f; f = files[i]; i++) {
+	
+				// 只處理image類型的檔案上傳
+				if (!f.type.match('image.*')) {
+					continue;
+				}
+				var reader = new FileReader();
+				// Read in the image file as a data URL.
+				reader.readAsDataURL(f);
+				// Closure to capture the file information.
+				reader.onload = (function(theFile) {
+					return function(e) {
+						// Render thumbnail.			
+						$("#member_pic_preview").attr({class:'thumb',src:e.target.result,title:escape(theFile.name)});			
+					};
+				})(f);				
 			}
-			var reader = new FileReader();
-			// Read in the image file as a data URL.
-			reader.readAsDataURL(f);
-			// Closure to capture the file information.
-			reader.onload = (function(theFile) {
-				return function(e) {
-					// Render thumbnail.			
-					$("#member_pic_preview").attr({class:'thumb',src:e.target.result,title:escape(theFile.name)});			
-				};
-			})(f);				
 		}
-	}
-		document.getElementById('member_pic').addEventListener('change',
-			handleFileSelect, false);
+		document.getElementById('member_pic').addEventListener('change',handleFileSelect, false);
+		
+		//ajax驗證帳號與電子信箱是否OK
+		function ajaxverify(this){
+			fetch('<%=request.getContextPath()%>/back_end/employee/emp.do',{method: 'post',body:newempform})
+			.then(function(response){	
+				if (response.redirected) {
+					window.location = response.url ;
+				}
+				return response.json();
+			})
+		}
 	</script>
 </html>
