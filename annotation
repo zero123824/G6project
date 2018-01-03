@@ -1,6 +1,7 @@
 @WebServlet("/front_end/member/member.do")
 @WebServlet("/front_end/member/getmemberpic")
 @WebServlet("/back_end/employee/emp.do")
+@WebServlet("/front_end/friend/friend.do")
 @WebFilter( filterName="LoginFilter",
 			urlPatterns={"/front_end/member/membercenter.jsp"},
 			dispatcherTypes={

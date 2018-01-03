@@ -205,12 +205,7 @@
                         </div>
                     </div>
                 </div>
-                <ul id="chatlist" class="list-inline" style="background-color:white;color: black;position: fixed;z-index: 100;bottom: 10px;right: 10px;">
-					<li><a href="#">清單項目</a></li>
-					<li><a href="#">清單項目</a></li>
-					<li><a href="#">清單項目</a></li>
-				</ul>
-
+               
                 <!-- 到這裡結束 -->
 				<!-- include footer -->
                 <jsp:include page="/front_end/template/footer.jsp"/>
@@ -296,7 +291,7 @@
 				console.log(response);
 				return response.text();})
 			.then(function(msgs){
-				$("#chatlist").append("<li stlye='background-color:grey;padding:7px'><a href='#'><textarea id='messagesArea' class='panel message-area' readonly >"+msgs+"</textarea></a></li>");
+
 			});			
 		})
 	</script>
