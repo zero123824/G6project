@@ -30,7 +30,8 @@ public class FriendDAO implements FriendDAO_interface{
 	private static final String UPDATE = "UPDATE FRIEND SET RELATION_STATUS = ?, MEMBER_MSG=?, MSG_STATUS=? "
 										 +"WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
 	private static final String DELETE = "DELETE FROM FRIEND WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
-	private static final String GETONEMEMFRIEND = "SELECT * FROM FRIEND WHERE MEMBER_ID1 = ? ";
+	private static final String GETONEMEMFRIEND = "SELECT * FROM FRIEND WHERE MEMBER_ID1 = ? OR MEMBER_ID2 = ?";
+	private static final String GETMSGS = "SELECT * FROM FRIEND WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
 		
 	@Override
 	public void add(FriendVO newfriend) {
@@ -133,7 +134,7 @@ public class FriendDAO implements FriendDAO_interface{
 	}
 
 	@Override
-	public List<FriendVO> getOneMemFriends(Integer member_id1) {
+	public List<FriendVO> getOneMemFriends(Integer member_id) {
 		Connection con = null;
 		PreparedStatement psmt = null;
 		FriendVO friend = null;
@@ -142,7 +143,8 @@ public class FriendDAO implements FriendDAO_interface{
 		try {
 			con = ds.getConnection();
 			psmt = con.prepareStatement(GETONEMEMFRIEND);
-			psmt.setInt(1, member_id1);
+			psmt.setInt(1, member_id);
+			psmt.setInt(2, member_id);
 			rs = psmt.executeQuery();
 			while (rs.next()) {
 				friend = new FriendVO();
@@ -179,5 +181,53 @@ public class FriendDAO implements FriendDAO_interface{
 			}
 		}
 		return memfriendList;
+	}
+
+	@Override
+	public FriendVO getRelationInTwo(Integer member_id1, Integer member_id2) {
+		
+		Connection con = null;
+		PreparedStatement psmt = null;
+		ResultSet rs = null;
+		FriendVO friendVO = new FriendVO();
+		try {
+			con = ds.getConnection();
+			psmt = con.prepareStatement(GETMSGS);
+			psmt.setInt(1, member_id1);
+			psmt.setInt(2, member_id2);
+			rs = psmt.executeQuery();
+			while (rs.next()) {
+				friendVO.setMember_id1(rs.getInt(1));
+				friendVO.setMember_id2(rs.getInt(2));
+				friendVO.setRelation_status(rs.getInt(3));
+				friendVO.setMember_msg(rs.getString(4));
+				friendVO.setMsg_status(rs.getInt(5));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace(System.err);
+				}
+			}
+			if (psmt != null) {
+				try {
+					psmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return friendVO;
 	}
 }

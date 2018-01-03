@@ -64,7 +64,7 @@ public class InsertMember extends HttpServlet {
 		  .setMember_firstname(req.getParameter("member_firstname"))
 		  .setMember_address(req.getParameter("member_address"))
 		  .setMobilenum(req.getParameter("mobilenum"))
-		  .setMember_emailaddress(req.getParameter("member_emailaddress"))
+		  .setMember_email(req.getParameter("member_email"))
 		  .setMember_birthday(new java.sql.Date(today.getTime()))
 		  .setMember_idcode(req.getParameter("member_idcode"))
 		  .setCreaditcard(req.getParameter("creaditcard"))

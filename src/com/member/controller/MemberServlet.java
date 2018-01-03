@@ -154,7 +154,7 @@ public class MemberServlet extends HttpServlet {
 				String member_psw_forcheck = req.getParameter("member_psw_forcheck");
 				String member_address = req.getParameter("member_address");
 				String mobilenum = req.getParameter("mobilenum");
-				String member_emailaddress = req.getParameter("member_emailaddress");
+				String member_email = req.getParameter("member_email");
 				String member_idcode = req.getParameter("member_idcode");
 				String creaditcard = req.getParameter("creaditcard");
 				String member_nickname = req.getParameter("member_nickname");;				
@@ -228,7 +228,7 @@ public class MemberServlet extends HttpServlet {
 				.setMember_firstname(member_firstname)
 				.setMember_address(county+area+member_address)
 				.setMobilenum(mobilenum)
-				.setMember_emailaddress(member_emailaddress)
+				.setMember_email(member_email)
 				.setMember_birthday(member_birthday)
 				.setMember_idcode(member_idcode)
 				.setCreaditcard(creaditcard)
@@ -247,7 +247,7 @@ public class MemberServlet extends HttpServlet {
 				/******************2.新增資料*******************/
 				Integer member_lock_status = 0;
 				memberVO = memberSvc.add(member_account, member_psw_forcheck, member_lastname, member_firstname, 
-						county+area+member_address, mobilenum, member_emailaddress, member_birthday, member_idcode, 
+						county+area+member_address, mobilenum, member_email, member_birthday, member_idcode, 
 						creaditcard, subsenews, member_sex, member_lock_status, member_pic, member_nickname,favorlist);
 				/*****************3.新增完成,準備轉交(Send the Success view)*********/
 				session.setAttribute("member", memberVO);
@@ -265,7 +265,7 @@ public class MemberServlet extends HttpServlet {
 			Integer member_id = new Integer(req.getParameter("member_id").trim());
 			String member_name = req.getParameter("member_name");			
 			String mobilenum = req.getParameter("mobilenum");
-			String member_emailaddress = req.getParameter("member_emailaddress");
+			String member_email = req.getParameter("member_email");
 			String creaditcard = req.getParameter("creaditcard");
 			String member_nickname = req.getParameter("member_nickname");
 			Integer subsenews = Integer.valueOf(req.getParameter("subsenews"));
@@ -280,14 +280,14 @@ public class MemberServlet extends HttpServlet {
 //			String county = req.getParameter("county");
 //			county = citymap.get(county)+"-";
 //			String area = req.getParameter("area")+"-";
-			if(member_address.trim().length() == 0 || member_emailaddress.trim().length() == 0
+			if(member_address.trim().length() == 0 || member_email.trim().length() == 0
 			   || mobilenum.trim().length() == 0){
 				errorMsgs.add("*為必填欄位");
 			}
 			MemberVO memberVO = memberSvc.findByPK(member_id);
 			memberVO.setMember_address(member_address)
 					.setMobilenum(mobilenum)
-					.setMember_emailaddress(member_emailaddress)
+					.setMember_email(member_email)
 					.setSubsenews(subsenews)
 					.setMember_nickname(member_nickname);
 			if (!errorMsgs.isEmpty()) {
@@ -298,7 +298,7 @@ public class MemberServlet extends HttpServlet {
 			}					
 			/***************************2.開始修改資料*****************************************/
 			memberVO = memberSvc.update(member_id,memberVO.getMember_account(),memberVO.getMember_psw(),member_lastname, member_firstname, member_address,
-						mobilenum, member_emailaddress, memberVO.getMember_birthday(), memberVO.getMember_idcode(),
+						mobilenum, member_email, memberVO.getMember_birthday(), memberVO.getMember_idcode(),
 						memberVO.getCreaditcard(), memberVO.getSubsenews(), memberVO.getMember_sex(), memberVO.getMember_lock_status(),
 						memberVO.getMember_pic(), memberVO.getMember_nickname());
 			/***************************3.修改完成,準備轉交(Send the Success view)*************/

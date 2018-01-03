@@ -19,7 +19,7 @@ public class FriendTest {
 	private static final String UPDATE = "UPDATE FRIEND SET RELATION_STATUS = ?, MEMBER_MSG=?, MSG_STATUS=? "
 			+ "WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
 	private static final String DELETE = "DELETE FROM FRIEND WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
-	private static final String GETONEMEMFRIEND = "SELECT * FROM FRIEND WHERE MEMBER_ID1 = ? "; 
+	private static final String GETONEMEMFRIEND = "SELECT * FROM FRIEND WHERE MEMBER_ID1 = ? OR MEMBER_ID2 = ?"; 
 
 	public static void main(String[] args) {
 		FriendVO newfriend = new FriendVO();
@@ -42,7 +42,7 @@ public class FriendTest {
 //		add(newfriend);
 //		update(newfriend,member2);
 //		delete(newfriend,member2);
-		List list = getOneMemFriends(1000000011);
+		List list = getOneMemFriends(1000000003);
 		Iterator it = list.iterator();
 		while (it.hasNext()) {
 			FriendVO member1 = (FriendVO)it.next();
@@ -149,6 +149,7 @@ public class FriendTest {
 		try {
 			psmt = con.prepareStatement(GETONEMEMFRIEND);
 			psmt.setInt(1, member_id1);
+			psmt.setInt(2, member_id1);
 			rs = psmt.executeQuery();
 			while (rs.next()) {
 				friend = new FriendVO();

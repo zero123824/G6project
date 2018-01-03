@@ -18,6 +18,7 @@
 <title>SNEAKER影城員工管理</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
 <!--[if lt IE 9]>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
@@ -309,6 +310,10 @@
 					}
 				})
 			});
+		}
+		var newEmpmail = '<%=request.getParameter("newEmpmail")%>';
+		if(newEmpmail != null){
+			$("td[class='emp_email']:contains("+newEmpmail+")").parent("tr").css("background-color","yellow");			
 		}
 	</script>
 </body>

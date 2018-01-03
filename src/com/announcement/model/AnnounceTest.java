@@ -16,12 +16,12 @@ import java.util.List;
 public class AnnounceTest {
 	private static Connection con = null;
 	private static PreparedStatement psmt = null;
-	private static final String INSERT = "INSERT INTO ANNOUNCEMENT (ANOUNCE_ID, ANOUNCE_TITLE, ANOUNCE_CONTENT, ANOUNCE_TIME ,EMPNO,ANOUNCE_STATUS) "
+	private static final String INSERT = "INSERT INTO ANNOUNCEMENT (ANNOUNCE_ID, ANNOUNCE_TITLE, ANNOUNCE_CONTENT, ANNOUNCE_TIME ,EMPNO,ANNOUNCE_STATUS) "
 			+ "VALUES('7'||LPAD(ANNOUNCEMENT_SEQUENCE.NEXTVAL,4,'0'),?,?,?,?,?)";
-	private static final String UPDATE = "UPDATE ANNOUNCEMENT SET ANOUNCE_TITLE=?,ANOUNCE_CONTENT=?,ANOUNCE_TIME=?,EMPNO=?,ANOUNCE_STATUS=? "
-			+ "WHERE ANOUNCE_ID = ?";
-	private static final String DELETE = "DELETE FROM ANNOUNCEMENT WHERE ANOUNCE_ID = ?";
-	private static final String SELECT = "SELECT * FROM ANNOUNCEMENT WHERE ANOUNCE_ID = ?";
+	private static final String UPDATE = "UPDATE ANNOUNCEMENT SET ANNOUNCE_TITLE=?,ANNOUNCE_CONTENT=?,ANNOUNCE_TIME=?,EMPNO=?,ANNOUNCE_STATUS=? "
+			+ "WHERE ANNOUNCE_ID = ?";
+	private static final String DELETE = "DELETE FROM ANNOUNCEMENT WHERE ANNOUNCE_ID = ?";
+	private static final String SELECT = "SELECT * FROM ANNOUNCEMENT WHERE ANNOUNCE_ID = ?";
 	private static final String GETALL = "SELECT * FROM ANNOUNCEMENT ";
 
 	public static void main(String[] args) {

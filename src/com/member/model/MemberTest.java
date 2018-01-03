@@ -18,10 +18,10 @@ import java.util.List;
 
 //測試 SQL指令 IN javaSE
 public class MemberTest {
-	private static final String INSERT = "INSERT INTO MEMBER_INFO (MEMBER_ID, MEMBER_ACCOUNT, MEMBER_PSW, MEMBER_LASTNAME, MEMBER_FIRSTNAME, MEMBER_ADDRESS, MOBILENUM, MEMBER_EMAILADDRESS, MEMBER_BIRTHDAY, MEMBER_IDCODE, CREADITCARD, SUBSENEWS, MEMBER_SEX, MEMBER_LOCK_STATUS, MEMBER_PIC, MEMBER_NICKNAME)"
+	private static final String INSERT = "INSERT INTO MEMBER_INFO (MEMBER_ID, MEMBER_ACCOUNT, MEMBER_PSW, MEMBER_LASTNAME, MEMBER_FIRSTNAME, MEMBER_ADDRESS, MOBILENUM, MEMBER_EMAIL, MEMBER_BIRTHDAY, MEMBER_IDCODE, CREADITCARD, SUBSENEWS, MEMBER_SEX, MEMBER_LOCK_STATUS, MEMBER_PIC, MEMBER_NICKNAME)"
 			+ "VALUES ('1'||LPAD(MEMBER_SEQUENCE.NEXTVAL,9,'0'), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String UPDATE = "UPDATE MEMBER_INFO SET MEMBER_ACCOUNT = ? ,MEMBER_PSW = ?,MEMBER_LASTNAME = ?,"
-			+ "MEMBER_FIRSTNAME = ?,MEMBER_ADDRESS=?,MOBILENUM=?,MEMBER_EMAILADDRESS=?,"
+			+ "MEMBER_FIRSTNAME = ?,MEMBER_ADDRESS=?,MOBILENUM=?,Member_email=?,"
 			+ "MEMBER_BIRTHDAY=?,MEMBER_IDCODE=?,CREADITCARD=?,SUBSENEWS=?,MEMBER_SEX=?,"
 			+ "MEMBER_LOCK_STATUS=?,MEMBER_PIC=?,MEMBER_NICKNAME=? WHERE MEMBER_ID = ? ";
 	private static final String DELETE = "DELETE FROM MEMBER_INFO WHERE MEMBER_ID = ? ";
@@ -44,7 +44,7 @@ public class MemberTest {
 		}
 		System.out.println("success");
 		newmember.setMember_account("abctest").setMember_psw("123455").setMember_lastname("李").setMember_firstname("大同")
-				.setMember_address("中山北路789號").setMobilenum("0987654321").setMember_emailaddress("abctest@gmail.com")
+				.setMember_address("中山北路789號").setMobilenum("0987654321").setMember_email("abctest@gmail.com")
 				.setMember_birthday(new java.sql.Date(today.getTime())).setMember_idcode("A123456789")
 				.setCreaditcard("123156456451561").setSubsenews(1).setMember_sex(2).setMember_lock_status(1)
 				.setMember_pic(new byte[5]).setMember_nickname("yoyo");
@@ -63,7 +63,7 @@ public class MemberTest {
 		// System.out.println(mem.getMember_firstname());
 		// System.out.println(mem.getMember_address());
 		// System.out.println(mem.getMobilenum());
-		// System.out.println(mem.getMember_emailaddress());
+		// System.out.println(mem.getMember_email());
 		// System.out.println(mem.getMember_birthday());
 		// System.out.println(mem.getMember_idcode());
 		// System.out.println(mem.getCreaditcard());
@@ -125,7 +125,7 @@ public class MemberTest {
 			psmt.setString(4, newmember.getMember_firstname());
 			psmt.setString(5, newmember.getMember_address());
 			psmt.setString(6, newmember.getMobilenum());
-			psmt.setString(7, newmember.getMember_emailaddress());
+			psmt.setString(7, newmember.getMember_email());
 			psmt.setDate(8, newmember.getMember_birthday());
 			psmt.setString(9, newmember.getMember_idcode());
 			psmt.setString(10, newmember.getCreaditcard());
@@ -166,7 +166,7 @@ public class MemberTest {
 			psmt.setString(4, selectedmem.getMember_firstname());
 			psmt.setString(5, selectedmem.getMember_address());
 			psmt.setString(6, selectedmem.getMobilenum());
-			psmt.setString(7, selectedmem.getMember_emailaddress());
+			psmt.setString(7, selectedmem.getMember_email());
 			psmt.setDate(8, selectedmem.getMember_birthday());
 			psmt.setString(9, selectedmem.getMember_idcode());
 			psmt.setString(10, selectedmem.getCreaditcard());
@@ -240,7 +240,7 @@ public class MemberTest {
 				member.setMember_firstname(rs.getString(5));
 				member.setMember_address(rs.getString(6));
 				member.setMobilenum(rs.getString(7));
-				member.setMember_emailaddress(rs.getString(8));
+				member.setMember_email(rs.getString(8));
 				member.setMember_birthday(rs.getDate(9));
 				member.setMember_idcode(rs.getString(10));
 				member.setCreaditcard(rs.getString(11));
@@ -288,7 +288,7 @@ public class MemberTest {
 				member.setMember_firstname(rs.getString(5));
 				member.setMember_address(rs.getString(6));
 				member.setMobilenum(rs.getString(7));
-				member.setMember_emailaddress(rs.getString(8));
+				member.setMember_email(rs.getString(8));
 				member.setMember_birthday(rs.getDate(9));
 				member.setMember_idcode(rs.getString(10));
 				member.setCreaditcard(rs.getString(11));
@@ -336,7 +336,7 @@ public class MemberTest {
 				member.setMember_firstname(rs.getString(5));
 				member.setMember_address(rs.getString(6));
 				member.setMobilenum(rs.getString(7));
-				member.setMember_emailaddress(rs.getString(8));
+				member.setMember_email(rs.getString(8));
 				member.setMember_birthday(rs.getDate(9));
 				member.setMember_idcode(rs.getString(10));
 				member.setCreaditcard(rs.getString(11));

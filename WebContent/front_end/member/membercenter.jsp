@@ -1,3 +1,4 @@
+<%@page import="com.friend.model.FriendService"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Collections"%>
@@ -29,13 +30,15 @@
  		}
 // 		Collections.shuffle(recommendmovie);
 		pageContext.setAttribute("recommendmovie", recommendmovie);
+//計算有幾個喜歡的類型
 		for(String favorname : memberSvc.getfavorTypeName(memberVO.getMember_id())) {
 			count++;
 			favormap.put("類型"+count, favorname);
 			pageContext.setAttribute("favorname", favormap);
 		}
 	}%>
-
+<%	FriendService friendSvc = new FriendService();
+	pageContext.setAttribute("friendSvc",friendSvc);%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
@@ -54,6 +57,12 @@
          <!-- Our Custom CSS -->
         <link rel="stylesheet" href="<%=request.getContextPath()%>/front_end/css/frontend.css">
     </head>
+    <style>
+    	.message-area{
+    		height:100px;
+    	}
+    
+    </style>
     <body id="myPage">
 
         <div class="wrapper">
@@ -74,7 +83,7 @@
                 </ol>
                 <div class="container">
                     <div class="col-xs-12 col-sm-4">
-                        <div class="panel panel-danger">
+                        <div class="panel panel-danger person_data">
                             <div class="panel-heading">
                                 <h3 class="panel-title">個人資料</h3>
                             </div>
@@ -85,18 +94,33 @@
                             <ul class="list-inline center-block text-center" style="margin-bottom: 25px">
 	                            <li><a id="ajaxgetmemberdata" data-toggle="modal" data-target="#modal-edittable" class="list-group-item list-group-item-action list-group-item-danger">編輯會員資料</a></li>
 	                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">管理文章</a></li>
-	                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">好友管理</a></li>
+	                            <li><a id="friendlist" class="list-group-item list-group-item-action list-group-item-danger">好友管理</a></li>
                         	</ul>
                         	<div class="panel-body showdata" id="editable">
                         		<h4>暱稱:<c:out value="${member.member_nickname}" default=""/></h4><br>
                         		<h4>姓名:<c:out value="${member.member_lastname}" default=""/> <c:out value="${member.member_firstname}" default=""/></h4><br>
                         		<h4>地址:<c:out value="${member.member_address}" default=""/></h4><br>
                         		<h4>手機號碼:<c:out value="${member.mobilenum}" default=""/></h4><br>
-                        		<h4>電子信箱:<c:out value="${member.member_emailaddress}" default=""/></h4><br>
+                        		<h4>電子信箱:<c:out value="${member.member_email}" default=""/></h4><br>
                         		<h4>訂閱電子報:<c:out value="${(member.subsenews == 1)? '是':'否'}" default=""/></h4><br>
                         	</div>                        	
                    		</div>
-                   </div>
+						<div class="panel panel-info friend_list" class="thumbnail">
+							<div class="panel-heading">
+								<button type="button" class="close" style="color:red;font-size: 16px;opacity: .3;" onclick="backtoPD()">返回個人資料</button>
+								<h3 class="panel-title">好友列表</h3>
+							</div>
+							<div class="panel-body">
+								<c:forEach var="friend" items="${friendSvc.getOneMemFriends(member.member_id)}">
+                                    <a class="thumbnail friend">
+                                    	<span style="display:none">${friend.member_id}</span>
+    									<img src="<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=${friend.member_id}" style="width: 30%;border-radius: 30%;">
+    									<span>${friend.member_lastname}${friend.member_firstname}</span>
+                                    </a>							
+								</c:forEach>
+							</div>
+						</div>
+					</div>
                    
 					<div class="col-xs-12 col-sm-4 col-sm-push-4">
 						<div class="panel panel-info">
@@ -122,7 +146,7 @@
                         <div class="panel panel-success">
                             <div class="panel-heading">
                                 <h2 class="panel-title">
-                                	根據您喜好類型:
+                                	根據喜好類型:
                                 	<c:forEach var="memberfavorVO" items="${memberfavorSvc.getOneMemFavor(member.member_id)}"></c:forEach>
                                 	<c:if test="${favorname != null}">
                                 	${favorname.類型1}、
@@ -162,7 +186,7 @@
                                 <h4>姓名:</h4><input type='text' name="member_name" value="${member.member_lastname}${member.member_firstname}"><br>
                                 <h4>地址:</h4><input type='text' name="member_address" value="${member.member_address}"><br>
                                 <h4>手機號碼:</h4><input type='text' name="mobilenum" value="${member.mobilenum}" maxlength="10"><br>
-                                <h4>電子信箱:</h4><input type='text' name="member_emailaddress" value="${member.getMember_emailaddress()}"><br>
+                                <h4>電子信箱:</h4><input type='text' name="member_email" value="${member.getMember_email()}"><br>
                                 <h4>生日:</h4><input type='text' value="${member.member_birthday}"><br>
                                 <h4>身份證字號:</h4><input type='text' name="member_idcode" value="${member.member_idcode}"><br>
                                 <h4>訂閱電子報:</h4>
@@ -181,6 +205,11 @@
                         </div>
                     </div>
                 </div>
+                <ul id="chatlist" class="list-inline" style="background-color:white;color: black;position: fixed;z-index: 100;bottom: 10px;right: 10px;">
+					<li><a href="#">清單項目</a></li>
+					<li><a href="#">清單項目</a></li>
+					<li><a href="#">清單項目</a></li>
+				</ul>
 
                 <!-- 到這裡結束 -->
 				<!-- include footer -->
@@ -198,7 +227,7 @@
         <!-- jQuery Custom Scroller CDN -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 
-		<script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>  		
+		<script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>	
     </body>
     <!-- modal置中 -->
 	<script type="text/javascript">
@@ -241,11 +270,34 @@
 		function doupadte(){
 			$("#editform").submit();
 		}
-	
+//只顯示電影內容前100個字
 		$(".caption p").each(function(){
 			if($(this).text().length > 80) {
 				$(this).html($(this).text().substring(0,100)+'<a style="font-size:14px;color:#0f52ba;font-weight:bold" href="#">......觀看詳細介紹</a>');
 			};
 		});
+//好友列表與個人資料切換		
+		$("#friendlist").click(function(){
+			$(".person_data").hide(500,function(){
+				$(".friend_list").show(250);
+			});
+		})
+		function backtoPD(){
+			$(".friend_list").hide(500,function(){
+				$(".person_data").show(250);
+			});
+		}
+		
+		$(".friend").click(function(){
+			var friendID = ($(this).children("span")[0]);
+			$(friendID).text();
+			fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=getmsgs&myfriendID='+$(friendID).text()+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
+			.then(function(response){
+				console.log(response);
+				return response.text();})
+			.then(function(msgs){
+				$("#chatlist").append("<li stlye='background-color:grey;padding:7px'><a href='#'><textarea id='messagesArea' class='panel message-area' readonly >"+msgs+"</textarea></a></li>");
+			});			
+		})
 	</script>
 </html>

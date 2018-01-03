@@ -20,7 +20,7 @@ public class MemberService {
 	}
 	
 	public MemberVO add(String member_account,String member_psw,String member_lastname,String member_firstname
-			,String member_address,String mobilenum,String member_emailaddress,java.sql.Date member_birthday,String member_idcode
+			,String member_address,String mobilenum,String member_email,java.sql.Date member_birthday,String member_idcode
 			,String creaditcard,Integer subsenews,Integer member_sex,Integer member_lock_status,byte[] member_pic,String member_nickname,
 			List<String> favorlist){
 		MemberVO memberVO = new MemberVO();
@@ -30,7 +30,7 @@ public class MemberService {
 		.setMember_firstname(member_firstname)
 		.setMember_address(member_address)
 		.setMobilenum(mobilenum)
-		.setMember_emailaddress(member_emailaddress)
+		.setMember_email(member_email)
 		.setMember_birthday(member_birthday)
 		.setMember_idcode(member_idcode)
 		.setCreaditcard(creaditcard)
@@ -45,7 +45,7 @@ public class MemberService {
 	}
 	
 	public MemberVO update(Integer member_id,String member_account,String member_psw,String member_lastname,String member_firstname
-			,String member_address,String mobilenum,String member_emailaddress,java.sql.Date member_birthday,String member_idcode
+			,String member_address,String mobilenum,String member_email,java.sql.Date member_birthday,String member_idcode
 			,String creaditcard,Integer subsenews,Integer member_sex,Integer member_lock_status,byte[] member_pic,String member_nickname){
 		MemberVO memberVO = new MemberVO();
 		memberVO.setMember_id(member_id)
@@ -55,7 +55,7 @@ public class MemberService {
 		.setMember_firstname(member_firstname)
 		.setMember_address(member_address)
 		.setMobilenum(mobilenum)
-		.setMember_emailaddress(member_emailaddress)
+		.setMember_email(member_email)
 		.setMember_birthday(member_birthday)
 		.setMember_idcode(member_idcode)
 		.setCreaditcard(creaditcard)

@@ -11,7 +11,7 @@ public class MemberVO implements Serializable {
 	private String member_firstname;
 	private String member_address;
 	private String mobilenum;
-	private String member_emailaddress;
+	private String member_email;
 	private java.sql.Date member_birthday;
 	private String member_idcode;
 	private String creaditcard;
@@ -111,12 +111,12 @@ public class MemberVO implements Serializable {
 		return this;
 	}
 
-	public String getMember_emailaddress() {
-		return member_emailaddress;
+	public String getMember_email() {
+		return member_email;
 	}
 
-	public MemberVO setMember_emailaddress(String member_emailaddress) {
-		this.member_emailaddress = member_emailaddress;
+	public MemberVO setMember_email(String member_email) {
+		this.member_email = member_email;
 		return this;
 	}
 
@@ -164,5 +164,41 @@ public class MemberVO implements Serializable {
 		this.member_nickname = member_nickname;
 		return this;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((member_account == null) ? 0 : member_account.hashCode());
+		result = prime * result + ((member_email == null) ? 0 : member_email.hashCode());
+		result = prime * result + ((member_id == null) ? 0 : member_id.hashCode());
+		return result;
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MemberVO other = (MemberVO) obj;
+		if (member_account == null) {
+			if (other.member_account != null)
+				return false;
+		} else if (!member_account.equals(other.member_account))
+			return false;
+		if (member_email == null) {
+			if (other.member_email != null)
+				return false;
+		} else if (!member_email.equals(other.member_email))
+			return false;
+		if (member_id == null) {
+			if (other.member_id != null)
+				return false;
+		} else if (!member_id.equals(other.member_id))
+			return false;
+		return true;
+	}
 }

@@ -2,6 +2,7 @@ package com.employee.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,15 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.employee.model.EmployeeService;
 import com.employee.model.EmployeeVO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.member.model.MemberService;
-import com.member.model.MemberVO;
 import com.permision.model.PermisionService;
 import com.tools.PassWordEncode;
 import com.tools.SendToNewEmployee;
@@ -161,7 +157,7 @@ public class EmployeeServlet extends HttpServlet {
 					e.printStackTrace();
 				}
 //				req.setAttribute("empVO", empVO); 	 // 資料庫update成功後,正確的的empVO物件,存入req
-				String url = req.getParameter("hrefFrom");
+				String url = req.getParameter("hrefFrom")+"&newEmpmail="+empVO.getEmp_email();
 				res.sendRedirect(url);				 // 修改成功後,ajax重導
 				return;
 
@@ -169,7 +165,7 @@ public class EmployeeServlet extends HttpServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 				RequestDispatcher failureView = req
-						.getRequestDispatcher("/emp/update_emp_input.jsp?whichPage=1500");
+						.getRequestDispatcher("/emp/update_emp_input.jsp");
 				failureView.forward(req, res);
 			}
 		}
@@ -346,7 +342,9 @@ public class EmployeeServlet extends HttpServlet {
 				out.print("無此員工");
 				return;
 			}
+			/**登入成功，修改最後登入時間為系統目前時間，並且放入權限**/
 			if(PassWordEncode.verifyPsw(emp_psw, employeeVO.getEmp_psw())) {
+				empSvc.updateLastActivityTime(employeeVO, new Date().getTime());
 				session.setAttribute("keymap",permisionSvc.getOneEmpPermision(employeeVO.getEmpno()));
 				out.println("登入成功");	
 			}else {

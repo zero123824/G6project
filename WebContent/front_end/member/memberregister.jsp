@@ -101,9 +101,9 @@
                                 <div class="basic">
                                 <strong style="font-size:22px;color:#beb8b8;">為必填項目</strong>
                                 <div class="form-group mygroup">
-                                    <strong for="member_emailaddress">電子信箱</strong><b id="emailcheck" style="color:red"></b>
-                                    <input type="email" id="member_emailaddress" name="member_emailaddress" maxlength="30" onchange="ajaxverify(this)" 
-                                    class="form-control" value="<%= (memberVO == null) ? "": memberVO.getMember_emailaddress()%>" placeholder="請輸入電子信箱"><br>
+                                    <strong for="member_email">電子信箱</strong><b id="emailcheck" style="color:red"></b>
+                                    <input type="email" id="member_email" name="member_email" maxlength="30" onchange="ajaxverify(this)" 
+                                    class="form-control" value="<%= (memberVO == null) ? "": memberVO.getMember_email()%>" placeholder="請輸入電子信箱"><br>
                                 </div>
                                 <div class="form-group mygroup">
                                 	<strong for="member_account">帳號</strong>
@@ -358,19 +358,19 @@
 				}
 				document.getElementById("area").innerHTML = options;
 			}
-			$("#member_emailaddress").bind("blur", validate);
+			$("#member_email").bind("blur", validate);
 			function validateEmail(email) {
 				  var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 				  return regex.test(email);
 			}			
 			function validate() {
 				 $("#emailcheck").text("");
-				 var email = $("#member_emailaddress").val();
+				 var email = $("#member_email").val();
 				 if (validateEmail(email)) {
-				    $("#member_emailaddress").css("background-color", "#DFF0D8");
+				    $("#member_email").css("background-color", "#DFF0D8");
 				 } else {
 					$("#emailcheck").append("<br>非有效電子信箱");
-				    $("#member_emailaddress").css("background-color", "#F2DEDE");
+				    $("#member_email").css("background-color", "#F2DEDE");
 				 }
 				 return false;
 			}
@@ -403,14 +403,14 @@
 		document.getElementById('member_pic').addEventListener('change',handleFileSelect, false);
 		
 		//ajax驗證帳號與電子信箱是否OK
-		function ajaxverify(this){
-			fetch('<%=request.getContextPath()%>/back_end/employee/emp.do',{method: 'post',body:newempform})
-			.then(function(response){	
-				if (response.redirected) {
-					window.location = response.url ;
-				}
-				return response.json();
-			})
-		}
+// 		function ajaxverify(this){
+<%-- 			fetch('<%=request.getContextPath()%>/back_end/employee/emp.do',{method: 'post',body:newempform}) --%>
+// 			.then(function(response){	
+// 				if (response.redirected) {
+// 					window.location = response.url ;
+// 				}
+// 				return response.json();
+// 			})
+// 		}
 	</script>
 </html>

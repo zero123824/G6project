@@ -3,8 +3,6 @@ package com.employee.model;
 import java.sql.Timestamp;
 import java.util.List;
 
-import com.permision.model.PermisionDAO;
-import com.permision.model.PermisionDAO_interface;
 import com.permision.model.PermisionService;
 
 public class EmployeeService {
@@ -52,6 +50,13 @@ public class EmployeeService {
 		dao.update(employeeVO);
 		return employeeVO;
 	}
+	
+	public EmployeeVO updateLastActivityTime(EmployeeVO employeeVO,Long thisTime){
+		employeeVO.setLast_activity(new Timestamp(thisTime));
+		dao.update(employeeVO);
+		return employeeVO;		
+	}
+
 	
 	public void suspend(EmployeeVO employeeVO,Integer inserviced){
 		employeeVO.setInserviced(inserviced);
