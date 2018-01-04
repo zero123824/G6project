@@ -25,11 +25,12 @@
 	<div class="page-header">
 	  <h1>輪播牆編輯<small>真是好照片啊</small></h1>
 	</div>
+	<form method="post" enctype="multipart/form-data" action="<%=request.getContextPath()%>/img/changecarousel.do?action=change"> 
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12 col-sm-12 carouselnow">
 			carousel1目前圖片:<img src="<%=request.getContextPath()%>/img/carousel1.png">
-			更換圖片<input type="file" id="carousel1" name="change">
+			更換圖片<input type="file" id="carousel1" name="carousel1.png">
 			</div>
 		</div>
 	</div>
@@ -38,7 +39,7 @@
 		<div class="row">
 			<div class="col-xs-12 col-sm-12 carouselnow">
 			carousel2目前圖片:<img src="<%=request.getContextPath()%>/img/carousel2.jpg">
-			更換圖片<input type="file" id="carousel2" name="change">			
+			更換圖片<input type="file" id="carousel2" name="carousel2.jpg">			
 			</div>
 		</div>
 	</div>
@@ -47,10 +48,13 @@
 		<div class="row">
 			<div class="col-xs-12 col-sm-12 carouselnow">
 			carousel3目前圖片:<img src="<%=request.getContextPath()%>/img/carousel3.png">
-			更換圖片<input type="file" id="carousel3" name="change">
-			</div>			
+			更換圖片<input type="file" id="carousel3" name="carousel3.png">
+			<br>
+			<button>送出</button>
+			</div>						
 		</div>
-	</div>
+	</div>	
+	</form>
 <!-- jQuery CDN -->
 <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
 <!-- Bootstrap Js CDN -->
@@ -61,7 +65,6 @@
 //單張預覽
 		function handleFileSelect(evt) {
 			// FileList物件
-			console.log(evt);
 			var files = evt.target.files; 		
 			// Loop through the FileList and render image files as thumbnails.
 			for (var i = 0, f; f = files[i]; i++) {
@@ -77,8 +80,8 @@
 				reader.onload = (function(theFile) {
 					return function(e) {
 						// Render thumbnail.	
-						var thisimg = $(evt).prev("img");
-						console.log(thisimg);
+						var thisinput = evt.target;
+						var thisimg = $(thisinput).prev("img");
 						thisimg.attr({class:'thumb',src:e.target.result,title:escape(theFile.name)});			
 					};
 				})(f);				
