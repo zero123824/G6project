@@ -27,6 +27,13 @@
 	.carouselnow img, .carouselpreview canvas{
 		width:100%;
 	}
+	
+	#submit{
+		width: 10%;
+		height: 60px;
+		background-color:#00e4ff;
+		border: none;
+	}
 </style>
 <body>
 	<div class="page-header">
@@ -34,7 +41,7 @@
 	</div>
 	<form method="post" enctype="multipart/form-data" id="form" action="<%=request.getContextPath()%>/img/changecarousel.do?action=change"> 
 	<div class="container">
-		<input type="button" value="送出" id="submit">	
+		<input type="submit" id="submit" value="送出更新">	
 		<div class="row">
 			<div class="col-xs-12 col-sm-6 carouselnow">
 				carousel1目前圖片:<img src="/img/carousel1.png">
@@ -138,6 +145,8 @@
 	                zoomable:false,
 	                crop: function(e) {
 	                	formdata.set("which",name);
+	                	var param = new Array(e.x,e.y,e.width,e.height); 
+	                	formdata.set("param",param);
 	                	formdata.set("x",e.x);
 	                	formdata.set("y",e.y);
 	                	formdata.set("width",e.width);
@@ -152,14 +161,10 @@
 	    	var result = $(target.target).siblings("img").cropper("getCroppedCanvas");
 	    	$(pf).html(result);
 			fetch('<%=request.getContextPath()%>/img/changecarousel.do?action=setSize',{method: 'post',body:formdata})
-	    	console.log(formdata.get("which"));
-
+			.then(function(response){
+				console.log(response);
+			});
 	    })
-	    
-	    $("#submit").click(function(){
-	    	$("#form").submit();	    	
-	    })
-	    
 // 		function imgSubmit(){
 //         	var result= $('.box > img').cropper("getCroppedCanvas");
 //         	$(".avatar-preview").target = result;
