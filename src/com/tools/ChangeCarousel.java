@@ -1,11 +1,16 @@
 package com.tools;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -18,23 +23,46 @@ import javax.servlet.http.Part;
 @WebServlet("/img/changecarousel.do")
 public class ChangeCarousel extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private Map<String,List> picMap = new HashMap<String,List>(); 
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String action = req.getParameter("action");
 		if("change".equals(action)){
-			Collection<Part> parts = req.getParts();
-			for(Part part : parts){
-				Set<String> imgpath = getServletContext().getResourcePaths("/img");
-				if(imgpath.contains("/img/"+part.getName())){
-					String path = ("/img/"+part.getName());
-					getServletContext().getResourceAsStream(path);
-					String realPath = getServletContext().getRealPath("/img/"+part.getName());
-					File f = new File(realPath);
-					part.write(f.toString());					
+			String pageFrom = req.getParameter("pageFrom");
+			try{
+				Collection<Part> parts = req.getParts();
+				for(Part part : parts){
+					File localdir = new File("D://image");
+					File[] files = localdir.listFiles();			        
+					for(File file :files){
+						if(file.getName().equals(part.getName()) && part.getSize() !=0 ){
+							//寫入完整圖片
+							part.write(file.getAbsolutePath());
+							//裁圖片
+					        BufferedImage image = ImageIO.read(file);
+//					        image = image.getSubimage(x, y, width, height);  
+
+
+						}
+					}
 				}
-				part.getName();
+				res.sendRedirect(pageFrom);
+				return;
+			}catch(Exception e){
+				e.printStackTrace();
 			}
 		}
+		if("setSize".equals(action)){
+			
+		}
+		
 	}
-
 }
+//Set<String> imgpath = getServletContext().getResourcePaths("/img");
+//if(imgpath.contains("/img/"+part.getName()) && part.getSize() != 0){
+//	String path = ("/img/"+part.getName());					
+//	getServletContext().getResourceAsStream(path);
+//	String realPath = getServletContext().getRealPath("/img/"+part.getName());
+//	File f = new File(realPath);
+//	part.write(f.toString());					
+//}
+//part.getName();

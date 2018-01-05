@@ -52,15 +52,15 @@
                                     <!-- Wrapper for slides -->
                                     <div class="carousel-inner img-responsive img-custom">
                                         <div class="item active">
-                                            <img src="<%=request.getContextPath()%>/img/carousel1.png" alt="carousel1">
+                                            <img src="/img/carousel1.png" alt="carousel1">
                                         </div>
 
                                         <div class="item">
-                                            <img src="<%=request.getContextPath()%>/img/carousel2.jpg" alt="carousel2">
+                                            <img src="/img/carousel2.jpg" alt="carousel2">
                                         </div>
 
                                         <div class="item">
-                                            <img src="<%=request.getContextPath()%>/img/carousel3.png" alt="carousel3">
+                                            <img src="/img/carousel3.png" alt="carousel3">
                                         </div>
                                     </div>
 
