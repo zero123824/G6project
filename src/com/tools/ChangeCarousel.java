@@ -16,6 +16,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 5 * 1024 * 1024, maxRequestSize = 10 * 1024 * 1024)
@@ -30,7 +31,7 @@ public class ChangeCarousel extends HttpServlet {
 			try{
 				Collection<Part> parts = req.getParts();
 				for(Part part : parts){
-					File localdir = new File("C://image");
+					File localdir = new File("D://image");
 					File[] files = localdir.listFiles();			        
 					for(File file :files){
 						if(file.getName().equals(part.getName()) && part.getSize() !=0 ){
@@ -49,7 +50,9 @@ public class ChangeCarousel extends HttpServlet {
 						}
 					}
 				}
-				res.setHeader("Cache-Control", "no-store");
+				res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+				res.setHeader("Pragma", "no-cache");
+				res.setDateHeader("Expires", 0);
 				res.sendRedirect(pageFrom);
 				return;
 			}catch(Exception e){

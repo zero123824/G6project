@@ -194,8 +194,20 @@
                                 value="1" <c:if test="${member.getSubsenews() == 1 }">checked</c:if>><label for="subsenews_true">是</label>
                                 <input type="radio" class="magic-radio" name="subsenews" id="subsenews_false" 
                                 value="0" <c:if test="${member.getSubsenews() == 0 }">checked</c:if>><label for="subsenews_false">否</label><br>
+								<h4>挑選喜好電影類型:</h4>
+								<a href="#modalpopover" role="button" data-modal-position="relative" data-toggle="modal-popover" 
+								data-placement="bottom"></a></td>
 								<input type="hidden" name="action"	value="update">
-								<input type="hidden" name="member_id" value="${member.member_id}">								                          	
+								<input type="hidden" name="member_id" value="${member.member_id}">
+								<input type="checkbox" name="operation_id" value="15001"></input>
+						       	<input type="checkbox" name="operation_id" value="15002"></input>
+						       	<input type="checkbox" name="operation_id" value="15003"></input>
+						       	<input type="checkbox" name="operation_id" value="15004"></input>
+						       	<input type="checkbox" name="operation_id" value="15005"></input>
+						       	<input type="checkbox" name="operation_id" value="15006"></input>
+						       	<input type="checkbox" name="operation_id" value="15007"></input>
+						       	<input type="checkbox" name="operation_id" value="15008"></input>
+						       	<input type="checkbox" name="operation_id" value="15009"></input>							                          	
                             </FORM>
                             </div>	    
                             <div class="modal-footer">

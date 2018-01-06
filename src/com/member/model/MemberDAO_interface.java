@@ -1,5 +1,6 @@
 package com.member.model;
 import java.util.List;
+import java.util.Set;
 
 public interface MemberDAO_interface {
 	Integer add(MemberVO newmember);
@@ -9,6 +10,7 @@ public interface MemberDAO_interface {
 	MemberVO findByAccount(String member_account);
 	List<MemberVO> getAll();
 	List<MemberVO> loginCheck();
+	Set<MemberVO> getAll(String keyword);
 	
 	/**JDBC TRANSACTION ACID**/
 //	void addByJDBCTransaction(MemberVO newmember,List<String> favorlist);

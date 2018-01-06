@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -26,6 +28,7 @@ import javax.servlet.http.Part;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.Gson;
 import com.member.model.*;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 10 * 1024 * 1024, maxRequestSize = 20 * 10 * 1024 * 1024)
 public class MemberServlet extends HttpServlet {
@@ -308,7 +311,7 @@ public class MemberServlet extends HttpServlet {
 			RequestDispatcher successView = req.getRequestDispatcher(url); // 修改成功後,轉交listOneEmp.jsp
 			successView.forward(req, res);
 		}
-		
+		/**********************會員停權****************************/
 		if("suspend".equals(action)){
 			/*************1.接收停權會員ID***************/
 			Integer member_id = Integer.valueOf(req.getParameter("member_id").trim());
@@ -332,6 +335,19 @@ public class MemberServlet extends HttpServlet {
 			successView.forward(req, res);
 		}
 		
+		/**********************全會員搜尋****************************/
+		if("search".equals(action)){
+			String keyword = req.getParameter("keyword");
+			MemberService memberSvc = new MemberService();
+			Set<MemberVO> memSet = new HashSet<MemberVO>();
+			if(keyword != null && keyword.trim().length() != 0){
+				memSet = memberSvc.getAll(keyword.trim());
+			}
+			//超危險 需修改memberVO 把個資去除
+			Gson gson = new Gson();			
+			out.println(gson.toJson(memSet));
+			return;
+		}
 	}
 	public void init(){		
 		if(citymap == null){

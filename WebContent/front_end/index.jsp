@@ -52,7 +52,7 @@
                                     <!-- Wrapper for slides -->
                                     <div class="carousel-inner img-responsive img-custom">
                                         <div class="item active">
-                                            <img src="/img/carousel1.png" alt="carousel1">
+                                            <img src="/img/carousel1.gif" alt="carousel1">
                                         </div>
 
                                         <div class="item">

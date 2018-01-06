@@ -2,6 +2,7 @@ package com.member.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.genre.model.GenreDAO;
 import com.genre.model.GenreDAO_interface;
@@ -103,6 +104,9 @@ public class MemberService {
 		return dao.findByAccount(member_account);	
 	}
 
+	public Set<MemberVO> getAll(String keyword) {
+		return dao.getAll(keyword);		
+	}
 	
 	public List<MemberVO> getAll(){
 		return dao.getAll();

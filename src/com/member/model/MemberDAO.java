@@ -4,7 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -401,6 +403,70 @@ public class MemberDAO implements MemberDAO_interface{
 		}
 		return memList;
 	}
+
+
+	@Override
+	public Set<MemberVO> getAll(String keyword) {
+		Connection con = null;
+		PreparedStatement psmt = null;
+		MemberVO member = null;
+		ResultSet rs = null;
+		Set<MemberVO> memSet = new HashSet<MemberVO>();
+//只查詢前6筆
+		try {
+			con = ds.getConnection();
+			String searchSQL = "select * from (SELECT * FROM MEMBER_INFO WHERE MEMBER_FIRSTNAME LIKE '%"+keyword+"%' OR MEMBER_LASTNAME LIKE '%"+keyword+"%'"
+					+ " OR MEMBER_NICKNAME LIKE '%"+keyword+"%') where rownum <= 6";
+			psmt = con.prepareStatement(searchSQL);
+			rs = psmt.executeQuery();
+			while(rs.next()){
+				member = new MemberVO();
+				member.setMember_id(rs.getInt(1));
+				member.setMember_account(rs.getString(2));
+				member.setMember_psw(rs.getString(3));
+				member.setMember_lastname(rs.getString(4));
+				member.setMember_firstname(rs.getString(5));
+				member.setMember_address(rs.getString(6));
+				member.setMobilenum(rs.getString(7));
+				member.setMember_email(rs.getString(8));
+				member.setMember_birthday(rs.getDate(9));
+				member.setMember_idcode(rs.getString(10));
+				member.setCreaditcard(rs.getString(11));
+				member.setSubsenews(rs.getInt(12));
+				member.setMember_sex(rs.getInt(13));
+				member.setMember_lock_status(rs.getInt(14));
+				member.setMember_pic(rs.getBytes(15));
+				member.setMember_nickname(rs.getString(16));
+				memSet.add(member);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally{
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace(System.err);
+				}
+			}
+			if(psmt != null){
+				try {
+					psmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if(con != null){
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return memSet;
+	}
+
 
 	/***JDBC TRANSACTiON 由PK方進行主控，將自增主鍵與連線交給下一個DAO***/
 //	@Override

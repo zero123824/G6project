@@ -2,7 +2,9 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page import="java.util.*"%>
-<% response.setHeader("Cache-Control", "no-store"); %>
+<% 	response.setHeader("Cache-Control", "no-store");
+	response.setHeader("Pragma", "no-cache");
+	response.setDateHeader("Expires", 0);%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -44,7 +46,7 @@
 		<input type="submit" id="submit" value="送出更新">	
 		<div class="row">
 			<div class="col-xs-12 col-sm-6 carouselnow">
-				carousel1目前圖片:<img src="/img/carousel1.png">
+				carousel1目前圖片:<img src="/img/carousel1.png?random=<%=Math.random()%>">
 				<input type="file" class="carouselbtn" id="carousel1" name="carousel1.png">
 				<input type="button" name="" value="預覽" class="imgSubmit">
 			</div>			
@@ -58,7 +60,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12 col-sm-6 carouselnow">
-			carousel2目前圖片:<img src="/img/carousel2.jpg">
+			carousel2目前圖片:<img src="/img/carousel2.jpg?random=<%=Math.random()%>">
 			<input type="file" class="carouselbtn" id="carousel2" name="carousel2.jpg">
 			<input type="button" name="" value="預覽" class="imgSubmit">	
 			</div>
@@ -72,7 +74,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12 col-sm-6 carouselnow">
-			carousel3目前圖片:<img src="/img/carousel3.png">
+			carousel3目前圖片:<img src="/img/carousel3.png?random=<%=Math.random()%>">
 			<input type="file" class="carouselbtn" id="carousel3" name="carousel3.png">
 			<input type="button" name="" value="預覽" class="imgSubmit">	
 			</div>
@@ -122,8 +124,8 @@
 // 		document.getElementById('carousel1').addEventListener('change',handleFileSelect, false);
 // 		document.getElementById('carousel2').addEventListener('change',handleFileSelect, false);
 // 		document.getElementById('carousel3').addEventListener('change',handleFileSelect, false);
-		var formdata = new FormData();
 
+		var formdata = new FormData();
 		  //生成裁剪區域
 	    $(".carouselbtn").change(function(e){
 	    	var input = $(this);

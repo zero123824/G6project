@@ -246,7 +246,7 @@
                       </div>
                         <!-- 到這裡結束 -->
 				<!-- include footer -->
-                <jsp:include page="/front_end/template/footer.jsp"/>
+<%--                 <jsp:include page="/front_end/template/footer.jsp"/> --%>
             </div>            
         </div>
         <div class="overlay"></div>
