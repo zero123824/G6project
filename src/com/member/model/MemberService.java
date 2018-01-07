@@ -1,7 +1,10 @@
 package com.member.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.genre.model.GenreDAO;
@@ -103,9 +106,19 @@ public class MemberService {
 	public MemberVO findByAccount(String member_account){
 		return dao.findByAccount(member_account);	
 	}
-
-	public Set<MemberVO> getAll(String keyword) {
-		return dao.getAll(keyword);		
+/**將membervo裡個人資料拿出**/
+	public Set<Map<String,String>> getAll(String keyword) {
+		Set<MemberVO> memberSet = dao.getAll(keyword);
+		Set<Map<String,String>> onlyNeeded = new HashSet<Map<String,String>>();
+		for(MemberVO memberVO : memberSet){
+			Map<String,String> map = new HashMap<String, String>();
+			map.put("member_id", memberVO.getMember_id().toString());
+			map.put("member_lastname", memberVO.getMember_lastname());
+			map.put("member_firstname", memberVO.getMember_firstname());
+			map.put("member_nickname", memberVO.getMember_nickname());			
+			onlyNeeded.add(map);
+		}
+		return onlyNeeded;
 	}
 	
 	public List<MemberVO> getAll(){

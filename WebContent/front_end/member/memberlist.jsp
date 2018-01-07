@@ -6,6 +6,7 @@
 <!-- 取得目前麵包屑位置 -->
 <% 	request.setAttribute("hereis", "center");%>
 <%	MemberVO memberVO = (MemberVO)session.getAttribute("member");
+	if(memberVO == null){memberVO = new MemberVO();}
 	FriendService friendSvc = new FriendService();
 	pageContext.setAttribute("friendSvc",friendSvc);%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -67,23 +68,7 @@
 							  </div>
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-4">
-							<div class="panel panel-info">
-								<div class="panel-heading">
-									<h3 class="panel-title">好友們</h3>
-								</div>
-								<div class="panel-body">
-								<c:forEach var="friend" items="${friendSvc.getOneMemFriends(member.member_id)}">
-                                    <a class="thumbnail friend">
-                                    	<span style="display:none">${friend.member_id}</span>
-    									<img src="<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=${friend.member_id}" style="width: 30%;border-radius: 30%;">
-    									<span>${friend.member_lastname}${friend.member_firstname}</span>
-                                    </a>							
-								</c:forEach>								
-								</div>
-							</div>
-						</div>
-						<div class="col-xs-12 col-sm-4">
+						<div class="col-xs-12 col-sm-8">
 							<div class="panel panel-success">
 								<div class="panel-heading">
 									<h3 class="panel-title">訊息</h3>
@@ -92,6 +77,28 @@
 								<div id="msgtextarea">
 								</div>
 							  </div>
+							</div>
+						</div>
+					</div>
+				</div>	
+				<div class="container">
+					<div class="row">
+						<div class="col-xs-12 col-sm-12">
+							<div class="panel panel-info">
+								<div class="panel-heading">
+									<h3 class="panel-title">好友們</h3>
+								</div>
+								<div class="panel-body">
+								<c:forEach var="friend" items="${friendSvc.getOneMemFriends(member.member_id)}">
+                                    <div class="col-xs-12 col-sm-2">
+	                                    <a class="thumbnail friend">
+	                                    	<span style="display:none">${friend.member_id}</span>
+	    									<img src="<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=${friend.member_id}" style="width: 30%;border-radius: 30%;">
+	    									<span>${friend.member_lastname}${friend.member_firstname}</span>
+	                                    </a>
+                                    </div>							
+								</c:forEach>								
+								</div>
 							</div>
 						</div>
 					</div>
@@ -116,7 +123,7 @@
     </body>
 <script type="text/javascript">
 	//搜尋會員
-	function search(tar){
+	function search(tar){		
 		$("#membetcontainer").empty();
 		var keyword = $(tar).val();
 		var fd = new FormData();
@@ -139,14 +146,11 @@
 	}
 
 	//查看好友訊息
-	$(".friend").click(function(){
+	$(".friend").click(function(){		
 		var area = '<div class="panel input-area"><input id="message" class="text-field"'
 		+'type="text" placeholder="Message" onkeydown="if (event.keyCode == 13)'
 		+'sendMessage();" /> <input type="submit" id="sendMessage" class="button" value="Send"'
-		+'onclick="sendMessage();" /> <input type="button" id="connect"'
-		+'class="button" value="Connect" onclick="connect();" /> <input type="button"' 
-		+'id="disconnect" class="button" value="Disconnect"'
-		+'onclick="disconnect();" /></div>';
+		+'onclick="sendMessage();" /></div>';
 		var friendID = ($(this).children("span")[0]);
 		$(friendID).text();
 		fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=getmsgs&myfriendID='+$(friendID).text()+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
@@ -167,6 +171,10 @@
 		    console.log(stringbuilder);
 			$("#msgtextarea").html(stringbuilder+area);
 		});			
-	})
+	});
+	
+	function sendMessage(){
+		console.log("sending");
+	}
 </script>
 </html>

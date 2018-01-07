@@ -339,12 +339,12 @@ public class MemberServlet extends HttpServlet {
 		if("search".equals(action)){
 			String keyword = req.getParameter("keyword");
 			MemberService memberSvc = new MemberService();
-			Set<MemberVO> memSet = new HashSet<MemberVO>();
+			Set<Map<String,String>> memSet = new HashSet<Map<String,String>>();
 			if(keyword != null && keyword.trim().length() != 0){
 				memSet = memberSvc.getAll(keyword.trim());
 			}
 			//超危險 需修改memberVO 把個資去除
-			Gson gson = new Gson();			
+			Gson gson = new Gson();
 			out.println(gson.toJson(memSet));
 			return;
 		}
