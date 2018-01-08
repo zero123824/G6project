@@ -52,9 +52,9 @@ public class FriendServlet extends HttpServlet {
 			    	case 3:break;
 		    	
 		    	}
-		    	System.out.println(unreadmsgs);
-		    	System.out.println(msgs);		    	
-		    	System.out.println(msg_status);
+//		    	System.out.println(unreadmsgs);
+//		    	System.out.println(msgs);		    	
+//		    	System.out.println(msg_status);
 		    	out.print(msgs);
 		    	return;
 

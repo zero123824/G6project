@@ -69,7 +69,7 @@
     <url-pattern>/front_end/index.jsp</url-pattern>
     <url-pattern>/front_end/member/membercenter.jsp</url-pattern>
     <url-pattern>/front_end/member/memberregister.jsp</url-pattern>
-	<url-pattern>/front_end/member/memberrelist.jsp</url-pattern>
+	<url-pattern>/front_end/member/memberlist.jsp</url-pattern>
     <url-pattern>/front_end/announcement/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
@@ -77,4 +77,9 @@
     <dispatcher>ERROR</dispatcher>
     <dispatcher>ASYNC</dispatcher>
   </filter-mapping>
+  
+  <context-param>
+        <param-name>org.apache.tomcat.websocket.textBufferSize</param-name>
+        <param-value>307200</param-value>
+  </context-param>
 </web-app>

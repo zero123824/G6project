@@ -32,9 +32,29 @@
 	.positiobright{
 		float: right;
     	color:#468f06;
+	}	
+	.sticky{
+		margin: 3px;
+		width:50px;
+		height:50px;
+		display:inline-block;
+		border-radius: 50%;
+	}
+	.messagediv{
+		margin: 5px;
+		background-color:white;
+		display: inline-table;
+		width: 60%;
+		border-radius: 17px;
+		padding:5px;
+	}
+	#textbody{
+		height: 420px;
+		overflow: auto;
+		background-color:#e0e0de;		
 	}
 </style>
-<body id="myPage">
+<body id="myPage" onunload="disconnect();">
 	<div class="wrapper">
         <!-- Include sidebar -->        
         <jsp:include page="/front_end/template/sidebar.jsp"/>
@@ -73,10 +93,16 @@
 								<div class="panel-heading">
 									<h3 class="panel-title">訊息</h3>
 								</div>
-								<div class="panel-body">
-								<div id="msgtextarea">
+								<div class="panel-body" id="textbody">
+									<div id="msgtextarea">
+									</div>								
 								</div>
-							  </div>
+								<div class="panel-footer">
+							  		<div class="input-area">
+										<input id="message" class="text-field" type="text" placeholder="Message" onkeydown="if (event.keyCode == 13)sendMessage();"/>
+										<input type="submit" id="sendMessage" class="button" value="Send" onclick="sendMessage();" />
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -144,15 +170,21 @@
 			})
 		});
 	}
-
+	var me = <%=memberVO.getMember_id()%>;
+	var EndPoint = "/FriendChat";
+	var host = window.location.host;
+	var path = window.location.pathname;
+	var webCtx = path.substring(0,path.indexOf('/',1));
+	var endPointURL = "ws://"+host+webCtx+EndPoint;
+	var connectArray = new Array();
+	var WSSessionArray = new Array();
+	var webSocket;
+	var friendId;
+	var friendName;
+	
 	//查看好友訊息
-	$(".friend").click(function(){		
-		var area = '<div class="panel input-area"><input id="message" class="text-field"'
-		+'type="text" placeholder="Message" onkeydown="if (event.keyCode == 13)'
-		+'sendMessage();" /> <input type="submit" id="sendMessage" class="button" value="Send"'
-		+'onclick="sendMessage();" /></div>';
-		var friendID = ($(this).children("span")[0]);
-		$(friendID).text();
+	$(".friend").click(function(){
+		friendID = ($(this).children("span")[0]);
 		fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=getmsgs&myfriendID='+$(friendID).text()+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
 		.then(function(response){
 			return response.text();})
@@ -168,13 +200,78 @@
 					stringbuilder += '<div class="name">'+who+':</div><br>'+that.split("　")[1]+'<br>';
 				}				
 			})
-		    console.log(stringbuilder);
-			$("#msgtextarea").html(stringbuilder+area);
+		    startWSSession($(friendID).text(),<%=memberVO.getMember_id()%>);
+			$("#msgtextarea").html(stringbuilder);
+	        $("#textbody").scrollTop($("#textbody")[0].scrollHeight);
 		});			
 	});
 	
-	function sendMessage(){
-		console.log("sending");
+	function startWSSession(friendID,myID){
+		var wsurl = endPointURL+"/"+friendID+"/"+myID;
+		if(connectArray.indexOf(wsurl) == -1){
+			connectArray.push(wsurl);
+			webSocket = new WebSocket(wsurl);
+			WSSessionArray.push({wsurl:webSocket});			
+		}else{				
+			WSSessionArray.forEach(function(ws){
+				if(ws.wsurl.url == wsurl){webSocket = ws.wsurl;}
+			});
+		}
+		console.log(webSocket);
+		webSocketOperation(webSocket,friendID,myID);
 	}
+
+	function webSocketOperation(webSocket,friendID,myID){
+		var picurl = "<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=";
+		webSocket.onopen = function(event) {			
+			console.log("WebSocket 成功連線");
+		};
+		webSocket.onmessage = function(event) {
+			var jsonObj = JSON.parse(event.data);
+	        var message = jsonObj.whoSend + ": " + jsonObj.message + "\r\n";
+	        var time = jsonObj.time;	       
+	        if(jsonObj.whoSend == me){
+		        $("#msgtextarea").append("<div class='messagediv positiobright'>"
+		        						+"<img src='"+picurl+myID+"' class='sticky positiobright'>"
+		        						+"<p style='color:#383838'>"+jsonObj.message+"</p>"
+		        						+"<p><small>"+time+"</small></p></div><br>");
+	        }else{
+		        $("#msgtextarea").append("<div class='messagediv'>"
+		        						 +"<img src='"+picurl+friendID+"' class='sticky'>"
+		        						 +"<p style='color:#383838;display: inline-block;'>"+jsonObj.message+"</p>"
+		        						 +"<p><small>"+time+"</small></p></div><br>");
+	        }
+	        $("#textbody").scrollTop($("#textbody")[0].scrollHeight);
+		};
+	}
+	
+	function sendMessage(){
+		var inputMessage = document.getElementById("message");
+	    var message = inputMessage.value.trim();
+	    var time = new Date();
+	    if(message == ""){inputMessage.focus();return}
+        var jsonObj = {"whoSend" : <%=memberVO.getMember_id()%>, "message" : message,"time" : formatAMPM(time)};
+		webSocket.send(JSON.stringify(jsonObj));
+		inputMessage.value = "";
+		inputMessage.focus();
+	}
+	
+	function disconnect () {
+		if(webSocket){
+			webSocket.close();
+		}
+	}
+	
+	function formatAMPM(date) {
+	    var hours = date.getHours();
+	    var minutes = date.getMinutes();
+	    var ampm = hours >= 12 ? 'PM' : 'AM';
+	    hours = hours % 12;
+	    hours = hours ? hours : 12; // the hour '0' should be '12'
+	    minutes = minutes < 10 ? '0'+minutes : minutes;
+	    var strTime = hours + ':' + minutes + ' ' + ampm;
+	    return strTime;
+	}   
+	
 </script>
 </html>
