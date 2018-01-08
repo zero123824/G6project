@@ -117,8 +117,9 @@
 								<div class="panel-body">
 								<c:forEach var="friend" items="${friendSvc.getOneMemFriends(member.member_id)}">
                                     <div class="col-xs-12 col-sm-2">
-	                                    <a class="thumbnail friend">
+	                                    <a class="thumbnail friend ${friend.member_id}">
 	                                    	<span style="display:none">${friend.member_id}</span>
+	                                    	<span class="badge" style="color:white;background-color:red;"></span>
 	    									<img src="<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=${friend.member_id}" style="width: 30%;border-radius: 30%;">
 	    									<span>${friend.member_lastname}${friend.member_firstname}</span>
 	                                    </a>
@@ -132,7 +133,7 @@
 
                 <!-- 到這裡結束 -->
 				<!-- include footer -->
-<%--                 <jsp:include page="/front_end/template/footer.jsp"/> --%>
+                <jsp:include page="/front_end/template/footer.jsp"/>
             </div>            
         </div>
 
@@ -178,13 +179,14 @@
 	var endPointURL = "ws://"+host+webCtx+EndPoint;
 	var connectArray = new Array();
 	var WSSessionArray = new Array();
-	var webSocket;
+	var nowWebSocket;
 	var friendId;
 	var friendName;
 	
 	//查看好友訊息
 	$(".friend").click(function(){
 		friendID = ($(this).children("span")[0]);
+		console.log($("#msgtextarea").text());
 		fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=getmsgs&myfriendID='+$(friendID).text()+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
 		.then(function(response){
 			return response.text();})
@@ -200,48 +202,60 @@
 					stringbuilder += '<div class="name">'+who+':</div><br>'+that.split("　")[1]+'<br>';
 				}				
 			})
-		    startWSSession($(friendID).text(),<%=memberVO.getMember_id()%>);
 			$("#msgtextarea").html(stringbuilder);
-	        $("#textbody").scrollTop($("#textbody")[0].scrollHeight);
+		    startWSSession($(friendID).text(),<%=memberVO.getMember_id()%>);
+			$("#textbody").scrollTop($("#textbody")[0].scrollHeight);
 		});			
 	});
 	
+	//為點擊不同好友開啟一條新的ws,如有舊的則從array中取出沿用。再進行ws操作
 	function startWSSession(friendID,myID){
+		$("a."+friendID).children("span.badge").text("");
 		var wsurl = endPointURL+"/"+friendID+"/"+myID;
 		if(connectArray.indexOf(wsurl) == -1){
 			connectArray.push(wsurl);
-			webSocket = new WebSocket(wsurl);
-			WSSessionArray.push({wsurl:webSocket});			
+			nowWebSocket = new WebSocket(wsurl);
+			WSSessionArray.push({wsurl:nowWebSocket});			
 		}else{				
-			WSSessionArray.forEach(function(ws){
-				if(ws.wsurl.url == wsurl){webSocket = ws.wsurl;}
+			WSSessionArray.forEach(function(ws){          //從已有的連線中撈取未讀取資料
+				if(ws.wsurl.url == wsurl){
+					nowWebSocket = ws.wsurl;
+					if(ws.msg){
+						ws.msg.forEach(function(jsonObj){
+							console.log(jsonObj);
+							parseMessage(jsonObj,friendID,myID);
+							console.log(ws);
+						});
+						ws.msg = "";
+					}
+				}
 			});
 		}
-		console.log(webSocket);
-		webSocketOperation(webSocket,friendID,myID);
+		webSocketOperation(nowWebSocket,friendID,myID);
 	}
 
+	//註冊不同session的ws事件與操作
 	function webSocketOperation(webSocket,friendID,myID){
-		var picurl = "<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=";
 		webSocket.onopen = function(event) {			
 			console.log("WebSocket 成功連線");
 		};
+		var unread = 0;
+		var msgArray = new Array();
 		webSocket.onmessage = function(event) {
-			var jsonObj = JSON.parse(event.data);
-	        var message = jsonObj.whoSend + ": " + jsonObj.message + "\r\n";
-	        var time = jsonObj.time;	       
-	        if(jsonObj.whoSend == me){
-		        $("#msgtextarea").append("<div class='messagediv positiobright'>"
-		        						+"<img src='"+picurl+myID+"' class='sticky positiobright'>"
-		        						+"<p style='color:#383838'>"+jsonObj.message+"</p>"
-		        						+"<p><small>"+time+"</small></p></div><br>");
-	        }else{
-		        $("#msgtextarea").append("<div class='messagediv'>"
-		        						 +"<img src='"+picurl+friendID+"' class='sticky'>"
-		        						 +"<p style='color:#383838;display: inline-block;'>"+jsonObj.message+"</p>"
-		        						 +"<p><small>"+time+"</small></p></div><br>");
-	        }
-	        $("#textbody").scrollTop($("#textbody")[0].scrollHeight);
+			if(webSocket == nowWebSocket){
+				var jsonObj = JSON.parse(event.data);
+				parseMessage(jsonObj,friendID,myID)
+			}else{
+				unread++;
+				WSSessionArray.forEach(function(ws){
+					if(ws.wsurl == webSocket){
+						var jsonObj = JSON.parse(event.data);
+						msgArray.push(jsonObj);
+						ws.msg = msgArray;
+						$("a."+friendID).children("span.badge").text(unread);
+					}
+				});
+			}
 		};
 	}
 	
@@ -251,14 +265,14 @@
 	    var time = new Date();
 	    if(message == ""){inputMessage.focus();return}
         var jsonObj = {"whoSend" : <%=memberVO.getMember_id()%>, "message" : message,"time" : formatAMPM(time)};
-		webSocket.send(JSON.stringify(jsonObj));
+        nowWebSocket.send(JSON.stringify(jsonObj));
 		inputMessage.value = "";
 		inputMessage.focus();
 	}
 	
 	function disconnect () {
-		if(webSocket){
-			webSocket.close();
+		if(nowWebSocket){
+			nowWebSocket.close();
 		}
 	}
 	
@@ -273,5 +287,24 @@
 	    return strTime;
 	}   
 	
+	function parseMessage(jsonObj,friendID,myID){
+		var picurl = "<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=";
+		var message = jsonObj.whoSend + ": " + jsonObj.message + "\r\n";
+		var time = jsonObj.time;	
+		if(jsonObj.whoSend == me){
+			console.log(jsonObj.whoSend);
+			$("#msgtextarea").append("<div class='messagediv positiobright'>"
+		        					 +"<img src='"+picurl+myID+"' class='sticky positiobright'>"
+		        					 +"<p style='color:#383838'>"+jsonObj.message+"</p>"
+		        					 +"<p><small>"+time+"</small></p></div><br>");
+		}else{
+			console.log(jsonObj.whoSend);
+			$("#msgtextarea").append("<div class='messagediv'>"
+		        					 +"<img src='"+picurl+friendID+"' class='sticky'>"
+		        					 +"<p style='color:#383838;display: inline-block;'>"+jsonObj.message+"</p>"
+		        					 +"<p><small>"+time+"</small></p></div><br>");
+		}
+		$("#textbody").scrollTop($("#textbody")[0].scrollHeight);		
+	}
 </script>
 </html>
