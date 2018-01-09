@@ -25,9 +25,9 @@ public class FriendDAO implements FriendDAO_interface{
 			e.printStackTrace();
 		}
 	}	
-	private static final String INSERT = "INSERT INTO FRIEND (MEMBER_ID1,MEMBER_ID2,RELATION_STATUS,MEMBER_MSG,MSG_STATUS) "
-										 + "VALUES(?,?,?,?,?)";
-	private static final String UPDATE = "UPDATE FRIEND SET RELATION_STATUS = ?, MEMBER_MSG=?, MSG_STATUS=? "
+	private static final String INSERT = "INSERT INTO FRIEND (MEMBER_ID1,MEMBER_ID2,RELATION_STATUS) "
+										 + "VALUES(?,?,?)";
+	private static final String UPDATE = "UPDATE FRIEND SET RELATION_STATUS = ?,MEMBER_MSG=?,LAST_MSG_TIME=?,MEMBER_ID1_UNREAD=?,MEMBER_ID2_UNREAD=?, MSG_STATUS=?"
 										 +"WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
 	private static final String DELETE = "DELETE FROM FRIEND WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
 	private static final String GETONEMEMFRIEND = "SELECT * FROM FRIEND WHERE MEMBER_ID1 = ? OR MEMBER_ID2 = ?";
@@ -44,8 +44,6 @@ public class FriendDAO implements FriendDAO_interface{
 			psmt.setInt(1, newfriend.getMember_id1());
 			psmt.setInt(2, newfriend.getMember_id2());
 			psmt.setInt(3, newfriend.getRelation_status());
-			psmt.setCharacterStream(4, reader);
-			psmt.setInt(5, newfriend.getMsg_status());
 			psmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -75,12 +73,14 @@ public class FriendDAO implements FriendDAO_interface{
 			con = ds.getConnection();
 			Reader reader = new StringReader(friendVO.getMember_msg());
 			psmt = con.prepareStatement(UPDATE);
-			psmt.setInt(4, friendVO.getMember_id1());
-			psmt.setInt(5, friendVO.getMember_id2());
+			psmt.setInt(7, friendVO.getMember_id1());
+			psmt.setInt(8, friendVO.getMember_id2());
 			psmt.setInt(1, friendVO.getRelation_status());
 			psmt.setCharacterStream(2, reader);
-			psmt.setInt(3, friendVO.getMsg_status());
-
+			psmt.setTimestamp(3, friendVO.getLast_msg_time());
+			psmt.setInt(4, friendVO.getMember_id1_unread());
+			psmt.setInt(5, friendVO.getMember_id2_unread());
+			psmt.setInt(6, friendVO.getMsg_status());
 			psmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -152,7 +152,10 @@ public class FriendDAO implements FriendDAO_interface{
 				friend.setMember_id2(rs.getInt(2));
 				friend.setRelation_status(rs.getInt(3));
 				friend.setMember_msg(rs.getString(4));
-				friend.setMsg_status(rs.getInt(5));
+				friend.setLast_msg_time(rs.getTimestamp(5));
+				friend.setMember_id1_unread(rs.getInt(6));
+				friend.setMember_id2_unread(rs.getInt(7));
+				friend.setMsg_status(rs.getInt(8));
 				memfriendList.add(friend);
 			}
 		} catch (SQLException e) {
@@ -201,7 +204,10 @@ public class FriendDAO implements FriendDAO_interface{
 				friendVO.setMember_id2(rs.getInt(2));
 				friendVO.setRelation_status(rs.getInt(3));
 				friendVO.setMember_msg(rs.getString(4));
-				friendVO.setMsg_status(rs.getInt(5));
+				friendVO.setLast_msg_time(rs.getTimestamp(5));
+				friendVO.setMember_id1_unread(rs.getInt(6));
+				friendVO.setMember_id2_unread(rs.getInt(7));
+				friendVO.setMsg_status(rs.getInt(8));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

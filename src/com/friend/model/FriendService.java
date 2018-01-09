@@ -1,5 +1,7 @@
 package com.friend.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,19 +47,34 @@ public class FriendService {
 	public Set<MemberVO> getOneMemFriends(Integer member_id) {
 		Set<MemberVO> friends = new LinkedHashSet<MemberVO>();
 		List<FriendVO> onememfriendlist = dao.getOneMemFriends(member_id);
+		Collections.sort(onememfriendlist);
 		for(FriendVO friendVO : onememfriendlist){
 			MemberVO onemem = new MemberVO();
 			onemem = memdao.findByPK(friendVO.getMember_id1());
 			friends.add(onemem);
 			onemem = memdao.findByPK(friendVO.getMember_id2());
 			friends.add(onemem);
+			System.out.println(friendVO.getLast_msg_time());
 		}
-		friends.remove(memdao.findByPK(member_id));
+		friends.remove(memdao.findByPK(member_id));		
 		return friends;
 	}
 	
 	public FriendVO getRelationInTwo(Integer member_id1, Integer member_id2) {
 		FriendVO relationInTwo = dao.getRelationInTwo(member_id1, member_id2);
 		return relationInTwo;	
+	}
+	
+	public boolean updateMessage(Integer member_id1 ,Integer member_id2,String member_msg,Integer msg_status,Long nowtime){
+		FriendVO friendVO = dao.getRelationInTwo(member_id1, member_id2) ;
+		if(friendVO.getRelation_status() == null){
+			friendVO = dao.getRelationInTwo(member_id2, member_id1);
+		}		
+		friendVO.setRelation_status(1);
+		friendVO.setMember_msg(friendVO.getMember_msg()+"\n"+member_msg);
+		friendVO.setMsg_status(msg_status);
+		friendVO.setLast_msg_time(new java.sql.Timestamp(nowtime));
+		dao.update(friendVO);		
+		return true;
 	}
 }

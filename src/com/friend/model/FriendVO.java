@@ -2,12 +2,16 @@ package com.friend.model;
 
 import java.io.Serializable;
 
-public class FriendVO implements Serializable {
+public class FriendVO implements Serializable,Comparable<FriendVO> {
 	private static final long serialVersionUID = 1L;
+	
 	private Integer member_id1;
 	private Integer member_id2;
 	private Integer relation_status;
 	private String member_msg;
+	private java.sql.Timestamp last_msg_time;
+	private Integer member_id1_unread;
+	private Integer member_id2_unread;
 	private Integer msg_status;
 	
 	public Integer getMember_id1() {
@@ -45,8 +49,35 @@ public class FriendVO implements Serializable {
 		this.msg_status = msg_status;
 		return this;
 	}
-	
-
-
-
+	public java.sql.Timestamp getLast_msg_time() {
+		return last_msg_time;
+	}
+	public FriendVO setLast_msg_time(java.sql.Timestamp last_msg_time) {
+		this.last_msg_time = last_msg_time;
+		return this;
+	}
+	public Integer getMember_id1_unread() {
+		return member_id1_unread;
+	}
+	public FriendVO setMember_id1_unread(Integer member_id1_unread) {
+		this.member_id1_unread = member_id1_unread;
+		return this;
+	}
+	public Integer getMember_id2_unread() {
+		return member_id2_unread;
+	}
+	public FriendVO setMember_id2_unread(Integer member_id2_unread) {
+		this.member_id2_unread = member_id2_unread;
+		return this;
+	}
+	@Override
+	public int compareTo(FriendVO friendVO) {
+		if(this.getLast_msg_time().getTime()<friendVO.getLast_msg_time().getTime()){
+			return 1;
+		}else if(this.getLast_msg_time().getTime() == friendVO.getLast_msg_time().getTime()){
+			return 0;
+		}else{
+			return -1;
+		}
+	}
 }

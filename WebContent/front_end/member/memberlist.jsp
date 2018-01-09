@@ -186,23 +186,33 @@
 	//查看好友訊息
 	$(".friend").click(function(){
 		friendID = ($(this).children("span")[0]);
-		console.log($("#msgtextarea").text());
+		$(".friend").each(function(index){			
+			$(this).css("background-color","white");
+		})
+		$(this).css("background-color","#F2DEDE");
+		$("#msgtextarea").text("");
 		fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=getmsgs&myfriendID='+$(friendID).text()+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
 		.then(function(response){
 			return response.text();})
 		.then(function(msgs){
-			vMsg = msgs.replace(/\n/g,"<br>");				
-			var array = vMsg.split("<br>");
-			var stringbuilder = "";
-			array.forEach(function(that){
-				var who = that.split("　")[0];
-				if(who == 'Me'){
-					stringbuilder += '<b class="positiobright">'+that.split("　")[1]+'</b>';
-				}else if (who != null){
-					stringbuilder += '<div class="name">'+who+':</div><br>'+that.split("　")[1]+'<br>';
-				}				
+			var jsonarray = msgs.split(/\n/g);
+			jsonarray.forEach(function(vjson){
+	 			var jsonObj = JSON.parse(vjson);
+				parseMessage(jsonObj,$(friendID).text(),me);
 			})
-			$("#msgtextarea").html(stringbuilder);
+// 			var jsonObj = JSON.parse(msgs);
+// 			vMsg = msgs.replace(/\n/g,"<br>");				
+// 			var array = vMsg.split("<br>");
+// 			var stringbuilder = "";
+// 			array.forEach(function(that){
+// 				var who = that.split("　")[0];
+// 				if(who == me){
+// 					stringbuilder += '<b class="positiobright">'+that.split("　")[1]+'</b>';
+// 				}else if (who != null){
+// 					stringbuilder += '<div class="name">'+who+':</div><br>'+that.split("　")[1]+'<br>';
+// 				}				
+// 			})
+// 			$("#msgtextarea").html(stringbuilder);
 		    startWSSession($(friendID).text(),<%=memberVO.getMember_id()%>);
 			$("#textbody").scrollTop($("#textbody")[0].scrollHeight);
 		});			
@@ -222,9 +232,7 @@
 					nowWebSocket = ws.wsurl;
 					if(ws.msg){
 						ws.msg.forEach(function(jsonObj){
-							console.log(jsonObj);
 							parseMessage(jsonObj,friendID,myID);
-							console.log(ws);
 						});
 						ws.msg = "";
 					}
@@ -292,13 +300,11 @@
 		var message = jsonObj.whoSend + ": " + jsonObj.message + "\r\n";
 		var time = jsonObj.time;	
 		if(jsonObj.whoSend == me){
-			console.log(jsonObj.whoSend);
 			$("#msgtextarea").append("<div class='messagediv positiobright'>"
 		        					 +"<img src='"+picurl+myID+"' class='sticky positiobright'>"
 		        					 +"<p style='color:#383838'>"+jsonObj.message+"</p>"
 		        					 +"<p><small>"+time+"</small></p></div><br>");
 		}else{
-			console.log(jsonObj.whoSend);
 			$("#msgtextarea").append("<div class='messagediv'>"
 		        					 +"<img src='"+picurl+friendID+"' class='sticky'>"
 		        					 +"<p style='color:#383838;display: inline-block;'>"+jsonObj.message+"</p>"

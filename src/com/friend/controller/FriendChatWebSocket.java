@@ -1,6 +1,8 @@
 package com.friend.controller;
 
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -15,11 +17,13 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import com.friend.model.FriendService;
+
 @ServerEndpoint("/FriendChat/{friendID}/{myID}")
 public class FriendChatWebSocket {
 
 private static final Map<String,Set<Session>> allRelationAndSessions = new ConcurrentHashMap<>();
-	
+private static final Map<String,String> messageBufferedMap = new HashMap<String,String>();
 	@OnOpen
 	public void onOpen(@PathParam("friendID") String friendID, @PathParam("myID") String myID, Session userSession) {
 		String relation = relationChecked(friendID,myID);
@@ -38,11 +42,22 @@ private static final Map<String,Set<Session>> allRelationAndSessions = new Concu
 	public void OnMessage(@PathParam("friendID") String friendID, @PathParam("myID") String myID ,Session userSession, String message){
 		String relation = relationChecked(friendID,myID);
 		Set<Session> sessionInRelation = allRelationAndSessions.get(relation);
-		for (Session session : sessionInRelation) {
-			if (session.isOpen())
-				session.getAsyncRemote().sendText(message);
+		String messageBuffered = messageBufferedMap.get(relation);
+		Long nowtime = new Date().getTime();
+		messageBufferedMap.put(relation, messageBuffered+message);
+		FriendService friendSvc = new FriendService();
+		if(friendSvc.updateMessage(Integer.valueOf(friendID), Integer.valueOf(myID), message, 1,nowtime)){
+			for (Session session : sessionInRelation) {
+				if (session.isOpen())
+					session.getAsyncRemote().sendText(message);
+			}
+			System.out.println("Message received: " + message);	
 		}
-		System.out.println("Message received: " + message);
+		
+		new Thread(){
+			void Run(){				
+			}
+		}.start();
 	}
 	
 	@OnError
