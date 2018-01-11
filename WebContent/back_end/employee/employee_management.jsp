@@ -2,6 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="java.util.*"%>  
 <%
 	EmployeeService empSvc = new EmployeeService();
@@ -144,8 +145,8 @@
 				<td class="emp_name">${empVO.emp_name}</td>
 				<td class="emp_email">${empVO.emp_email}</td>
 				<td class="emp_hiredate">${empVO.emp_hiredate}</td>
-				<td class="emp_phone">${empVO.emp_phone}</td>
-				<td class="last_activity">${empVO.last_activity}</td> 
+				<td class="emp_phone">${empVO.emp_phone}</td>				
+				<td class="last_activity"><fmt:formatDate value="${empVO.last_activity}" pattern="yyyy-MM-dd HH:mm:ss"/></td> 
 				<td class="inserviced">${(empVO.inserviced == 1) ? "在職":"離職"}</td>
 				<td>
 				     <input type="submit" value="修改" class="editable" <c:if test="${(empVO.inserviced) == 2}">disabled</c:if>>

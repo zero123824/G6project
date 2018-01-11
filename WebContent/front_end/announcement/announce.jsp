@@ -3,6 +3,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <% request.setAttribute("hereis", "announce");%>
 <%	AnnouncementService anncmSvc = new AnnouncementService();
 	if(request.getParameter("announce_id") != null){
@@ -59,7 +60,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-xs-12 col-sm-12">
-						<h2><time class="date">${thisanna.announce_time}</time></h2>
+						<h2><time class="date"><fmt:formatDate value="${thisanna.announce_time}" pattern="yyyy-MM-dd"/></time></h2>
 						<h2>${thisanna.announce_title}</h2>
 						<div class="content"><c:forEach var="ln" items="${content}">
 							${ln}<br>
@@ -82,11 +83,4 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 	<script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>
 </body>
-<script>
-	$(".date").each(function(){
-		var time = $(this).text();
-		var chain = time.split("-")[0]+"/"+time.split("-")[1]+"/"+time.split("-")[2]
-		$(this).text(chain.substring(0,10));			
-	});	
-</script>
 </html>

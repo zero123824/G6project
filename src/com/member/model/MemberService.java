@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.friend.model.FriendService;
+import com.friend.model.FriendVO;
 import com.genre.model.GenreDAO;
 import com.genre.model.GenreDAO_interface;
 import com.member_favor.model.MemberFavorDAO;
@@ -109,6 +111,7 @@ public class MemberService {
 /**將membervo裡個人資料拿出**/
 	public Set<Map<String,String>> getAll(String keyword) {
 		Set<MemberVO> memberSet = dao.getAll(keyword);
+		memberSet.remove(dao.findByAccount("guest"));
 		Set<Map<String,String>> onlyNeeded = new HashSet<Map<String,String>>();
 		for(MemberVO memberVO : memberSet){
 			Map<String,String> map = new HashMap<String, String>();
@@ -121,6 +124,50 @@ public class MemberService {
 		return onlyNeeded;
 	}
 	
+/**已經登入的會員找其他會員，確認好友關係**/
+	public Set<Map<String,String>> getAll(String keyword,String whoS) {
+		Set<MemberVO> memberSet = dao.getAll(keyword);
+		memberSet.remove(dao.findByAccount("guest"));
+		Integer who = Integer.valueOf(whoS);
+		FriendService friendSvc = new FriendService(); 
+		Set<MemberVO> whosfriend = friendSvc.getOneMemFriends(who);
+		
+		//確認好友關係狀態0or1or2
+		List<FriendVO> list = friendSvc.getFriendRelation(who);
+		Set<MemberVO> friendpending = new HashSet<MemberVO>();
+		for(FriendVO friendVO : list){
+			MemberVO onemem = new MemberVO();
+			if(friendVO.getRelation_status() == 0 ){
+				onemem = dao.findByPK(friendVO.getMember_id1());
+				friendpending.add(onemem);
+				onemem = dao.findByPK(friendVO.getMember_id2());
+				friendpending.add(onemem);
+			}else if(friendVO.getRelation_status() == 1){
+				
+			}else {
+				
+			} 
+		}
+		
+		
+		Set<Map<String,String>> onlyNeeded = new HashSet<Map<String,String>>();
+		for(MemberVO memberVO : memberSet){
+			Map<String,String> map = new HashMap<String, String>();
+			map.put("member_id", memberVO.getMember_id().toString());
+			map.put("member_lastname", memberVO.getMember_lastname());
+			map.put("member_firstname", memberVO.getMember_firstname());
+			map.put("member_nickname", memberVO.getMember_nickname());
+			if(whosfriend.contains(memberVO)){
+				map.put("havebeenfriend", "true");
+			};
+			
+			if(friendpending.contains(memberVO)){
+				map.put("pending", "true");
+			}
+			onlyNeeded.add(map);
+		}
+		return onlyNeeded;
+	}	
 	public List<MemberVO> getAll(){
 		return dao.getAll();
 	}

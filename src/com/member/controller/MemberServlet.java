@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,12 +17,10 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -337,13 +334,18 @@ public class MemberServlet extends HttpServlet {
 		
 		/**********************全會員搜尋****************************/
 		if("search".equals(action)){
-			String keyword = req.getParameter("keyword");
+			//每搜尋一次，從會員表格中進行全搜尋
+			String keyword = req.getParameter("keyword");			
 			MemberService memberSvc = new MemberService();
 			Set<Map<String,String>> memSet = new HashSet<Map<String,String>>();
 			if(keyword != null && keyword.trim().length() != 0){
-				memSet = memberSvc.getAll(keyword.trim());
+				//如果會員有登入，用ID找會員關係
+				if(!req.getParameter("who").equals("null")){
+					memSet = memberSvc.getAll(keyword.trim(),req.getParameter("who"));
+				}else{
+					memSet = memberSvc.getAll(keyword.trim());
+				}
 			}
-			//超危險 需修改memberVO 把個資去除
 			Gson gson = new Gson();
 			out.println(gson.toJson(memSet));
 			return;

@@ -18,24 +18,28 @@ public class FriendService {
 		memdao = new MemberDAO();
 	}
 	
-	public FriendVO add(Integer member_id1 ,Integer member_id2,String member_msg) {
+	public FriendVO add(Integer member_id1 ,Integer member_id2,String member_msg,Long nowtime) {
 		FriendVO friendVO = new FriendVO();
 		friendVO.setMember_id1(member_id1);
 		friendVO.setMember_id2(member_id2);
 		friendVO.setRelation_status(0);
 		friendVO.setMember_msg(member_msg);
+		friendVO.setLast_msg_time(new java.sql.Timestamp(nowtime));
 		friendVO.setMsg_status(0);
 		dao.add(friendVO);
 		return friendVO;
 	}
 	
-	public FriendVO update(Integer member_id1 ,Integer member_id2,Integer relation_status,String member_msg,Integer msg_status) {
+	public FriendVO update(Integer member_id1 ,Integer member_id2,Integer relation_status,String member_msg,Integer msg_status,Long nowtime) {
 		FriendVO friendVO = new FriendVO();
 		friendVO.setMember_id1(member_id1);
 		friendVO.setMember_id2(member_id2);
 		friendVO.setRelation_status(relation_status);
+		friendVO.setMember_id1_unread(0);
+		friendVO.setMember_id2_unread(0);
+		friendVO.setLast_msg_time(new java.sql.Timestamp(nowtime));
 		friendVO.setMember_msg(member_msg);
-		friendVO.setMsg_status(msg_status);		
+		friendVO.setMsg_status(msg_status);
 		dao.update(friendVO);
 		return friendVO;
 	}
@@ -54,10 +58,15 @@ public class FriendService {
 			friends.add(onemem);
 			onemem = memdao.findByPK(friendVO.getMember_id2());
 			friends.add(onemem);
-			System.out.println(friendVO.getLast_msg_time());
 		}
-		friends.remove(memdao.findByPK(member_id));		
+		friends.remove(memdao.findByPK(member_id));
 		return friends;
+	}
+	
+	public List<FriendVO> getFriendRelation(Integer member_id) {
+		List<FriendVO> onememfriendlist = dao.getOneMemFriends(member_id);
+		Collections.sort(onememfriendlist);
+		return onememfriendlist;
 	}
 	
 	public FriendVO getRelationInTwo(Integer member_id1, Integer member_id2) {
@@ -65,16 +74,21 @@ public class FriendService {
 		return relationInTwo;	
 	}
 	
-	public boolean updateMessage(Integer member_id1 ,Integer member_id2,String member_msg,Integer msg_status,Long nowtime){
-		FriendVO friendVO = dao.getRelationInTwo(member_id1, member_id2) ;
+	public boolean updateMessage(Integer receiver ,Integer sender,String member_msg,Integer msg_status,Long nowtime){
+		FriendVO friendVO = dao.getRelationInTwo(receiver, sender) ;
+		Integer unread = 0;
+		friendVO.setMember_id1_unread(++unread);
 		if(friendVO.getRelation_status() == null){
-			friendVO = dao.getRelationInTwo(member_id2, member_id1);
-		}		
-		friendVO.setRelation_status(1);
+			friendVO = dao.getRelationInTwo(sender, receiver);
+			unread = friendVO.getMember_id2_unread();
+			friendVO.setMember_id2_unread(++unread);
+		}
+		unread = friendVO.getMember_id1_unread();
+		friendVO.setRelation_status(friendVO.getRelation_status());
 		friendVO.setMember_msg(friendVO.getMember_msg()+"\n"+member_msg);
 		friendVO.setMsg_status(msg_status);
 		friendVO.setLast_msg_time(new java.sql.Timestamp(nowtime));
-		dao.update(friendVO);		
+		dao.update(friendVO);
 		return true;
 	}
 }

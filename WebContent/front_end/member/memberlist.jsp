@@ -29,7 +29,15 @@
     	float: right;
     	color:#468f06;
 	}
-	.positiobright{
+	.checked{
+	    float: right;
+		color:red;
+	}
+	.pending{
+	    float: right;
+	    color:blue;	    
+	}
+	.positionright{
 		float: right;
     	color:#468f06;
 	}	
@@ -53,8 +61,19 @@
 		overflow: auto;
 		background-color:#e0e0de;		
 	}
+	#accept,#reject{
+	    margin: 2px;
+		float: right;
+		border-radius: 10px;
+		border: 0;
+    	box-shadow: 1px 2px #ecafaf;		
+	}
+	#accept{
+		background-color:#c9302c;
+		color:#fff;				
+	}
 </style>
-<body id="myPage" onunload="disconnect();">
+<body id="myPage" onload="arrange()" onunload="disconnect();">
 	<div class="wrapper">
         <!-- Include sidebar -->        
         <jsp:include page="/front_end/template/sidebar.jsp"/>
@@ -99,8 +118,8 @@
 								</div>
 								<div class="panel-footer">
 							  		<div class="input-area">
-										<input id="message" class="text-field" type="text" placeholder="Message" onkeydown="if (event.keyCode == 13)sendMessage();"/>
-										<input type="submit" id="sendMessage" class="button" value="Send" onclick="sendMessage();" />
+										<input id="message" class="text-field" type="text" placeholder="輸入訊息......." onkeydown="if (event.keyCode == 13)sendMessage();" disabled="disabled"/>
+										<input type="submit" id="sendMessage" class="button" value="Send" onclick="sendMessage();" disabled="disabled"/>
 									</div>
 								</div>
 							</div>
@@ -116,11 +135,11 @@
 								</div>
 								<div class="panel-body">
 								<c:forEach var="friend" items="${friendSvc.getOneMemFriends(member.member_id)}">
-                                    <div class="col-xs-12 col-sm-2">
+                                    <div class="col-xs-12 col-sm-2 friendArray" style="height:80px" >
 	                                    <a class="thumbnail friend ${friend.member_id}">
 	                                    	<span style="display:none">${friend.member_id}</span>
 	                                    	<span class="badge" style="color:white;background-color:red;"></span>
-	    									<img src="<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=${friend.member_id}" style="width: 30%;border-radius: 30%;">
+	    									<img src="<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=${friend.member_id}" style="width: 40px;height:40px;border-radius: 30%;">
 	    									<span>${friend.member_lastname}${friend.member_firstname}</span>
 	                                    </a>
                                     </div>							
@@ -148,13 +167,54 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 		<script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>	
     </body>
+<c:forEach var="relation" items="${friendSvc.getFriendRelation(member.member_id)}">
+	<span style="display:none" class="arraytime">${relation.last_msg_time}</span>
+	<span style="display:none" class="arrayStatus">${relation.relation_status}</span>	
+</c:forEach>
+    
 <script type="text/javascript">
+	
+	//排序好友與顯示未讀訊息
+	function arrange(){
+		var friensArray=$(".friendArray").toArray();
+		var friendTimeArray =$(".arraytime").toArray();
+		var friendStatusArray =$(".arrayStatus").toArray();
+		var friendBindArray = new Array();
+		var friendID;
+		friensArray.forEach(function(that){
+			var jsonObject = new Object();
+			jsonObject.name = that;
+			jsonObject.time = (friendTimeArray[friensArray.indexOf(that)]).innerHTML;
+			jsonObject.status = (friendStatusArray[friensArray.indexOf(that)]).innerHTML;
+			friendBindArray.push(jsonObject);
+			var friend = ($(jsonObject.name).find("a.friend span")[0]);
+			friendID = ($(friend).text());			
+		});
+		console.log(friendBindArray);
+		fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=getfriendsStatus&friendID='+friendID+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
+		.then(function(response){
+			if(response.status == 200 && response.statusText == "OK"){
+				return (response.json())
+			}
+		})
+		.then(function(msg){
+			$(msg).each(function(index){
+				var friendBadge = friendBindArray[index].name;
+				var unread = JSON.parse(msg[index]).unread;
+				if(unread != "0"){
+					$(friendBadge).find(".badge").text(unread);
+				}
+			});
+		})		
+	}
+	
 	//搜尋會員
 	function search(tar){		
 		$("#membetcontainer").empty();
 		var keyword = $(tar).val();
 		var fd = new FormData();
 		fd.set("keyword",keyword);
+		fd.set("who",me);
 		//ajax回傳搜尋會員 回傳json陣列
 		fetch('<%=request.getContextPath()%>/front_end/member/member.do?action=search',{method: 'post',body:fd})
 		.then(function(response){
@@ -162,16 +222,42 @@
 		})
 		.then(function(msg){
 			$(msg).each(function(index){
-				console.log(index);
 				var membername = $(this)[0].member_lastname+$(this)[0].member_firstname;
 				var memberid = $(this)[0].member_id;
 				var membernick = $(this)[0].member_nickname;
 				var picurl = "<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=";
-				$("#membetcontainer").append("<li class='list-group-item'><img src='"+picurl+memberid+"' style='width:80px;height:80px;display:inline-block'><p style='display:inline-block;color:black;'>"+membername+"("+membernick+")"+"</p><i class='fa fa-plus-circle plus' aria-hidden='true'></i><br>");				
+				var havebeenfriend = $(this)[0].havebeenfriend;
+				var pending = $(this)[0].pending;
+				if(havebeenfriend == "true" && pending != "true" && memberid != me.toString()){
+					$("#membetcontainer").append("<li class='list-group-item'><img src='"+picurl+memberid+"' style='width:80px;height:80px;display:inline-block'><p style='display:inline-block;color:black;'>"+membername+"("+membernick+")"+"</p><input type='hidden' value='"+memberid+"'><i class='fa fa-check-circle checked' aria-hidden='true'>已是好友</i><br>");	
+				}else if(memberid == me.toString()){
+					$("#membetcontainer").append("<li class='list-group-item'><img src='"+picurl+memberid+"' style='width:80px;height:80px;display:inline-block'><p style='display:inline-block;color:black;'>"+membername+"("+membernick+")"+"</p><br>");
+				}else if(pending == "true"){
+					$("#membetcontainer").append("<li class='list-group-item'><img src='"+picurl+memberid+"' style='width:80px;height:80px;display:inline-block'><p style='display:inline-block;color:black;'>"+membername+"("+membernick+")"+"</p><input type='hidden' value='"+memberid+"'><i class='fa fa-clock-o pending' aria-hidden='true'>請求中</i><br>");
+				}else{
+					$("#membetcontainer").append("<li class='list-group-item'><img src='"+picurl+memberid+"' style='width:80px;height:80px;display:inline-block'><p style='display:inline-block;color:black;'>"+membername+"("+membernick+")"+"</p><input type='hidden' value='"+memberid+"'><i class='fa fa-plus-circle plus' onclick='befriend(this)' data-toggle='tooltip' title='加為好友' aria-hidden='true'></i><br>");
+				} 
 			})
+			trigger();
 		});
 	}
-	var me = <%=memberVO.getMember_id()%>;
+	function trigger(){
+		$(".plus").hover(function(that){
+		    $('[data-toggle="tooltip"]').tooltip(); 
+		})
+	}
+	function befriend(that){
+		var friendID = $(that).prev("input").val();		
+		fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=pending&friendID='+friendID+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
+		.then(function(response){
+			if(response.status == 200 && response.statusText == "OK"){
+				$(that).removeClass("fa fa-plus-circle plus").addClass("fa fa-clock-o pending");
+				$(that).append("請求中");
+				$(that).removeAttr("onclick data-original-title");
+			}
+		});
+	}
+	var me = (!<%=memberVO.getMember_id()%>)?  0 : <%=memberVO.getMember_id()%>;
 	var EndPoint = "/FriendChat";
 	var host = window.location.host;
 	var path = window.location.pathname;
@@ -181,10 +267,14 @@
 	var WSSessionArray = new Array();
 	var nowWebSocket;
 	var friendId;
-	var friendName;
+	var friendFocus;
 	
 	//查看好友訊息
-	$(".friend").click(function(){
+	$(".friend").click(function(that){
+		friendFocus = that.target;
+		var picurl = "<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=";
+		$("#sendMessage").attr("disabled","true");
+		$("#message").attr("disabled","true");
 		friendID = ($(this).children("span")[0]);
 		$(".friend").each(function(index){			
 			$(this).css("background-color","white");
@@ -195,11 +285,32 @@
 		.then(function(response){
 			return response.text();})
 		.then(function(msgs){
-			var jsonarray = msgs.split(/\n/g);
-			jsonarray.forEach(function(vjson){
-	 			var jsonObj = JSON.parse(vjson);
-				parseMessage(jsonObj,$(friendID).text(),me);
-			})
+			var BIGjson = JSON.parse(msgs);	
+	    	//查詢位置在2的不是好友關係，->好友請求
+			if(BIGjson.relation_status == 2){
+				$("#sendMessage").removeAttr("disabled");
+				$("#message").removeAttr("disabled");
+				if(!BIGjson.message){
+					$("#msgtextarea").append("<div class='messagediv'>"
+							 +"<p style='color:#383838'>你們已經成為好友!趕快留下第一則訊息吧</p><br>"
+							 +"</div>");					
+				}else{
+					var jsonarray = BIGjson.message.split(/\n/g);
+					jsonarray.forEach(function(vjson){
+		 				var jsonObj = JSON.parse(vjson);
+						parseMessage(jsonObj,$(friendID).text(),me);
+					});
+				}
+			}else if(BIGjson.relation_status == 0 && BIGjson.position == 2){
+				$("#msgtextarea").append("<div class='messagediv'>"
+										 +"<img src='"+picurl+$(friendID).text()+"' class='sticky'>"
+				 		  				 +"<p style='color:#383838'>請求成為好友!!</p><br>"
+										 +"<button class='btn' id='reject'>拒絕</button><button class='btn' id='accept' onclick='acceptinvite()'>接受</button></div>");
+			}else{
+				$("#msgtextarea").append("<h1>好友邀請已經送出!!!等待接受</h1>");
+			}			
+		    startWSSession($(friendID).text(),<%=memberVO.getMember_id()%>);
+			$("#textbody").scrollTop($("#textbody")[0].scrollHeight);
 // 			var jsonObj = JSON.parse(msgs);
 // 			vMsg = msgs.replace(/\n/g,"<br>");				
 // 			var array = vMsg.split("<br>");
@@ -213,11 +324,17 @@
 // 				}				
 // 			})
 // 			$("#msgtextarea").html(stringbuilder);
-		    startWSSession($(friendID).text(),<%=memberVO.getMember_id()%>);
-			$("#textbody").scrollTop($("#textbody")[0].scrollHeight);
 		});			
 	});
 	
+	function acceptinvite(){
+		fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=befriend&friendID='+$(friendID).text()+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
+		.then(function(response){
+			if(response.status == 200 && response.statusText == "OK"){
+				$(friendFocus).click();
+			}
+		});
+	}	
 	//為點擊不同好友開啟一條新的ws,如有舊的則從array中取出沿用。再進行ws操作
 	function startWSSession(friendID,myID){
 		$("a."+friendID).children("span.badge").text("");
@@ -252,6 +369,7 @@
 		webSocket.onmessage = function(event) {
 			if(webSocket == nowWebSocket){
 				var jsonObj = JSON.parse(event.data);
+				console.log(jsonObj);
 				parseMessage(jsonObj,friendID,myID)
 			}else{
 				unread++;
@@ -296,12 +414,15 @@
 	}   
 	
 	function parseMessage(jsonObj,friendID,myID){
+		if(jsonObj == null){
+			return;
+		}
 		var picurl = "<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=";
 		var message = jsonObj.whoSend + ": " + jsonObj.message + "\r\n";
-		var time = jsonObj.time;	
+		var time = jsonObj.time;		
 		if(jsonObj.whoSend == me){
-			$("#msgtextarea").append("<div class='messagediv positiobright'>"
-		        					 +"<img src='"+picurl+myID+"' class='sticky positiobright'>"
+			$("#msgtextarea").append("<div class='messagediv positionright'>"
+		        					 +"<img src='"+picurl+myID+"' class='sticky positionright'>"
 		        					 +"<p style='color:#383838'>"+jsonObj.message+"</p>"
 		        					 +"<p><small>"+time+"</small></p></div><br>");
 		}else{

@@ -4,6 +4,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <% request.setAttribute("hereis", "announce");%>
 <%	AnnouncementService anncmSvc = new AnnouncementService();
 	List<AnnouncementVO> announcelist = anncmSvc.getAll();
@@ -73,8 +74,8 @@
 						<div class="line"></div>						
 						<ul class="list-unstyled announce">
 							<c:forEach var="announce" items="${announcelist}">
-							<li><time class="date">${announce.announce_time}</time><a href="<%=request.getContextPath()%>/front_end/announcement/announce.jsp?announce_id=${announce.announce_id}">　${announce.announce_title} </a></li>
-							<div class="line"></div>							
+							<li><time class="date"><fmt:formatDate value="${announce.announce_time}" pattern="yyyy-MM-dd"/></time><a href="<%=request.getContextPath()%>/front_end/announcement/announce.jsp?announce_id=${announce.announce_id}">　${announce.announce_title} </a></li>
+							<div class="line"></div>
 							</c:forEach>
 						</ul>
 					</div>
@@ -95,12 +96,4 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 	<script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>		
 </body>
-<script>
-
-	$(".date").each(function(){
-		var time = $(this).text();
-		var chain = time.split("-")[0]+"/"+time.split("-")[1]+"/"+time.split("-")[2]
-		$(this).text(chain.substring(0,10));			
-	});		
-</script>
 </html>

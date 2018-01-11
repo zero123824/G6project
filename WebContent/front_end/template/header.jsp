@@ -33,7 +33,7 @@
 			<c:if test="${not empty member}">
 				<li><a
 					href="<%=request.getContextPath()%>/front_end/member/membercenter.jsp"
-					style="color: white; margin-top: 5px"><i class="fa fa-user"></i>${member.member_account} 您好!會員中心</a></li>
+					style="color: white; margin-top: 5px"><img src="<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=${member.member_id}" style="width: 30px;border-radius: 50%;">${member.member_firstname} 您好!會員中心</a></li>
 				<li><a
 					onclick="document.getElementById('logoutform').submit();"
 					style="color: white; margin-top: 5px">登出</a></li>

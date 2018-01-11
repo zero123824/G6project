@@ -141,7 +141,7 @@ a[data-toggle="collapse"] {
 }
 
 a[aria-expanded="false"]::before, a[aria-expanded="true"]::before {
-    content: '\e259';
+    /*content: '\e259';*/
     display: block;
     position: absolute;
     right: 20px;
@@ -149,7 +149,7 @@ a[aria-expanded="false"]::before, a[aria-expanded="true"]::before {
     font-size: 0.6em;
 }
 a[aria-expanded="true"]::before {
-    content: '\e260';
+    /*content: '\e260';*/
 }
 
 
@@ -285,7 +285,7 @@ footer a:hover {
 }
 
 /*-----------------------------------
-éºµåŒ…å±‘
+üI°üÐ¼
 ------------------------------------*/
 .mygroup{
     margin-bottom: 0;
@@ -309,7 +309,7 @@ footer a:hover {
 
 
 /*---------------------------------
-å¿«é€Ÿè¨‚ç¥¨
+¿ìËÙÓ†Æ±
 -----------------------------------*/
 .right-fastticket{
     position: fixed;top: 35%; right: 0; z-index: 10;
@@ -335,7 +335,7 @@ footer a:hover {
 }
 
 /*-----------------------------------------
-ç™»å…¥è·³çª—
+µÇÈëÌø´°
 ------------------------------------------*/
 /****** LOGIN MODAL ******/
 .loginmodal-container {
