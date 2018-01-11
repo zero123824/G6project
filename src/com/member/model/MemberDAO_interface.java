@@ -11,6 +11,7 @@ public interface MemberDAO_interface {
 	List<MemberVO> getAll();
 	List<MemberVO> loginCheck();
 	Set<MemberVO> getAll(String keyword);
+	void updateStatus(MemberVO selectedmem);
 	
 	/**JDBC TRANSACTION ACID**/
 //	void addByJDBCTransaction(MemberVO newmember,List<String> favorlist);

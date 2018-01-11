@@ -30,7 +30,7 @@ public class MemberFavorService {
 	}	
 	
 	public void delete(Integer member_id, Integer genre_id) {
-		dao.delete(member_id, genre_id);
+		dao.delete(member_id);
 	}
 	
 	public List<MemberFavorVO> getOneMemFavor(Integer member_id) {
@@ -51,5 +51,13 @@ public class MemberFavorService {
 			}
 		}
 		return recommendmovie;		
+	}
+	
+	public boolean checkedFavor(Integer member_id, Integer genre_id){		
+		if(dao.getFavor(member_id, genre_id) == null){
+			return false;
+		}else{
+			return true;
+		}
 	}
 }

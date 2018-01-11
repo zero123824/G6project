@@ -1,3 +1,4 @@
+<%@page import="com.genre.model.GenreService"%>
 <%@page import="com.friend.model.FriendService"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
@@ -20,7 +21,9 @@
 	int count = 0;
 	MemberService memberSvc = new MemberService();
 	MemberFavorService memberfavorSvc = new MemberFavorService();
+	GenreService genreSvc = new GenreService();
 	pageContext.setAttribute("memberfavorSvc", memberfavorSvc);
+	pageContext.setAttribute("genrefavorSvc", genreSvc);
  	Map<String,String> favormap = new HashMap<String,String>();
 	List<MovieVO> recommendmovie = new ArrayList<MovieVO>();
 	if(memberVO != null){
@@ -91,10 +94,9 @@
                                 <img src="<%=request.getContextPath()%>/front_end/member/getmemberpic?member_id=${member.member_id}" style="width: 50%;border-radius: 50%;">
                                	 哈摟!<c:out value="${member.member_firstname}" default="親愛的會員"/>                                
                             </div>
-                            <ul class="list-inline center-block text-center" style="margin-bottom: 25px">
+                            <ul class="list-inline center-block text-center" style="margin-bottom: 25px;">
 	                            <li><a id="ajaxgetmemberdata" data-toggle="modal" data-target="#modal-edittable" class="list-group-item list-group-item-action list-group-item-danger">編輯會員資料</a></li>
-	                            <li><a href="#" class="list-group-item list-group-item-action list-group-item-danger">管理文章</a></li>
-	                            <li><a id="friendlist" class="list-group-item list-group-item-action list-group-item-danger">好友管理</a></li>
+	                            <li><a href="<%=request.getContextPath()%>/front_end/member/memberlist.jsp" id="friendlist" class="list-group-item list-group-item-action list-group-item-danger">訊息專區</a></li>
                         	</ul>
                         	<div class="panel-body showdata" id="editable">
                         		<h4>暱稱:<c:out value="${member.member_nickname}" default=""/></h4><br>
@@ -152,7 +154,7 @@
                                 	${favorname.類型1}、
                                 	${favorname.類型2}、
                                 	${favorname.類型3}、
-                                	${favorname.類型4}
+                                	${favorname.類型4}                               
                                 	</c:if>
                                 </h2>
                                 <h3 class="panel-title">目前有電影上映:</h3>
@@ -181,33 +183,30 @@
                             </div>
                             <div class="modal-body">
 							<FORM METHOD="post" id="editform" ACTION="<%=request.getContextPath()%>/front_end/member/member.do" style="margin-bottom: 0px;">
-                            	<h4>帳號:</h4><input type='text' name="member_account" value="${member.member_account}" disabled></h4>
-                                <h4>暱稱:</h4><input type='text' name="member_nickname" value="${member.member_nickname}"><br>
-                                <h4>姓名:</h4><input type='text' name="member_name" value="${member.member_lastname}${member.member_firstname}"><br>
-                                <h4>地址:</h4><input type='text' name="member_address" value="${member.member_address}"><br>
-                                <h4>手機號碼:</h4><input type='text' name="mobilenum" value="${member.mobilenum}" maxlength="10"><br>
-                                <h4>電子信箱:</h4><input type='text' name="member_email" value="${member.getMember_email()}"><br>
-                                <h4>生日:</h4><input type='text' value="${member.member_birthday}"><br>
-                                <h4>身份證字號:</h4><input type='text' name="member_idcode" value="${member.member_idcode}"><br>
+                            	<h4>帳號:</h4><input type='text' class="edittext" name="member_account" value="${member.member_account}" disabled></h4>
+                                <h4>暱稱:</h4><input type='text' class="edittext" name="member_nickname" value="${member.member_nickname}"><br>
+                                <h4>姓名:</h4><input type='text' class="edittext" name="member_name" value="${member.member_lastname}${member.member_firstname}"><br>
+                                <h4>地址:</h4><input type='text' class="edittext" name="member_address" value="${member.member_address}"><br>
+                                <h4>手機號碼:</h4><input type='text' class="edittext" name="mobilenum" value="${member.mobilenum}" maxlength="10"><br>
+                                <h4>電子信箱:</h4><input type='text' class="edittext" name="member_email" value="${member.getMember_email()}"><br>
+                                <h4>生日:</h4><input type='text' class="edittext" value="${member.member_birthday}"><br>
+                                <h4>身份證字號:</h4><input type='text' class="edittext" name="member_idcode" value="${member.member_idcode}"><br>
                                 <h4>訂閱電子報:</h4>
-                                <input type="radio" class="magic-radio" name="subsenews" id="subsenews_true" 
+                                <input type="radio" class="magic-radio" name="subsenews" id="subsenews_true" style="width: 20px;"
                                 value="1" <c:if test="${member.getSubsenews() == 1 }">checked</c:if>><label for="subsenews_true">是</label>
-                                <input type="radio" class="magic-radio" name="subsenews" id="subsenews_false" 
+                                <input type="radio" class="magic-radio" name="subsenews" id="subsenews_false" style="width: 20px;"
                                 value="0" <c:if test="${member.getSubsenews() == 0 }">checked</c:if>><label for="subsenews_false">否</label><br>
 								<h4>挑選喜好電影類型:</h4>
 								<a href="#modalpopover" role="button" data-modal-position="relative" data-toggle="modal-popover" 
 								data-placement="bottom"></a></td>
 								<input type="hidden" name="action"	value="update">
 								<input type="hidden" name="member_id" value="${member.member_id}">
-								<input type="checkbox" name="operation_id" value="15001"></input>
-						       	<input type="checkbox" name="operation_id" value="15002"></input>
-						       	<input type="checkbox" name="operation_id" value="15003"></input>
-						       	<input type="checkbox" name="operation_id" value="15004"></input>
-						       	<input type="checkbox" name="operation_id" value="15005"></input>
-						       	<input type="checkbox" name="operation_id" value="15006"></input>
-						       	<input type="checkbox" name="operation_id" value="15007"></input>
-						       	<input type="checkbox" name="operation_id" value="15008"></input>
-						       	<input type="checkbox" name="operation_id" value="15009"></input>							                          	
+								<c:forEach var="genere" items="${genrefavorSvc.all}">									
+									<label class="checkbox-inline"><input type="checkbox" name="operation_id" value="${genere.genre_id}" 									
+									<c:if test="${memberfavorSvc.checkedFavor(member.member_id,genere.genre_id)}">
+									checked
+									</c:if>/>${genere.genre_name}</label>
+								</c:forEach>
                             </FORM>
                             </div>	    
                             <div class="modal-footer">
@@ -306,5 +305,6 @@
 
 			});			
 		})
+
 	</script>
 </html>

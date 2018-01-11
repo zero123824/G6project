@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 
 public class GenreDAO implements GenreDAO_interface {
 
-	// 一個應用程式中,針對一個資料庫 ,共用一個DataSource即可
 	private static DataSource ds = null;
 	static {
 		try {
@@ -21,126 +20,10 @@ public class GenreDAO implements GenreDAO_interface {
 		}
 	}
 
-	private static final String INSERT_STMT = 
-		"INSERT INTO genre (genre_id,genre_name) VALUES (?, ?)";
 	private static final String GET_ALL_STMT = 
 		"SELECT genre_id,genre_name FROM genre order by genre_id";
 	private static final String GET_ONE_STMT = 
 		"SELECT genre_id,genre_name FROM genre where genre_id = ?";
-	private static final String DELETE = 
-		"DELETE FROM genre where genre_id = ?";
-	private static final String UPDATE = 
-		"UPDATE genre set genre_name=? where genre_id = ?";
-
-	@Override
-	public void insert(GenreVO genreVO) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-
-		try {
-
-			con = ds.getConnection();
-			pstmt = con.prepareStatement(INSERT_STMT);
-
-			pstmt.setInt(1, genreVO.getGenre_id());
-			pstmt.setString(2, genreVO.getGenre_name());
-
-			pstmt.executeUpdate();
-
-			// Handle any SQL errors
-		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
-			// Clean up JDBC resources
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException se) {
-					se.printStackTrace(System.err);
-				}
-			}
-			if (con != null) {
-				try {
-					con.close();
-				} catch (Exception e) {
-					e.printStackTrace(System.err);
-				}
-			}
-		}
-	}
-
-	@Override
-	public void update(GenreVO genreVO) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-
-		try {
-
-			con = ds.getConnection();
-			pstmt = con.prepareStatement(UPDATE);
-
-			pstmt.setString(1, genreVO.getGenre_name());
-			pstmt.setInt(2, genreVO.getGenre_id());
-
-			pstmt.executeUpdate();
-
-			// Handle any SQL errors
-		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
-			// Clean up JDBC resources
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException se) {
-					se.printStackTrace(System.err);
-				}
-			}
-			if (con != null) {
-				try {
-					con.close();
-				} catch (Exception e) {
-					e.printStackTrace(System.err);
-				}
-			}
-		}
-	}
-
-	@Override
-	public void delete(Integer genre_id) {
-		Connection con = null;
-		PreparedStatement pstmt = null;
-
-		try {
-
-			con = ds.getConnection();
-			pstmt = con.prepareStatement(DELETE);
-
-			pstmt.setInt(1, genre_id);
-
-			pstmt.executeUpdate();
-
-			// Handle any SQL errors
-		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. " + se.getMessage());
-			// Clean up JDBC resources
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException se) {
-					se.printStackTrace(System.err);
-				}
-			}
-			if (con != null) {
-				try {
-					con.close();
-				} catch (Exception e) {
-					e.printStackTrace(System.err);
-				}
-			}
-		}
-	}
 
 	@Override
 	public GenreVO findByPrimaryKey(Integer genre_id) {
@@ -212,7 +95,7 @@ public class GenreDAO implements GenreDAO_interface {
 			while (rs.next()) {
 				genreVO = new GenreVO();
 				genreVO.setGenre_id(rs.getInt("genre_id"));
-				genreVO.setGenre_name(rs.getString("genre-name"));
+				genreVO.setGenre_name(rs.getString("genre_name"));
 				list.add(genreVO);
 			}
 

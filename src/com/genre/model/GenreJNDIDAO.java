@@ -1,32 +1,43 @@
 package com.genre.model;
 
-import java.util.*;
 import java.sql.*;
+import java.util.*;
 
-public class GenreJDBCDAO implements GenreDAO_interface {
-	String driver = "oracle.jdbc.driver.OracleDriver";
-	String url = "jdbc:oracle:thin:@10.211.55.4:1521:XE";
-	String userid = "ba105g6";
-	String passwd = "ba105g6";
-	
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
+public class GenreJNDIDAO implements GenreDAO_interface {
+
+	// 銝���蝔�葉,�������澈 ,��銝��ataSource��
+	private static DataSource ds = null;
+	static {
+		try {
+			Context ctx = new InitialContext();
+			ds = (DataSource) ctx.lookup("java:comp/env/jdbc/BA105G6DB");
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private static final String GET_ALL_STMT = 
 		"SELECT genre_id,genre_name FROM genre order by genre_id";
 	private static final String GET_ONE_STMT = 
-		"SELECT genre_id,genre_name FROM genre where genre_id = ?";
-	
+		"SELECT genre_id,genre_name FROM emp2 where genre_id = ?";
+
 	@Override
 	public GenreVO findByPrimaryKey(Integer genre_id) {
 		GenreVO genreVO = null;
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+
 		try {
-			
-			Class.forName(driver);
-			con = DriverManager.getConnection(url, userid, passwd);
+
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(GET_ONE_STMT);
-			
+
 			pstmt.setInt(1, genre_id);
 
 			rs = pstmt.executeQuery();
@@ -37,10 +48,6 @@ public class GenreJDBCDAO implements GenreDAO_interface {
 				genreVO.setGenre_name(rs.getString("genre_name"));
 			}
 
-			// Handle any driver errors
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Couldn't load database driver. "
-					+ e.getMessage());
 			// Handle any SQL errors
 		} catch (SQLException se) {
 			throw new RuntimeException("A database error occured. " + se.getMessage());
@@ -70,7 +77,7 @@ public class GenreJDBCDAO implements GenreDAO_interface {
 		}
 		return genreVO;
 	}
-	
+
 	@Override
 	public List<GenreVO> getAll() {
 		List<GenreVO> list = new ArrayList<GenreVO>();
@@ -79,10 +86,10 @@ public class GenreJDBCDAO implements GenreDAO_interface {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
+
 		try {
 
-			Class.forName(driver);
-			con = DriverManager.getConnection(url, userid, passwd);
+			con = ds.getConnection();
 			pstmt = con.prepareStatement(GET_ALL_STMT);
 			rs = pstmt.executeQuery();
 
@@ -93,10 +100,6 @@ public class GenreJDBCDAO implements GenreDAO_interface {
 				list.add(genreVO);
 			}
 
-			// Handle any driver errors
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Couldn't load database driver. "
-					+ e.getMessage());
 			// Handle any SQL errors
 		} catch (SQLException se) {
 			throw new RuntimeException("A database error occured. " + se.getMessage());
@@ -125,24 +128,5 @@ public class GenreJDBCDAO implements GenreDAO_interface {
 			}
 		}
 		return list;
-	}
-	
-	public static void main(String[] args) {
-		
-		GenreJDBCDAO dao = new GenreJDBCDAO();
-		
-		//查詢
-		GenreVO genreVO3 = dao.findByPrimaryKey(90020);
-		System.out.print(genreVO3.getGenre_id() + ",");
-		System.out.println(genreVO3.getGenre_name());
-		System.out.println("---------------------");
-
-		//查詢
-		List<GenreVO> list = dao.getAll();
-		for (GenreVO aGenre : list) {
-			System.out.print(aGenre.getGenre_id() + ",");
-			System.out.print(aGenre.getGenre_name());
-			System.out.println();
-		}
 	}
 }

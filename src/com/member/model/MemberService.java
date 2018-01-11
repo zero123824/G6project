@@ -52,7 +52,8 @@ public class MemberService {
 	
 	public MemberVO update(Integer member_id,String member_account,String member_psw,String member_lastname,String member_firstname
 			,String member_address,String mobilenum,String member_email,java.sql.Date member_birthday,String member_idcode
-			,String creaditcard,Integer subsenews,Integer member_sex,Integer member_lock_status,byte[] member_pic,String member_nickname){
+			,String creaditcard,Integer subsenews,Integer member_sex,Integer member_lock_status,byte[] member_pic,String member_nickname,
+			List<String> favorlist){
 		MemberVO memberVO = new MemberVO();
 		memberVO.setMember_id(member_id)
 		.setMember_account(member_account)
@@ -71,6 +72,8 @@ public class MemberService {
 		.setMember_pic(member_pic)
 		.setMember_nickname(member_nickname);
 		dao.update(memberVO);
+		favordao.delete(member_id);
+		insertfavor(favorlist, member_id);
 		return memberVO;		
 	}
 	
@@ -132,7 +135,7 @@ public class MemberService {
 		FriendService friendSvc = new FriendService(); 
 		Set<MemberVO> whosfriend = friendSvc.getOneMemFriends(who);
 		
-		//確認好友關係狀態0or1or2
+		//確認好友關係狀態0or1or2(發送邀請 尚未接受 成為好友)
 		List<FriendVO> list = friendSvc.getFriendRelation(who);
 		Set<MemberVO> friendpending = new HashSet<MemberVO>();
 		for(FriendVO friendVO : list){

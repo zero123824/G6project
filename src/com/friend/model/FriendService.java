@@ -25,7 +25,7 @@ public class FriendService {
 		friendVO.setRelation_status(0);
 		friendVO.setMember_msg(member_msg);
 		friendVO.setLast_msg_time(new java.sql.Timestamp(nowtime));
-		friendVO.setMsg_status(0);
+		friendVO.setMember_id2_unread(1);
 		dao.add(friendVO);
 		return friendVO;
 	}
@@ -44,7 +44,10 @@ public class FriendService {
 		return friendVO;
 	}
 	
-	public void delete(FriendVO friendVO) {		
+	public void delete(Integer member_id1 ,Integer member_id2) {
+		FriendVO friendVO = new FriendVO();
+		friendVO.setMember_id1(member_id1);
+		friendVO.setMember_id2(member_id2);
 		dao.delete(friendVO);
 	}
 
@@ -85,9 +88,25 @@ public class FriendService {
 		}
 		unread = friendVO.getMember_id1_unread();
 		friendVO.setRelation_status(friendVO.getRelation_status());
+		System.out.println(friendVO.getMember_msg());
 		friendVO.setMember_msg(friendVO.getMember_msg()+"\n"+member_msg);
 		friendVO.setMsg_status(msg_status);
 		friendVO.setLast_msg_time(new java.sql.Timestamp(nowtime));
+		dao.update(friendVO);
+		return true;
+	}
+	
+	public boolean updateMessageStatus(Integer receiver ,Integer sender,Integer memberPosition){
+		FriendVO friendVO = dao.getRelationInTwo(receiver, sender) ;
+		Integer unread = 0;
+		if(friendVO.getRelation_status() == null){
+			friendVO = dao.getRelationInTwo(sender, receiver);
+		}
+		if(memberPosition == 1){
+			friendVO.setMember_id1_unread(unread);
+		}else{
+			friendVO.setMember_id2_unread(unread);
+		}
 		dao.update(friendVO);
 		return true;
 	}

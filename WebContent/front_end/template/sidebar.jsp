@@ -32,7 +32,7 @@
 		<i class="glyphicon glyphicon-arrow-left"></i>
 	</div>
 	<div class="sidebar-header">
-		<img src="<%=request.getContextPath()%>/img/logo.png">
+		<img src="<%=request.getContextPath()%>/img/logo.png" style="border-radius: 50%;">
 	</div>
 	<ul class="list-unstyled components">
 		<li <c:if test="${hereis == 'index'}">class="active"</c:if>><a

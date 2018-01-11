@@ -24,8 +24,9 @@ public class MemberFavorDAO implements MemberFavorDAO_interface {
 		}
 	}	
 	private static final String INSERT = "INSERT INTO MEMBER_FAVOR (MEMBER_ID,GENRE_ID) VALUES(?,?)";
-	private static final String DELETE = "DELETE FROM MEMBER_FAVOR WHERE MEMBER_ID = ? AND GENRE_ID = ?";
+	private static final String DELETE = "DELETE FROM MEMBER_FAVOR WHERE MEMBER_ID = ? ";
 	private static final String GETONEMEMFAVOR = "SELECT * FROM MEMBER_FAVOR WHERE MEMBER_ID = ? ";
+	private static final String GETFAVOR = "SELECT * FROM MEMBER_FAVOR WHERE MEMBER_ID = ? AND GENRE_ID = ?";
 	
 	@Override
 	public void add(MemberFavorVO newmemberfavor) {
@@ -66,14 +67,13 @@ public class MemberFavorDAO implements MemberFavorDAO_interface {
 	}
 
 	@Override
-	public void delete(Integer member_id, Integer genre_id) {
+	public void delete(Integer member_id) {
 		Connection con = null;
 		PreparedStatement psmt = null;
 		try {
 			con = ds.getConnection();
 			psmt = con.prepareStatement(DELETE);
 			psmt.setInt(1, member_id);
-			psmt.setInt(2, genre_id);
 			psmt.executeUpdate();
 
 		} catch (SQLException e) {
@@ -172,5 +172,51 @@ public class MemberFavorDAO implements MemberFavorDAO_interface {
 				}
 			}
 		}		
+	}
+
+	@Override
+	public MemberFavorVO getFavor(Integer member_id, Integer genre_id) {
+		Connection con = null;
+		PreparedStatement psmt = null;
+		MemberFavorVO memberfavor = null;
+		ResultSet rs = null;
+
+		try {
+			con = ds.getConnection();
+			psmt = con.prepareStatement(GETFAVOR);
+			psmt.setInt(1, member_id);
+			psmt.setInt(2, genre_id);
+			rs = psmt.executeQuery();
+			while (rs.next()) {
+				memberfavor = new MemberFavorVO();
+				memberfavor.setMember_id(rs.getInt(1));
+				memberfavor.setGenre_id(rs.getInt(2));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace(System.err);
+				}
+			}
+			if (psmt != null) {
+				try {
+					psmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return memberfavor;
 	}
 }

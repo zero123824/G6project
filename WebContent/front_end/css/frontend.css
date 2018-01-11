@@ -478,3 +478,7 @@ membercenter
 .showdata h4:hover{
     color:#ff8a33;
 }
+
+.modal-body #editform input.edittext{
+  width: 100%;
+}

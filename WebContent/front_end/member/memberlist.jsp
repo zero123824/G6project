@@ -48,6 +48,10 @@
 		display:inline-block;
 		border-radius: 50%;
 	}
+	.text-field{
+		border: 0;
+	    outline: none;
+	}
 	.messagediv{
 		margin: 5px;
 		background-color:white;
@@ -118,8 +122,8 @@
 								</div>
 								<div class="panel-footer">
 							  		<div class="input-area">
-										<input id="message" class="text-field" type="text" placeholder="輸入訊息......." onkeydown="if (event.keyCode == 13)sendMessage();" disabled="disabled"/>
 										<input type="submit" id="sendMessage" class="button" value="Send" onclick="sendMessage();" disabled="disabled"/>
+										<input id="message" class="text-field" type="text" placeholder="輸入訊息......." onkeydown="if (event.keyCode == 13)sendMessage();" disabled="disabled"/>
 									</div>
 								</div>
 							</div>
@@ -133,7 +137,7 @@
 								<div class="panel-heading">
 									<h3 class="panel-title">好友們</h3>
 								</div>
-								<div class="panel-body">
+								<div class="panel-body" id="panel-body-friend">
 								<c:forEach var="friend" items="${friendSvc.getOneMemFriends(member.member_id)}">
                                     <div class="col-xs-12 col-sm-2 friendArray" style="height:80px" >
 	                                    <a class="thumbnail friend ${friend.member_id}">
@@ -176,21 +180,24 @@
 	
 	//排序好友與顯示未讀訊息
 	function arrange(){
-		var friensArray=$(".friendArray").toArray();
+		var friendsArray=$(".friendArray").toArray();
 		var friendTimeArray =$(".arraytime").toArray();
 		var friendStatusArray =$(".arrayStatus").toArray();
 		var friendBindArray = new Array();
 		var friendID;
-		friensArray.forEach(function(that){
+		friendsArray.forEach(function(that){
+			var time = (friendTimeArray[friendsArray.indexOf(that)]).innerHTML;
+			$(that).find("a").append("<span style='display:none'>"+time+"</span>");
 			var jsonObject = new Object();
 			jsonObject.name = that;
-			jsonObject.time = (friendTimeArray[friensArray.indexOf(that)]).innerHTML;
-			jsonObject.status = (friendStatusArray[friensArray.indexOf(that)]).innerHTML;
+			jsonObject.time = (friendTimeArray[friendsArray.indexOf(that)]).innerHTML;
+			jsonObject.status = (friendStatusArray[friendsArray.indexOf(that)]).innerHTML;
 			friendBindArray.push(jsonObject);
 			var friend = ($(jsonObject.name).find("a.friend span")[0]);
 			friendID = ($(friend).text());			
 		});
-		console.log(friendBindArray);
+		$(".arraytime").remove();
+		$(".arrayStatus").remove();
 		fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=getfriendsStatus&friendID='+friendID+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
 		.then(function(response){
 			if(response.status == 200 && response.statusText == "OK"){
@@ -205,7 +212,7 @@
 					$(friendBadge).find(".badge").text(unread);
 				}
 			});
-		})		
+		});
 	}
 	
 	//搜尋會員
@@ -285,6 +292,7 @@
 		.then(function(response){
 			return response.text();})
 		.then(function(msgs){
+			console.log(msgs);
 			var BIGjson = JSON.parse(msgs);	
 	    	//查詢位置在2的不是好友關係，->好友請求
 			if(BIGjson.relation_status == 2){
@@ -305,7 +313,7 @@
 				$("#msgtextarea").append("<div class='messagediv'>"
 										 +"<img src='"+picurl+$(friendID).text()+"' class='sticky'>"
 				 		  				 +"<p style='color:#383838'>請求成為好友!!</p><br>"
-										 +"<button class='btn' id='reject'>拒絕</button><button class='btn' id='accept' onclick='acceptinvite()'>接受</button></div>");
+										 +"<button class='btn' id='reject' onclick='rejectinvite()'>拒絕</button><button class='btn' id='accept' onclick='acceptinvite()'>接受</button></div>");
 			}else{
 				$("#msgtextarea").append("<h1>好友邀請已經送出!!!等待接受</h1>");
 			}			
@@ -335,6 +343,16 @@
 			}
 		});
 	}	
+	
+	function rejectinvite(){
+		fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=reject&friendID='+$(friendID).text()+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
+		.then(function(response){
+			if(response.status == 200 && response.statusText == "OK"){
+				$(friendFocus).parent("div").remove();
+				$("#msgtextarea").text("");
+			}
+		});
+	}
 	//為點擊不同好友開啟一條新的ws,如有舊的則從array中取出沿用。再進行ws操作
 	function startWSSession(friendID,myID){
 		$("a."+friendID).children("span.badge").text("");
@@ -367,22 +385,39 @@
 		var unread = 0;
 		var msgArray = new Array();
 		webSocket.onmessage = function(event) {
+			var millisecond ;
 			if(webSocket == nowWebSocket){
 				var jsonObj = JSON.parse(event.data);
-				console.log(jsonObj);
-				parseMessage(jsonObj,friendID,myID)
+				parseMessage(jsonObj,friendID,myID);
+				millisecond = jsonObj.millisecond;
 			}else{
 				unread++;
 				WSSessionArray.forEach(function(ws){
 					if(ws.wsurl == webSocket){
 						var jsonObj = JSON.parse(event.data);
-						msgArray.push(jsonObj);
-						ws.msg = msgArray;
+// 						msgArray.push(jsonObj);
+// 						ws.msg = msgArray;
 						$("a."+friendID).children("span.badge").text(unread);
+						millisecond = jsonObj.millisecond;
 					}
 				});
 			}
+			positionSort(millisecond,friendID);
 		};
+	}
+	
+	function positionSort(millisecond,friendID){
+		var messageFromWhich = $("a."+friendID).children("span")[3]
+		$(messageFromWhich).text(millisecond);
+		var friendsArray=$(".friendArray").toArray().sort(function(a,b){
+			var aspan = $(a).find("span")[3];
+			var atime = $(aspan).text();
+			var bspan = $(b).find("span")[3];
+			var btime = $(bspan).text();
+			return new Date(btime) - new Date(atime);
+		});
+		$(".friendArray").detach();
+		$("#panel-body-friend").html(friendsArray);
 	}
 	
 	function sendMessage(){
@@ -390,10 +425,10 @@
 	    var message = inputMessage.value.trim();
 	    var time = new Date();
 	    if(message == ""){inputMessage.focus();return}
-        var jsonObj = {"whoSend" : <%=memberVO.getMember_id()%>, "message" : message,"time" : formatAMPM(time)};
+        var jsonObj = {"whoSend" : <%=memberVO.getMember_id()%>, "message" : message,"time" : formatAMPM(time),"millisecond":time};
         nowWebSocket.send(JSON.stringify(jsonObj));
 		inputMessage.value = "";
-		inputMessage.focus();
+		inputMessage.focus();		
 	}
 	
 	function disconnect () {

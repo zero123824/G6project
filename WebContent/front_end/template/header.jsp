@@ -37,6 +37,7 @@
 				<li><a
 					onclick="document.getElementById('logoutform').submit();"
 					style="color: white; margin-top: 5px">登出</a></li>
+				<jsp:include page="/front_end/member/globalmessage.jsp"/>
 			</c:if>
 		</ul>
 	</div>

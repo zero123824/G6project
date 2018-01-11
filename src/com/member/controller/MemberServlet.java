@@ -284,6 +284,20 @@ public class MemberServlet extends HttpServlet {
 			   || mobilenum.trim().length() == 0){
 				errorMsgs.add("*為必填欄位");
 			}
+			
+			List<String> favorlist = new ArrayList<String>();
+			try {
+				if(req.getParameterValues("operation_id").length>5) {
+					errorMsgs.add("超過5個喜好類型，請重選");
+				}else {
+					for(String favor : req.getParameterValues("operation_id")) {
+						favorlist.add(favor); 
+					}
+				}
+			}catch(NullPointerException ne){
+				System.out.println(ne);
+			}
+			
 			MemberVO memberVO = memberSvc.findByPK(member_id);
 			memberVO.setMember_address(member_address)
 					.setMobilenum(mobilenum)
@@ -300,7 +314,7 @@ public class MemberServlet extends HttpServlet {
 			memberVO = memberSvc.update(member_id,memberVO.getMember_account(),memberVO.getMember_psw(),member_lastname, member_firstname, member_address,
 						mobilenum, member_email, memberVO.getMember_birthday(), memberVO.getMember_idcode(),
 						memberVO.getCreaditcard(), memberVO.getSubsenews(), memberVO.getMember_sex(), memberVO.getMember_lock_status(),
-						memberVO.getMember_pic(), memberVO.getMember_nickname());
+						memberVO.getMember_pic(), memberVO.getMember_nickname(),favorlist);
 			/***************************3.修改完成,準備轉交(Send the Success view)*************/
 			session.setAttribute("member", memberVO); // 資料庫update成功後,正確的的empVO物件,存入session
 			req.setAttribute("member", memberVO); // 資料庫update成功後,正確的的empVO物件,存入req

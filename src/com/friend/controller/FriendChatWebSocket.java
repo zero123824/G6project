@@ -47,7 +47,6 @@ private static final Map<String,String> messageBufferedMap = new HashMap<String,
 		messageBufferedMap.put(relation, messageBuffered+message);
 		FriendService friendSvc = new FriendService();
 		if(friendSvc.updateMessage(Integer.valueOf(friendID), Integer.valueOf(myID), message, 1,nowtime)){
-			System.out.println("sdfsdf");
 			for (Session session : sessionInRelation) {
 				if (session.isOpen())
 					session.getAsyncRemote().sendText(message);

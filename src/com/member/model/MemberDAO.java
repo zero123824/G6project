@@ -35,6 +35,7 @@ public class MemberDAO implements MemberDAO_interface{
 	private static final String SELECTBYACCOUNT = "SELECT * FROM MEMBER_INFO WHERE MEMBER_ACCOUNT = ? ";
 	private static final String GETALL = "SELECT * FROM MEMBER_INFO";
 	private static final String LOGINCHECK = "SELECT MEMBER_EMAIL, MEMBER_PSW FROM MEMBER_INFO";
+	private static final String UPDATE_STATUS = "UPDATE MEMBER_INFO SET  MEMBER_LOCK_STATUS=? WHERE MEMBER_ID = ? ";
 
 	@Override
 	public Integer add(MemberVO newmember){
@@ -466,7 +467,40 @@ public class MemberDAO implements MemberDAO_interface{
 		}
 		return memSet;
 	}
-
+	
+	@Override
+	public void updateStatus(MemberVO selectedmem) {
+		Connection con = null;
+		PreparedStatement psmt = null;
+		try {
+			con = ds.getConnection();
+			psmt = con.prepareStatement(UPDATE_STATUS);
+			
+			
+			psmt.setInt(1, selectedmem.getMember_lock_status());	
+			psmt.setInt(2, selectedmem.getMember_id());
+			psmt.executeUpdate();
+			
+			
+		} catch (SQLException e) {			
+			e.printStackTrace();
+		} finally{
+			if(psmt != null){
+				try {
+					psmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if(con != null){
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
 	/***JDBC TRANSACTiON 由PK方進行主控，將自增主鍵與連線交給下一個DAO***/
 //	@Override
