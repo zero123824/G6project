@@ -88,7 +88,6 @@ public class FriendService {
 		}
 		unread = friendVO.getMember_id1_unread();
 		friendVO.setRelation_status(friendVO.getRelation_status());
-		System.out.println(friendVO.getMember_msg());
 		friendVO.setMember_msg(friendVO.getMember_msg()+"\n"+member_msg);
 		friendVO.setMsg_status(msg_status);
 		friendVO.setLast_msg_time(new java.sql.Timestamp(nowtime));

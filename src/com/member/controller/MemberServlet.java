@@ -47,7 +47,7 @@ public class MemberServlet extends HttpServlet {
 		req.setAttribute("errorMsgs", errorMsgs);
 		PrintWriter out = res.getWriter();
 		String action = req.getParameter("action");
-
+		
 			
 		/**********************會員登入****************************/		
 		if("login".equals(action)){

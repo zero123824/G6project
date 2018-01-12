@@ -180,6 +180,9 @@
 	
 	//排序好友與顯示未讀訊息
 	function arrange(){
+		if(me){
+			getGlobalMessage();
+		}
 		var friendsArray=$(".friendArray").toArray();
 		var friendTimeArray =$(".arraytime").toArray();
 		var friendStatusArray =$(".arrayStatus").toArray();
@@ -198,6 +201,7 @@
 		});
 		$(".arraytime").remove();
 		$(".arrayStatus").remove();
+		//根據好友ID與狀態查詢未讀訊息
 		fetch('<%=request.getContextPath()%>/front_end/friend/friend.do?action=getfriendsStatus&friendID='+friendID+'&member_id='+<%=memberVO.getMember_id()%>,{method: 'post'})
 		.then(function(response){
 			if(response.status == 200 && response.statusText == "OK"){
@@ -264,6 +268,7 @@
 			}
 		});
 	}
+	
 	var me = (!<%=memberVO.getMember_id()%>)?  0 : <%=memberVO.getMember_id()%>;
 	var EndPoint = "/FriendChat";
 	var host = window.location.host;
@@ -292,7 +297,6 @@
 		.then(function(response){
 			return response.text();})
 		.then(function(msgs){
-			console.log(msgs);
 			var BIGjson = JSON.parse(msgs);	
 	    	//查詢位置在2的不是好友關係，->好友請求
 			if(BIGjson.relation_status == 2){
@@ -432,6 +436,9 @@
 	}
 	
 	function disconnect () {
+		if(me){
+			disconnectGlobalMessage();
+		}
 		if(nowWebSocket){
 			nowWebSocket.close();
 		}
