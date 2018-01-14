@@ -12,6 +12,9 @@
 .navbar-right-custom li:hover{
 	color:green;
 }
+#logoutform{
+	margin-bottom:0px;
+}
 </style>
 <body>
 	<!-- header -->

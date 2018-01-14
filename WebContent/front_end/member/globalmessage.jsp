@@ -59,7 +59,6 @@
 			}else if(jsonObject.property == 'getFreind'){
 				var online = jsonObject.online.substring(1,jsonObject.online.length-1);
 				var array = online.split(", ");
-				console.log(array);
 				array.forEach(function(member_id){
 					$("a."+member_id).children(".badge").after("<span class='onlineStatus'></span>");
 				});

@@ -41,7 +41,7 @@
 		<li <c:if test="${hereis == 'center'}">class="active"</c:if>class="visible-xs"><a href="<%=request.getContextPath()%>/front_end/member/membercenter.jsp"><i
 				class="fa fa-user fa-lg"></i> 會員中心</a></li>
 		<li <c:if test="${hereis == '1'}">class="active"</c:if>><a href="#"><i class="fa fa-film fa-lg"></i> 上映電影資訊</a></li>
-		<li <c:if test="${hereis == '1'}">class="active"</c:if>><a href="forum.html"><i class="fa fa-commenting-o fa-lg"></i>討論區</a></li>
+		<li <c:if test="${hereis == 'forum_writer'}">class="active"</c:if>><a href="forum.html"><i class="fa fa-commenting-o fa-lg"></i>討論區</a></li>
 		<li <c:if test="${hereis == '1'}">class="active"</c:if>><a href="#"><i class="fa fa-newspaper-o fa-lg"
 				aria-hidden="true"></i> 電影活動</a></li>
 		<li <c:if test="${hereis == 'announce'}">class="active"</c:if>><a href="<%=request.getContextPath()%>/front_end/announcement/announcement.jsp"><i class="fa fa-bullhorn fa-lg"

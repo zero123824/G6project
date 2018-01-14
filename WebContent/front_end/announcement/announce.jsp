@@ -36,8 +36,9 @@
 .content{
 	font-family:Cambria;
 	font-size:26px;
-	color:blue;
+	color:#575074;
 	margin-bottom:40px;
+	padding: 10px 15px;
 }
 </style>
 <body id="myPage">
@@ -61,7 +62,7 @@
 				<div class="row">
 					<div class="col-xs-12 col-sm-12">
 						<h2><time class="date"><fmt:formatDate value="${thisanna.announce_time}" pattern="yyyy-MM-dd"/></time></h2>
-						<h2>${thisanna.announce_title}</h2>
+						<h2 style="color:red;">${thisanna.announce_title}</h2>
 						<div class="content"><c:forEach var="ln" items="${content}">
 							${ln}<br>
 						</c:forEach>
