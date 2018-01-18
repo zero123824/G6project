@@ -6,10 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <% request.setAttribute("hereis", "announce");%>
-<%	AnnouncementService anncmSvc = new AnnouncementService();
-	List<AnnouncementVO> announcelist = anncmSvc.getAll();
-	session.setAttribute("announcelist", announcelist);
-	%>
+<jsp:useBean id="anncSvc" scope="session" class="com.announcement.model.AnnouncementService"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -73,7 +70,7 @@
 						<h2>影城公告</h2>
 						<div class="line"></div>						
 						<ul class="list-unstyled announce">
-							<c:forEach var="announce" items="${announcelist}">
+							<c:forEach var="announce" items="${anncSvc.all}">
 							<li><time class="date"><fmt:formatDate value="${announce.announce_time}" pattern="yyyy-MM-dd"/></time><a href="<%=request.getContextPath()%>/front_end/announcement/announce.jsp?announce_id=${announce.announce_id}">　${announce.announce_title} </a></li>
 							<div class="line"></div>
 							</c:forEach>

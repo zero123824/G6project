@@ -383,7 +383,7 @@
 
 	//註冊不同session的ws事件與操作
 	function webSocketOperation(webSocket,friendID,myID){
-		webSocket.onopen = function(event) {			
+		webSocket.onopen = function(event) {	
 			console.log("WebSocket 成功連線");
 		};
 		var unread = 0;

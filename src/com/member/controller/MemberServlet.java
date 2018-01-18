@@ -156,10 +156,13 @@ public class MemberServlet extends HttpServlet {
 				String mobilenum = req.getParameter("mobilenum");
 				String member_email = req.getParameter("member_email");
 				String member_idcode = req.getParameter("member_idcode");
-				String creaditcard = req.getParameter("creaditcard");
+//				String creaditcard = req.getParameter("creaditcard");
+				String creditnum = req.getParameter("number");
+				String creditexpiry = req.getParameter("expiry");
+				String creditcvc = req.getParameter("cvc");
 				String member_nickname = req.getParameter("member_nickname");;				
 				String county = req.getParameter("county");
-
+				
 				county = citymap.get(county)+"-";
 				String area = req.getParameter("area")+"-";				
 
@@ -170,7 +173,7 @@ public class MemberServlet extends HttpServlet {
 				if(member_account.trim().length() == 0 || member_psw.trim().length() == 0
 				   || member_lastname.trim().length() == 0 || member_firstname.trim().length() == 0
 				   || member_psw_forcheck.trim().length() == 0 || member_address.trim().length() == 0
-				   || mobilenum.trim().length() == 0 || creaditcard.trim().length() == 0){
+				   || mobilenum.trim().length() == 0 ){
 					errorMsgs.add("*為必填欄位");
 				} else if(!member_account.trim().matches(enameReg)){
 					errorMsgs.add("帳號必須為英文與數字 , 且長度必需在4到12之間");
@@ -178,6 +181,21 @@ public class MemberServlet extends HttpServlet {
 				
 				if(!member_psw.equals(member_psw_forcheck)){
 					errorMsgs.add("密碼不相符");
+				}
+				
+				String creaditcard = new String();
+				try{
+					String newcreditnum = new String();
+					for(String x : creditnum.split(" ")){
+						newcreditnum += x;
+					}
+					String newcreditexpiry = new String();
+					for(String x : creditexpiry.split(" /")){
+						newcreditexpiry += x.trim();
+					}
+					creaditcard = newcreditnum+newcreditexpiry+creditcvc;
+				} catch(Exception e){
+					errorMsgs.add("信用卡有誤，請重填");
 				}
 				
 				Integer member_sex = -1;
