@@ -243,6 +243,7 @@
         <!-- jQuery Custom Scroller CDN -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 		<!-- customjs -->
-        <script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script>   
+        <script src="<%=request.getContextPath()%>/front_end/js/frontend.js"></script> 
+
     </body>
 </html>

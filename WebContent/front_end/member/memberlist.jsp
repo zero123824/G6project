@@ -309,6 +309,7 @@
 				}else{
 					var jsonarray = BIGjson.message.split(/\n/g);
 					jsonarray.forEach(function(vjson){
+						console.log(vjson);
 		 				var jsonObj = JSON.parse(vjson);
 						parseMessage(jsonObj,$(friendID).text(),me);
 					});
@@ -359,6 +360,7 @@
 	}
 	//為點擊不同好友開啟一條新的ws,如有舊的則從array中取出沿用。再進行ws操作
 	function startWSSession(friendID,myID){
+		console.log(friendID+myID);
 		$("a."+friendID).children("span.badge").text("");
 		var wsurl = endPointURL+"/"+friendID+"/"+myID;
 		if(connectArray.indexOf(wsurl) == -1){

@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import com.google.gson.Gson;
 import com.member.model.*;
+import com.tools.SendVerifyMember;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 10 * 1024 * 1024, maxRequestSize = 20 * 10 * 1024 * 1024)
 public class MemberServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -269,6 +270,9 @@ public class MemberServlet extends HttpServlet {
 						creaditcard, subsenews, member_sex, member_lock_status, member_pic, member_nickname,favorlist);
 				/*****************3.新增完成,準備轉交(Send the Success view)*********/
 				session.setAttribute("member", memberVO);
+				String verifyUrl = req.getContextPath();
+				System.out.println(verifyUrl);
+//				SendVerifyMember.SendMail(memberVO, verifyUrl);
 				String url=req.getContextPath()+"/front_end/member/membercenter.jsp";
 				res.sendRedirect(url);
 				return;

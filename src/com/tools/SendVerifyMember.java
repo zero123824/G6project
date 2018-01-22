@@ -11,15 +11,14 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.employee.model.EmployeeVO;
+import com.member.model.MemberVO;
 
-public class SendToNewEmployee {
+public class SendVerifyMember {
 
-	public SendToNewEmployee() {
+	public SendVerifyMember() {
 	}
-	
-	public static void SendMail(EmployeeVO employeeVO,String password){
-		String sendto = "ba105g6@gmail.com";  //employeeVO.getEmp_email();
+	public static void SendMail(MemberVO memberVO,String verifyUrl){
+		String sendto = "zero123824@g.ncu.edu.tw";  //employeeVO.getEmp_email();
 		String sendfrom = "ba105g6@gmail.com";
 		String host = "smtp.gmail.com";
 		int port = 587;
@@ -40,12 +39,12 @@ public class SendToNewEmployee {
 			Message msg = new MimeMessage(session);
 			msg.setFrom(new InternetAddress(sendfrom));
 			msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(sendto));
-			msg.setSubject("歡迎加入SEANKER影城");
+			msg.setSubject("歡迎成為SEANKER影城的一份子");
 //			msg.setText("Hello World!!!, \n\n 測試 測試 測試 測試 測試 測試 email !\n 密碼是:"+password);
-			String mailcontent = "<h2>你好 "+employeeVO.getEmp_name()+"</h2>"
-								+ "<div>歡迎加入SENAKER影城，成為我們的一分子</div>"
-								+ "<b style='color:red'>你的密碼是:"+password+"</b>"
-								+ "<div>用以登入員工操作後台，請妥善保管!</div><br>"
+			String mailcontent = "<h2>您好 "+memberVO.getMember_firstname()+"</h2>"
+								+ "<div>歡迎加入SENAKER影城</div>"
+								+ "<b style='color:red'>請點選下列網址開通訂票權限</b>"
+								+ "<div>"+verifyUrl+"</div><br>"
 								+ "<div>By:SEANKER影城團隊</div>";
 			msg.setContent(mailcontent,"text/html; charset=utf-8");
 			
@@ -59,5 +58,4 @@ public class SendToNewEmployee {
 			e.printStackTrace();
 		}
 	}
-
 }

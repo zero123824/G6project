@@ -26,8 +26,8 @@ public class FriendDAO implements FriendDAO_interface{
 			e.printStackTrace();
 		}
 	}	
-	private static final String INSERT = "INSERT INTO FRIEND (MEMBER_ID1,MEMBER_ID2,RELATION_STATUS,LAST_MSG_TIME,MEMBER_ID2_UNREAD) "
-										 + "VALUES(?,?,?,?,?)";
+	private static final String INSERT = "INSERT INTO FRIEND (MEMBER_ID1,MEMBER_ID2,RELATION_STATUS,LAST_MSG_TIME,MEMBER_ID2_UNREAD,MSG_STATUS) "
+										 + "VALUES(?,?,?,?,?,?)";
 	private static final String UPDATE = "UPDATE FRIEND SET RELATION_STATUS = ?,MEMBER_MSG=?,LAST_MSG_TIME=?,MEMBER_ID1_UNREAD=?,MEMBER_ID2_UNREAD=?, MSG_STATUS=?"
 										 +"WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
 	private static final String DELETE = "DELETE FROM FRIEND WHERE MEMBER_ID1 = ? AND MEMBER_ID2 = ?";
@@ -47,6 +47,7 @@ public class FriendDAO implements FriendDAO_interface{
 			psmt.setInt(3, newfriend.getRelation_status());
 			psmt.setTimestamp(4, newfriend.getLast_msg_time());
 			psmt.setInt(5, newfriend.getMember_id2_unread());
+			psmt.setInt(6, 0);
 			psmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
